@@ -1,0 +1,97 @@
+@import "./catppuccin.css";
+
+:root {
+  font-family: "VictorMono Nerd Font", monospace;
+  color: var(--ctp-macchiato-text);
+  background-color: #000;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+body {
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  overflow-wrap: break-word;
+}
+
+html,
+body {
+  width: 100vw;
+  height: 100vh;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+om-fake-screen {
+  display: grid;
+
+  width: 1280px;
+  height: 400px;
+
+  box-sizing: content-box;
+
+  border: 1px solid var(--ctp-macchiato-crust);
+}
+
+om-app {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.5rem;
+
+  position: relative;
+  isolation: isolate;
+  contain: strict;
+}
+
+om-app::before {
+  content: "";
+  position: absolute;
+
+  width: calc(100% + 8px);
+  height: calc(100% + 8px);
+
+  left: -4px;
+  top: -4px;
+
+  background-image: url(https://source.unsplash.com/random/1280×400/?pcb);
+  background-size: cover;
+
+  filter: grayscale() blur(2px) brightness(0.2);
+
+  z-index: -1;
+}

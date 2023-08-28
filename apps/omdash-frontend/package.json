@@ -1,0 +1,22 @@
+{
+  "name": "omdash-frotnend",
+  "version": "1.0.0",
+  "description": "Raspi dashboard for Om - Frontend",
+  "main": "index.js",
+  "scripts": {
+    "start": "npm run dev",
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
+  },
+  "author": "Damian Senn <damian.senn@topaxi.codes>",
+  "license": "ISC",
+  "dependencies": {
+    "lit": "^2.8.0",
+    "redux": "^4.2.1",
+    "redux-devtools-extension": "^2.13.9"
+  },
+  "devDependencies": {
+    "vite": "^4.4.9"
+  }
+}

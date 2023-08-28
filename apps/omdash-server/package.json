@@ -1,0 +1,26 @@
+{
+  "name": "omdash-server",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "dev": "node-dev src/server.ts",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "optionalDependencies": {
+    "bufferutil": "^4.0.7",
+    "utf-8-validate": "^6.0.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.5.7",
+    "@types/ws": "^8.5.5",
+    "node-dev": "^8.0.0",
+    "ts-node": "^10.9.1",
+    "tslib": "^2.6.2",
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "ws": "^8.13.0"
+  }
+}
