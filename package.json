@@ -5,9 +5,12 @@
   "main": "index.js",
   "workspaces": [
     "apps/*",
-    " packages/*"
+    "packages/*"
   ],
   "scripts": {
+    "dash": "npm run --prefix apps/omdash-frontend dev",
+    "server": "npm run --prefix apps/omdash-server dev",
+    "client": "npm run --prefix apps/omdash-client dev",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Damian Senn <damian.senn@topaxi.codes>",

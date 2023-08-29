@@ -1,5 +1,10 @@
-import { Action, legacy_createStore } from "redux";
+import { Action as ReduxAction, legacy_createStore } from "redux";
 import { composeWithDevTools } from "redux-devtools-extension";
+
+export interface Action<T, P> extends ReduxAction<T> {
+  client: string;
+  payload: P;
+}
 
 export interface RootState {
   clients: Record<string, any>;
@@ -9,7 +14,7 @@ export const initialState: RootState = {
   clients: {},
 };
 
-export function reducer(state: RootState = initialState, action: Action<any>) {
+export function reducer(state: RootState = initialState, action: Action<string>) {
   switch (action.type) {
     case 'register':
       if (state.clients[action.payload.name]) {
@@ -19,7 +24,9 @@ export function reducer(state: RootState = initialState, action: Action<any>) {
       return {
         clients: {
           ...state.clients,
-          [action.payload.name]: {},
+          [action.payload.name]: {
+            lastUpdate: Date.now(),
+          },
         },
       };
 
@@ -30,6 +37,7 @@ export function reducer(state: RootState = initialState, action: Action<any>) {
           [action.client]: {
             ...state.clients[action.client],
             ...action.payload,
+            lastUpdate: Date.now(),
           }
         },
       };

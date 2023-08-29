@@ -34,8 +34,6 @@ export class OmApp extends connect()(LitElement) {
         this.hostNames = [...this.hostNames, client];
       }
 
-      console.log(event.data);
-
       this.store.dispatch(action);
     });
 

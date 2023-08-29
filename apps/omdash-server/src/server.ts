@@ -1,3 +1,4 @@
+import childProcess from 'child_process';
 import WebSocket, { WebSocketServer } from 'ws';
 
 const createWebSocketServer = (port: number) => {
@@ -87,3 +88,18 @@ wssDashboard.on('connection', (ws) => {
     console.log('Dashboard disconnected');
   });
 });
+
+function executableExists(cmd: string) {
+  try {
+    childProcess.execSync(`which ${cmd}`, { stdio: 'ignore' });
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
+
+if (executableExists('swaymsg')) {
+  setInterval(() => {
+    childProcess.exec(`swaymsg output HDMI-A-1 dpms ${wssClients.clients.size ? 'on' : 'off'}`);
+  }, 1000);
+}
