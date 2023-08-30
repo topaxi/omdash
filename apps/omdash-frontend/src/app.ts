@@ -19,7 +19,7 @@ export class OmApp extends connect()(LitElement) {
     // Currently the WebSocket to server connection is always on the same host,
     // therefore we don't need to worry too much about connection issues.
     // Worst case, we can just reload the page.
-    this.ws = new WebSocket("ws://localhost:3300");
+    this.ws = new WebSocket(`ws://${window.location.hostname}:3300`);
 
     this.ws.addEventListener("message", (event) => {
       const action = JSON.parse(event.data);
