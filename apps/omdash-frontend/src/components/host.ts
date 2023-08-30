@@ -9,7 +9,7 @@ import './ago.ts';
 export class OmHost extends connect()(LitElement) {
   static styles = css`
     :host {
-      flex: 1 1 auto;
+      flex: 1 0 0px;
       border-radius: 6px;
       border: 1px solid var(--ctp-macchiato-lavender);
       background-color: var(--ctp-macchiato-base);
