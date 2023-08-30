@@ -1,5 +1,5 @@
 {
-  "name": "omdash-frotnend",
+  "name": "omdash-frontend",
   "version": "1.0.0",
   "description": "Raspi dashboard for Om - Frontend",
   "main": "index.js",

@@ -38,7 +38,7 @@ function connect(url: string) {
   return ws;
 }
 
-const ws = connect('ws://localhost:3200');
+const ws = connect('ws://ompi:3200');
 
 setInterval(() => {
   ws.send(encode(getRandomEvent()));
