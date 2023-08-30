@@ -1,0 +1,11 @@
+[Unit]
+After=network.target
+
+[Service]
+Type=simple
+User=topaxi
+ExecStart=/usr/bin/node /home/topaxi/projects/omdash/apps/omdash-server/build/server.js
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
