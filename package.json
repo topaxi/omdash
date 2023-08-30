@@ -11,9 +11,6 @@
     "start": "turbo start",
     "dev": "turbo dev",
     "build": "turbo build",
-    "dash": "npm run --prefix apps/omdash-frontend start",
-    "server": "npm run --prefix apps/omdash-server start",
-    "client": "npm run --prefix apps/omdash-client start",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Damian Senn <damian.senn@topaxi.codes>",
