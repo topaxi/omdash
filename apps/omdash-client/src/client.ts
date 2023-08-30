@@ -8,10 +8,15 @@ function encode(val: any) {
 function connect(url: string) {
   console.log('Connecting to', url);
 
+  const timeout: NodeJS.Timeout | null = null;
   const ws = new WebSocket(url);
 
   ws.on('open', () => {
     console.log('Connected');
+
+    setInterval(() => {
+      ws.send(encode(getRandomEvent()));
+    }, 1000);
 
     ws.send(encode({
       type: 'register',
@@ -23,6 +28,8 @@ function connect(url: string) {
 
   ws.once('close', () => {
     console.log('Connection closed');
+
+    clearTimeout(timeout!);
 
     setTimeout(() => {
       connect(url);
@@ -39,10 +46,6 @@ function connect(url: string) {
 }
 
 const ws = connect('ws://ompi:3200');
-
-setInterval(() => {
-  ws.send(encode(getRandomEvent()));
-}, 1000);
 
 function getRandomEvent() {
   const events = ['cpu', 'load', 'memory', 'processes'];
