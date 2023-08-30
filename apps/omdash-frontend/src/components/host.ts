@@ -3,7 +3,8 @@ import { customElement, property, state } from "lit/decorators.js";
 import { connect } from "../store/connect.js";
 import { RootState } from "../store/index.js";
 
-import './ago.ts';
+import './ago.js';
+import './gauge.js';
 
 @customElement("om-host")
 export class OmHost extends connect()(LitElement) {
@@ -37,9 +38,13 @@ export class OmHost extends connect()(LitElement) {
   }
 
   private renderLastUpdate() {
-    return html`
-      <div class="last-update">Last Update: <om-ago date="${this.lastUpdate}"></om-ago></div>
-    `;
+    if (Date.now() - this.lastUpdate > 10_000) {
+      return html`
+        <span class="last-update">(<om-ago date="${this.lastUpdate}"></om-ago>)</span>
+      `;
+    }
+
+    return '';
   }
 
   private renderLoadAverage() {
@@ -52,15 +57,18 @@ export class OmHost extends connect()(LitElement) {
     const memoryPercentage = (
       ((this.memory.total - this.memory.free) / this.memory.total) * 100);
     return html`
-      <div class="memory-usage">Memory usage: ${memoryPercentage.toFixed(1)}%</div>
+      <div class="memory-usage">
+        <om-gauge style="width:160px" percent="${memoryPercentage.toFixed(2)}">
+          Mem ${Math.round(memoryPercentage)}%
+        </om-gauge>
+      </div>
     `;
   }
 
   render() {
     return html`
-      <div class="hostname">${this.name}</div>
+      <div class="hostname">${this.name} ${this.renderLastUpdate()}</div>
       <div class="latency">Latency: 0ms</div>
-      ${this.renderLastUpdate()}
       <div class="uptime">Uptime: 0:00</div>
       <div class="cpu-usage">CPU: 0%</div>
       ${this.renderLoadAverage()}
