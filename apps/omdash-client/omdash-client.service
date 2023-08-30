@@ -8,4 +8,4 @@ ExecStart=/usr/bin/node /home/topaxi/projects/omdash/apps/omdash-client/build/cl
 Restart=on-failure
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=default.target
