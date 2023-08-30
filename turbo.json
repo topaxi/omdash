@@ -3,6 +3,13 @@
   "pipeline": {
     "build": {
       "outputs": ["build/**"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "start": {
+      "dependsOn": ["build"]
     }
   }
 }

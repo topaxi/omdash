@@ -8,6 +8,7 @@
     "packages/*"
   ],
   "scripts": {
+    "start": "turbo start",
     "dev": "turbo dev",
     "build": "turbo build",
     "dash": "npm run --prefix apps/omdash-frontend start",
