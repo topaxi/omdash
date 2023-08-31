@@ -39,7 +39,7 @@ export class OmGauge extends LitElement {
       background-color: var(--background, var(--ctp-macchiato-crust));
       transform: rotate(var(--rotation));
       transform-origin: bottom center;
-      transition-duration: 600ms;
+      transition: transform 600ms ease;
     }
     :host .value {
       position: absolute;
