@@ -14,7 +14,7 @@ function setIntervalImmediate(callback: () => void, interval: number) {
   return setInterval(callback, interval);
 }
 
-const psList = async function (...args: any[]) {
+const psList = async function(...args: any[]) {
   const m = (await Function('return import("ps-list")')()) as Promise<
     typeof import('ps-list')
   >;
@@ -94,6 +94,10 @@ function getMetrics() {
   return {
     type: 'metric',
     payload: {
+      // TODO: Move static values into register event.
+      arch: os.arch(),
+      platform: os.platform(),
+      release: os.release(),
       cpus: os.cpus(),
       load: os.loadavg(),
       memory: {
