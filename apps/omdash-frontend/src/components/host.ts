@@ -213,23 +213,8 @@ export class OmHost extends connect()(LitElement) {
     return 100 - (100 * idleDifference) / totalDifference;
   }
 
-  render() {
+  private renderProcessList() {
     return html`
-      <div class="hostname">
-        <div>${this.name} ${this.renderLastUpdate()}</div>
-        <small>${this.addr}</small>
-      </div>
-      <div class="latency">Latency: 0ms</div>
-      <div class="uptime">Uptime: 0:00</div>
-      <div style="display: flex">
-        <div style="margin-right: 0.5rem">
-          ${this.renderCPUUsage()} ${this.renderLoadAverage()}
-        </div>
-        <div>${this.renderMemoryUsage()} ${this.renderAvailableMemory()}</div>
-      </div>
-      <div class="disk-usage">Disk: 0%</div>
-      <div class="network-usage">Network: 0%</div>
-      <div class="processes">Processes: ${this.processCount}</div>
       <div class="process-list">
         <div class="highest-cpu">
           <strong>CPU</strong>
@@ -248,6 +233,27 @@ export class OmHost extends connect()(LitElement) {
           )}
         </div>
       </div>
+    `;
+  }
+
+  render() {
+    return html`
+      <div class="hostname">
+        <div>${this.name} ${this.renderLastUpdate()}</div>
+        <small>${this.addr}</small>
+      </div>
+      <div class="latency">Latency: 0ms</div>
+      <div class="uptime">Uptime: 0:00</div>
+      <div style="display: flex">
+        <div style="margin-right: 0.5rem">
+          ${this.renderCPUUsage()} ${this.renderLoadAverage()}
+        </div>
+        <div>${this.renderMemoryUsage()} ${this.renderAvailableMemory()}</div>
+      </div>
+      <div class="disk-usage">Disk: 0%</div>
+      <div class="network-usage">Network: 0%</div>
+      <div class="processes">Processes: ${this.processCount}</div>
+      ${this.renderProcessList()}
     `;
   }
 }
