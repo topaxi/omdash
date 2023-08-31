@@ -1,7 +1,7 @@
-@import "./catppuccin.css";
+@import './catppuccin.css';
 
 :root {
-  font-family: "VictorMono Nerd Font", monospace;
+  font-family: 'VictorMono Nerd Font', monospace;
   color: var(--ctp-macchiato-text);
   background-color: #000;
 }
@@ -68,32 +68,4 @@ om-fake-screen {
   box-sizing: content-box;
 
   border: 1px solid var(--ctp-macchiato-crust);
-}
-
-om-app {
-  display: flex;
-  gap: 0.5rem;
-  padding: 0.5rem;
-
-  position: relative;
-  isolation: isolate;
-  contain: strict;
-}
-
-om-app::before {
-  content: "";
-  position: absolute;
-
-  width: calc(100% + 8px);
-  height: calc(100% + 8px);
-
-  left: -4px;
-  top: -4px;
-
-  background-image: url(https://source.unsplash.com/random/1280×400/?pcb);
-  background-size: cover;
-
-  filter: grayscale() blur(2px) brightness(0.2);
-
-  z-index: -1;
 }

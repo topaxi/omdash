@@ -1,4 +1,4 @@
-import { LitElement, html } from 'lit';
+import { LitElement, css, html } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 
@@ -10,7 +10,37 @@ const identity = <T>(value: T) => value;
 
 @customElement('om-app')
 export class OmApp extends connect()(LitElement) {
-  ws: WebSocket | null = null;
+  static styles = css`
+    :host {
+      display: flex;
+      gap: 0.5rem;
+      padding: 0.5rem;
+
+      position: relative;
+      isolation: isolate;
+      contain: strict;
+    }
+
+    :host::before {
+      content: '';
+      position: absolute;
+
+      width: calc(100% + 8px);
+      height: calc(100% + 8px);
+
+      left: -4px;
+      top: -4px;
+
+      background-image: url(https://source.unsplash.com/random/1280×400/?pcb);
+      background-size: cover;
+
+      filter: grayscale() blur(2px) brightness(0.2);
+
+      z-index: -1;
+    }
+  `;
+
+  private ws: WebSocket | null = null;
 
   @state()
   private hostNames: readonly string[] = [];
