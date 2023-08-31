@@ -45,7 +45,9 @@ function connect(url: string) {
   return ws;
 }
 
-const ws = connect('ws://ompi:3200');
+const omdashServerHost = process.env.OMDASH_SERVER_HOST || 'localhost:3200';
+
+connect(`ws://${omdashServerHost}`);
 
 function getRandomEvent() {
   const events = ['cpu', 'load', 'memory', 'processes'];

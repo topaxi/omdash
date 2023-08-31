@@ -4,6 +4,7 @@ After=network.target
 [Service]
 Type=simple
 ExecStart=/usr/bin/node /home/topaxi/projects/omdash/apps/omdash-client/build/client.js
+Environment="OMDASH_SERVER_HOST=ompi:3200"
 Restart=on-failure
 
 [Install]
