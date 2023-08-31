@@ -45,11 +45,21 @@ export class OmApp extends connect()(LitElement) {
   }
 
   override stateChanged(state: RootState) {
-    this.lastUpdatedHosts = Object.fromEntries(Object.entries(state.clients).map(([client, { lastUpdate }]) => [client, lastUpdate]));
+    this.lastUpdatedHosts = Object.fromEntries(
+      Object.entries(state.clients).map(([client, { lastUpdate }]) => [
+        client,
+        lastUpdate,
+      ]),
+    );
   }
 
   private get activeHosts() {
-    return this.hostNames.filter((hostName) => Date.now() - (this.lastUpdatedHosts[hostName] || 0) < 300_000);
+    const now = Date.now();
+
+    return this.hostNames.filter(
+      (hostName) =>
+        now - (this.lastUpdatedHosts[hostName] || 0) < 300_000,
+    );
   }
 
   render() {
