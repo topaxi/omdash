@@ -1,6 +1,8 @@
 import os from 'os';
 import WebSocket from 'ws';
 
+const UPDATE_INTERVAL = 5000;
+
 function encode(val: any) {
   return JSON.stringify(val);
 }
@@ -15,8 +17,8 @@ function connect(url: string) {
     console.log('Connected');
 
     setInterval(() => {
-      ws.send(encode(getRandomEvent()));
-    }, 1000);
+      ws.send(encode(getMetrics()));
+    }, UPDATE_INTERVAL);
 
     ws.send(encode({
       type: 'register',
@@ -49,45 +51,24 @@ const omdashServerHost = process.env.OMDASH_SERVER_HOST || 'localhost:3200';
 
 connect(`ws://${omdashServerHost}`);
 
-function getRandomEvent() {
-  const events = ['cpu', 'load', 'memory', 'processes'];
-
-  switch (events[Math.floor(Math.random() * events.length)]) {
-    case 'cpu':
-      return {
-        type: 'metric',
-        payload: {
-          cpus: os.cpus().map((cpu) => ({
-            model: cpu.model,
-            speed: cpu.speed,
-            times: { user: cpu.times.user, nice: cpu.times.nice, sys: cpu.times.sys, idle: cpu.times.idle },
-          })),
-        }
-      };
-    case 'load':
-      return {
-        type: 'metric',
-        payload: {
-          load: os.loadavg(),
-        },
-      };
-    case 'memory':
-      return {
-        type: 'metric',
-        payload: {
-          memory: {
-            total: os.totalmem(),
-            free: os.freemem(),
-          },
-        },
-      };
-    case 'processes':
-      return {
-        type: 'metric',
-        payload: {
-          processes: [],
-        },
-      };
+function getMetrics() {
+  return {
+    type: 'metric',
+    payload: {
+      cpus: getCPUMetric(),
+      load: os.loadavg(),
+      memory: {
+        total: os.totalmem(),
+        free: os.freemem(),
+      },
+    },
   }
+}
 
+function getCPUMetric() {
+  return os.cpus().map(({ model, speed, times }) => ({
+    model,
+    speed,
+    times: { user: times.user, nice: times.nice, sys: times.sys, idle: times.idle },
+  }))
 }
