@@ -19,12 +19,13 @@ export class OmHost extends connect()(LitElement) {
       flex: 1 0 0px;
       border-radius: 6px;
       border: 1px solid var(--ctp-macchiato-lavender);
-      background-color: var(--ctp-macchiato-base);
+      background-color: rgb(var(--ctp-macchiato-base-raw), 90%);
 
       padding: 0.2rem 0.33rem;
     }
 
-    .load-average {
+    .load-average,
+    .available-memory {
       text-align: center;
     }
   `;
@@ -95,6 +96,30 @@ export class OmHost extends connect()(LitElement) {
     `;
   }
 
+  private formatBytes(bytes: number) {
+    const units = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB'];
+
+    let unitIndex = 0;
+    while (bytes > 1024) {
+      bytes /= 1024;
+      unitIndex++;
+    }
+
+    return `${bytes.toFixed(1)}${units[unitIndex]}`;
+  }
+
+  private renderAvailableMemory() {
+    const { total, free } = this.memory;
+
+    if (total === 1 && free === 1) {
+      return '';
+    }
+
+    return html`<div class="available-memory">
+      ${this.formatBytes(free)}/${this.formatBytes(total)}
+    </div>`;
+  }
+
   private renderCPUUsage() {
     const averageCPUUsage = this.averageCPUUsage();
 
@@ -152,7 +177,7 @@ export class OmHost extends connect()(LitElement) {
         <div style="margin-right: 0.5rem">
           ${this.renderCPUUsage()} ${this.renderLoadAverage()}
         </div>
-        ${this.renderMemoryUsage()}
+        <div>${this.renderMemoryUsage()} ${this.renderAvailableMemory()}</div>
       </div>
       <div class="disk-usage">Disk: 0%</div>
       <div class="network-usage">Network: 0%</div>
