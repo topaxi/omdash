@@ -9,21 +9,21 @@ const createWebSocketServer = (port: number) => {
         // See zlib defaults.
         chunkSize: 1024,
         memLevel: 7,
-        level: 3
+        level: 3,
       },
       zlibInflateOptions: {
-        chunkSize: 10 * 1024
+        chunkSize: 10 * 1024,
       },
       clientNoContextTakeover: true, // Defaults to negotiated value.
       serverNoContextTakeover: true, // Defaults to negotiated value.
       serverMaxWindowBits: 10, // Defaults to negotiated value.
       concurrencyLimit: 10, // Limits zlib concurrency for perf.
-      threshold: 1024 // Size (in bytes) below which messages
-    }
+      threshold: 1024, // Size (in bytes) below which messages
+    },
   });
 
   return wss;
-}
+};
 
 const wssClients = createWebSocketServer(3200);
 const wssDashboard = createWebSocketServer(3300);
@@ -39,7 +39,7 @@ function decode(val: any) {
 }
 
 wssClients.on('connection', (ws, req) => {
-  console.log('Client connected', req.socket.remoteAddress)
+  console.log('Client connected', req.socket.remoteAddress);
 
   const metadata = { addr: req.socket.remoteAddress } as Record<string, any>;
   clientMetadata.set(ws, metadata);
@@ -76,12 +76,16 @@ wssDashboard.on('connection', (ws) => {
   wssClients.clients.forEach((client) => {
     const metadata = clientMetadata.get(client)!;
 
-    ws.send(encode({
-      type: 'register', payload: {
-        name: metadata.name,
-        addr: metadata.addr,
-      }
-    }), { binary: false });
+    ws.send(
+      encode({
+        type: 'register',
+        payload: {
+          name: metadata.name,
+          addr: metadata.addr,
+        },
+      }),
+      { binary: false },
+    );
   });
 
   ws.once('close', () => {
@@ -100,6 +104,8 @@ function executableExists(cmd: string) {
 
 if (executableExists('swaymsg')) {
   setInterval(() => {
-    childProcess.exec(`swaymsg output HDMI-A-1 dpms ${wssClients.clients.size ? 'on' : 'off'}`);
+    childProcess.exec(
+      `swaymsg output HDMI-A-1 dpms ${wssClients.clients.size ? 'on' : 'off'}`,
+    );
   }, 1000);
 }

@@ -20,12 +20,14 @@ function connect(url: string) {
       ws.send(encode(getMetrics()));
     }, UPDATE_INTERVAL);
 
-    ws.send(encode({
-      type: 'register',
-      payload: {
-        name: os.hostname(),
-      }
-    }));
+    ws.send(
+      encode({
+        type: 'register',
+        payload: {
+          name: os.hostname(),
+        },
+      }),
+    );
   });
 
   ws.once('close', () => {
@@ -62,5 +64,5 @@ function getMetrics() {
         free: os.freemem(),
       },
     },
-  }
+  };
 }

@@ -1,10 +1,10 @@
-import { LitElement, css, html } from "lit";
-import { customElement, property, state } from "lit/decorators.js";
-import { connect } from "../store/connect.js";
-import { RootState } from "../store/index.js";
+import { LitElement, css, html } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
+import { connect } from '../store/connect.js';
+import { RootState } from '../store/index.js';
 
-import "./ago.js";
-import "./gauge.js";
+import './ago.js';
+import './gauge.js';
 
 interface CpuInfo {
   model: string;
@@ -12,7 +12,7 @@ interface CpuInfo {
   times: { user: number; nice: number; sys: number; idle: number; irq: number };
 }
 
-@customElement("om-host")
+@customElement('om-host')
 export class OmHost extends connect()(LitElement) {
   static styles = css`
     :host {
@@ -23,10 +23,14 @@ export class OmHost extends connect()(LitElement) {
 
       padding: 0.2rem 0.33rem;
     }
+
+    .load-average {
+      text-align: center;
+    }
   `;
 
   @property()
-  name = "";
+  name = '';
 
   @state()
   cpus: readonly CpuInfo[] = [];
@@ -60,13 +64,18 @@ export class OmHost extends connect()(LitElement) {
       `;
     }
 
-    return "";
+    return '';
   }
 
   private renderLoadAverage() {
+    // On Windows, Node.js returns [0, 0, 0], so we do not render load at all.
+    if (this.loadAverage.reduce((a, b) => a + b, 0) === 0) {
+      return '';
+    }
+
     return html`
       <div class="load-average">
-        Load: ${this.loadAverage.map((n) => n.toFixed(2)).join(" ")}
+        ${this.loadAverage.map((n) => n.toFixed(2)).join(' ')}
       </div>
     `;
   }
@@ -76,7 +85,10 @@ export class OmHost extends connect()(LitElement) {
       ((this.memory.total - this.memory.free) / this.memory.total) * 100;
     return html`
       <div class="memory-usage">
-        <om-gauge style="width:160px" percent="${memoryPercentage.toFixed(2)}">
+        <om-gauge
+          style="width:160px;--color: var(--ctp-macchiato-mauve)"
+          percent="${memoryPercentage.toFixed(2)}"
+        >
           Mem ${Math.round(memoryPercentage)}%
         </om-gauge>
       </div>
@@ -88,7 +100,10 @@ export class OmHost extends connect()(LitElement) {
 
     return html`
       <div class="cpu-usage">
-        <om-gauge style="width:160px" percent="${averageCPUUsage.toFixed(2)}">
+        <om-gauge
+          style="width:160px;--color: var(--ctp-macchiato-red)"
+          percent="${averageCPUUsage.toFixed(2)}"
+        >
           CPU ${Math.round(averageCPUUsage)}%
         </om-gauge>
       </div>
@@ -121,6 +136,10 @@ export class OmHost extends connect()(LitElement) {
     const idleDifference = cpuTimes.idle - prevCpuTimes.idle;
     const totalDifference = cpuTimes.total - prevCpuTimes.total;
 
+    if (totalDifference === 0) {
+      return 0;
+    }
+
     return 100 - (100 * idleDifference) / totalDifference;
   }
 
@@ -130,7 +149,9 @@ export class OmHost extends connect()(LitElement) {
       <div class="latency">Latency: 0ms</div>
       <div class="uptime">Uptime: 0:00</div>
       <div style="display: flex">
-        <div>${this.renderCPUUsage()} ${this.renderLoadAverage()}</div>
+        <div style="margin-right: 0.5rem">
+          ${this.renderCPUUsage()} ${this.renderLoadAverage()}
+        </div>
         ${this.renderMemoryUsage()}
       </div>
       <div class="disk-usage">Disk: 0%</div>
@@ -142,6 +163,6 @@ export class OmHost extends connect()(LitElement) {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "om-host": OmHost;
+    'om-host': OmHost;
   }
 }

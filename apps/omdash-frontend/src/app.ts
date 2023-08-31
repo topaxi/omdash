@@ -1,13 +1,13 @@
-import { LitElement, html } from "lit";
-import { customElement, state } from "lit/decorators.js";
-import { repeat } from "lit/directives/repeat.js";
+import { LitElement, html } from 'lit';
+import { customElement, state } from 'lit/decorators.js';
+import { repeat } from 'lit/directives/repeat.js';
 
-import "./components/host.js";
-import { connect } from "./store/connect.js";
+import './components/host.js';
+import { connect } from './store/connect.js';
 
 const identity = <T>(value: T) => value;
 
-@customElement("om-app")
+@customElement('om-app')
 export class OmApp extends connect()(LitElement) {
   ws: WebSocket | null = null;
 
@@ -21,11 +21,11 @@ export class OmApp extends connect()(LitElement) {
     // Worst case, we can just reload the page.
     this.ws = new WebSocket(`ws://${window.location.hostname}:3300`);
 
-    this.ws.addEventListener("message", (event) => {
+    this.ws.addEventListener('message', (event) => {
       const action = JSON.parse(event.data);
       const { type, client, payload } = action;
 
-      if (type === "register" && !this.hostNames.includes(payload.name)) {
+      if (type === 'register' && !this.hostNames.includes(payload.name)) {
         this.hostNames = [...this.hostNames, payload.name];
       }
 

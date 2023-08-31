@@ -1,5 +1,5 @@
-import { Action as ReduxAction, legacy_createStore } from "redux";
-import { composeWithDevTools } from "redux-devtools-extension";
+import { Action as ReduxAction, legacy_createStore } from 'redux';
+import { composeWithDevTools } from 'redux-devtools-extension';
 
 export interface Action<T, P> extends ReduxAction<T> {
   client: string;
@@ -14,7 +14,10 @@ export const initialState: RootState = {
   clients: {},
 };
 
-export function reducer(state: RootState = initialState, action: Action<string>) {
+export function reducer(
+  state: RootState = initialState,
+  action: Action<string>,
+) {
   switch (action.type) {
     case 'register':
       if (state.clients[action.payload.name]) {
@@ -37,9 +40,12 @@ export function reducer(state: RootState = initialState, action: Action<string>)
           [action.client]: {
             ...state.clients[action.client],
             ...action.payload,
-            pcpus: state.clients[action.client]?.cpus,
+            pcpus: action.payload.cpus
+              ? state.clients[action.client]?.cpus ??
+                state.clients[action.client]?.pcpus
+              : state.clients[action.client]?.pcpus,
             lastUpdate: Date.now(),
-          }
+          },
         },
       };
     }

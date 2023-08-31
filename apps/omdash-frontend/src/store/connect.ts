@@ -1,5 +1,5 @@
-import { Action, Store, Unsubscribe } from "redux";
-import { store as defaultStore } from "./index.js";
+import { Action, Store, Unsubscribe } from 'redux';
+import { store as defaultStore } from './index.js';
 
 type Constructor<T> = new (...args: any[]) => T;
 
