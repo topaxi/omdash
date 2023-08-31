@@ -37,6 +37,7 @@ export function reducer(state: RootState = initialState, action: Action<string>)
           [action.client]: {
             ...state.clients[action.client],
             ...action.payload,
+            pcpus: state.clients[action.client]?.cpus,
             lastUpdate: Date.now(),
           }
         },

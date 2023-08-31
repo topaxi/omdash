@@ -55,7 +55,7 @@ function getMetrics() {
   return {
     type: 'metric',
     payload: {
-      cpus: getCPUMetric(),
+      cpus: os.cpus(),
       load: os.loadavg(),
       memory: {
         total: os.totalmem(),
@@ -63,12 +63,4 @@ function getMetrics() {
       },
     },
   }
-}
-
-function getCPUMetric() {
-  return os.cpus().map(({ model, speed, times }) => ({
-    model,
-    speed,
-    times: { user: times.user, nice: times.nice, sys: times.sys, idle: times.idle },
-  }))
 }

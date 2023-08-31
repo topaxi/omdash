@@ -3,8 +3,14 @@ import { customElement, property, state } from "lit/decorators.js";
 import { connect } from "../store/connect.js";
 import { RootState } from "../store/index.js";
 
-import './ago.js';
-import './gauge.js';
+import "./ago.js";
+import "./gauge.js";
+
+interface CpuInfo {
+  model: string;
+  speed: number;
+  times: { user: number; nice: number; sys: number; idle: number; irq: number };
+}
 
 @customElement("om-host")
 export class OmHost extends connect()(LitElement) {
@@ -23,6 +29,12 @@ export class OmHost extends connect()(LitElement) {
   name = "";
 
   @state()
+  cpus: readonly CpuInfo[] = [];
+
+  @state()
+  pcpus: readonly CpuInfo[] = [];
+
+  @state()
   private lastUpdate = Date.now();
 
   @state()
@@ -32,30 +44,36 @@ export class OmHost extends connect()(LitElement) {
   private memory = { total: 1, free: 1 };
 
   override stateChanged(state: RootState): void {
+    this.cpus = state.clients[this.name]?.cpus ?? [];
+    this.pcpus = state.clients[this.name]?.pcpus ?? [];
     this.loadAverage = state.clients[this.name]?.load ?? [0, 0, 0];
     this.memory = state.clients[this.name]?.memory ?? { total: 1, free: 1 };
-    this.lastUpdate = state.clients[this.name]?.lastUpdate || this.lastUpdate
+    this.lastUpdate = state.clients[this.name]?.lastUpdate || this.lastUpdate;
   }
 
   private renderLastUpdate() {
     if (Date.now() - this.lastUpdate > 10_000) {
       return html`
-        <span class="last-update">(<om-ago date="${this.lastUpdate}"></om-ago>)</span>
+        <span class="last-update">
+          (<om-ago date="${this.lastUpdate}"></om-ago>)
+        </span>
       `;
     }
 
-    return '';
+    return "";
   }
 
   private renderLoadAverage() {
     return html`
-      <div class="load-average">Load: ${this.loadAverage.map(n => n.toFixed(2)).join(" ")}</div>
+      <div class="load-average">
+        Load: ${this.loadAverage.map((n) => n.toFixed(2)).join(" ")}
+      </div>
     `;
   }
 
   private renderMemoryUsage() {
-    const memoryPercentage = (
-      ((this.memory.total - this.memory.free) / this.memory.total) * 100);
+    const memoryPercentage =
+      ((this.memory.total - this.memory.free) / this.memory.total) * 100;
     return html`
       <div class="memory-usage">
         <om-gauge style="width:160px" percent="${memoryPercentage.toFixed(2)}">
@@ -65,14 +83,56 @@ export class OmHost extends connect()(LitElement) {
     `;
   }
 
+  private renderCPUUsage() {
+    const averageCPUUsage = this.averageCPUUsage();
+
+    return html`
+      <div class="cpu-usage">
+        <om-gauge style="width:160px" percent="${averageCPUUsage.toFixed(2)}">
+          CPU ${Math.round(averageCPUUsage)}%
+        </om-gauge>
+      </div>
+    `;
+  }
+
+  private getTotalCPUTimes(cpus: readonly CpuInfo[]) {
+    return cpus
+      .map((cpu) => cpu.times)
+      .reduce(
+        (acc, times) => {
+          acc.idle += times.idle;
+          acc.total +=
+            times.user + times.nice + times.sys + times.idle + times.irq;
+
+          return acc;
+        },
+        { idle: 0, total: 0 },
+      );
+  }
+
+  private averageCPUUsage() {
+    const cpuTimes = this.getTotalCPUTimes(this.cpus);
+    const prevCpuTimes = this.getTotalCPUTimes(this.pcpus);
+
+    if (prevCpuTimes.idle === 0) {
+      return 0;
+    }
+
+    const idleDifference = cpuTimes.idle - prevCpuTimes.idle;
+    const totalDifference = cpuTimes.total - prevCpuTimes.total;
+
+    return 100 - (100 * idleDifference) / totalDifference;
+  }
+
   render() {
     return html`
       <div class="hostname">${this.name} ${this.renderLastUpdate()}</div>
       <div class="latency">Latency: 0ms</div>
       <div class="uptime">Uptime: 0:00</div>
-      <div class="cpu-usage">CPU: 0%</div>
-      ${this.renderLoadAverage()}
-      ${this.renderMemoryUsage()}
+      <div style="display: flex">
+        <div>${this.renderCPUUsage()} ${this.renderLoadAverage()}</div>
+        ${this.renderMemoryUsage()}
+      </div>
       <div class="disk-usage">Disk: 0%</div>
       <div class="network-usage">Network: 0%</div>
       <div class="processes">Processes: 0</div>
