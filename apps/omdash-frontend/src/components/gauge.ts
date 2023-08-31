@@ -12,15 +12,15 @@ export class OmGauge extends LitElement {
       overflow: hidden;
     }
 
-    :host:before {
+    :host::before {
       content: '';
       display: block;
       padding-top: 50%; /* ratio of 2:1*/
     }
-    :host .chart {
+    .chart {
       overflow: hidden;
     }
-    :host .mask {
+    .mask {
       position: absolute;
       left: 20%;
       right: 20%;
@@ -30,7 +30,7 @@ export class OmGauge extends LitElement {
       border-radius: 50%/100% 100% 0 0;
     }
 
-    :host .percentage {
+    .percentage {
       position: absolute;
       top: -1px;
       left: -1px;
@@ -41,7 +41,7 @@ export class OmGauge extends LitElement {
       transform-origin: bottom center;
       transition: transform 600ms ease;
     }
-    :host .value {
+    .value {
       position: absolute;
       bottom: 0%;
       left: 0;
@@ -49,12 +49,12 @@ export class OmGauge extends LitElement {
       text-align: center;
     }
 
-    :host .min {
+    .min {
       position: absolute;
       bottom: 0;
       left: 5%;
     }
-    :host .max {
+    .max {
       position: absolute;
       bottom: 0;
       right: 5%;
