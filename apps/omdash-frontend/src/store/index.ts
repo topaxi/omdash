@@ -1,10 +1,17 @@
 import { Action as ReduxAction, legacy_createStore } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
 
+// TODO: Refactoring into several reducers.
+//       One for client registration and one for metrics.
+//       Within metrics, one for CPU to hold the history of CPU usage.
+
 export interface Action<T, P> extends ReduxAction<T> {
   client: string;
   payload: P;
 }
+
+export type RegisterAction = Action<'register', { addr: string; name: string }>;
+export type MetricAction = Action<'metric', Record<string, any>>;
 
 export interface RootState {
   clients: Record<string, any>;
@@ -16,7 +23,7 @@ export const initialState: RootState = {
 
 export function reducer(
   state: RootState = initialState,
-  action: Action<string>,
+  action: RegisterAction | MetricAction,
 ) {
   switch (action.type) {
     case 'register':
@@ -24,6 +31,7 @@ export function reducer(
         clients: {
           ...state.clients,
           [action.payload.name]: {
+            ...state.clients[action.payload.name],
             addr: action.payload.addr,
             lastUpdate: Date.now(),
           },

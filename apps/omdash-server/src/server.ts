@@ -50,6 +50,7 @@ wssClients.on('connection', (ws, req) => {
 
       if (type === 'register') {
         metadata.name = payload.name;
+        payload.addr = metadata.addr;
       }
 
       const enhancedPayload = encode({ type, client: metadata.name, payload });
