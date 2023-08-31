@@ -40,7 +40,7 @@ export class OmAgo extends LitElement {
   @state()
   now = Date.now();
 
-  interval: ReturnType<typeof setInterval> | undefined;
+  private interval: ReturnType<typeof setInterval> | undefined;
 
   override connectedCallback(): void {
     super.connectedCallback();

@@ -30,6 +30,11 @@ export class OmHost extends connect()(LitElement) {
     }
   `;
 
+  private interval: ReturnType<typeof setInterval> | undefined;
+
+  @state()
+  private now = 0;
+
   @property()
   name = '';
 
@@ -48,6 +53,19 @@ export class OmHost extends connect()(LitElement) {
   @state()
   private memory = { total: 1, free: 1 };
 
+  override connectedCallback(): void {
+    super.connectedCallback();
+
+    this.interval = setInterval(() => {
+      this.now = Date.now();
+    }, 5000);
+  }
+
+  override disconnectedCallback(): void {
+    clearInterval(this.interval);
+    this.interval = undefined;
+  }
+
   override stateChanged(state: RootState): void {
     this.cpus = state.clients[this.name]?.cpus ?? [];
     this.pcpus = state.clients[this.name]?.pcpus ?? [];
@@ -57,7 +75,7 @@ export class OmHost extends connect()(LitElement) {
   }
 
   private renderLastUpdate() {
-    if (Date.now() - this.lastUpdate > 10_000) {
+    if (this.now - this.lastUpdate > 10_000) {
       return html`
         <span class="last-update">
           (<om-ago date="${this.lastUpdate}"></om-ago>)
