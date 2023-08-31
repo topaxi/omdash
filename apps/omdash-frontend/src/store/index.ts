@@ -12,6 +12,14 @@ export interface Action<T, P> extends ReduxAction<T> {
 
 export type RegisterAction = Action<'register', { addr: string; name: string }>;
 export type MetricAction = Action<'metric', Record<string, any>>;
+export type PsAction = Action<
+  'ps',
+  {
+    count: number;
+    highestCpu: any[];
+    highestMemory: any[];
+  }
+>;
 
 export interface RootState {
   clients: Record<string, any>;
@@ -23,7 +31,7 @@ export const initialState: RootState = {
 
 export function reducer(
   state: RootState = initialState,
-  action: RegisterAction | MetricAction,
+  action: RegisterAction | MetricAction | PsAction,
 ) {
   switch (action.type) {
     case 'register':

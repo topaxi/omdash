@@ -234,18 +234,18 @@ export class OmHost extends connect()(LitElement) {
         <div class="highest-cpu">
           <strong>CPU</strong>
           ${repeat(
-      this.highestCPUProcesses,
-      (p) => p.pid,
-      (p) => html`<div>${p.cpu.toFixed(1)}% ${p.name}</div>`,
-    )}
+            this.highestCPUProcesses,
+            (p) => p.pid,
+            (p) => html`<div>${p.cpu.toFixed(1)}% ${p.name}</div>`,
+          )}
         </div>
         <div class="highest-memory">
           <strong>Memory</strong>
           ${repeat(
-      this.highestMemoryProcesses,
-      (p) => p.pid,
-      (p) => html`<div>${p.memory.toFixed(1)}% ${p.name}</div>`,
-    )}
+            this.highestMemoryProcesses,
+            (p) => p.pid,
+            (p) => html`<div>${p.memory.toFixed(1)}% ${p.name}</div>`,
+          )}
         </div>
       </div>
     `;
