@@ -134,7 +134,7 @@ export class OmHost extends connect()(LitElement) {
     }
 
     return html`<div class="available-memory">
-      ${this.formatBytes(free)}/${this.formatBytes(total)}
+      ${this.formatBytes(total - free)}/${this.formatBytes(total)}
     </div>`;
   }
 
