@@ -1,5 +1,6 @@
 import { LitElement, css, html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
+import { repeat } from 'lit/directives/repeat.js';
 import { connect } from '../store/connect.js';
 import { RootState } from '../store/index.js';
 
@@ -27,6 +28,15 @@ export class OmHost extends connect()(LitElement) {
     .load-average,
     .available-memory {
       text-align: center;
+    }
+
+    .process-list {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .process-list > div {
+      flex: 1 0 50%;
     }
   `;
 
@@ -56,6 +66,15 @@ export class OmHost extends connect()(LitElement) {
   @state()
   private addr = '';
 
+  @state()
+  private processCount = 0;
+
+  @state()
+  private highestCPUProcesses: any[] = [];
+
+  @state()
+  private highestMemoryProcesses: any[] = [];
+
   override connectedCallback(): void {
     super.connectedCallback();
 
@@ -76,6 +95,10 @@ export class OmHost extends connect()(LitElement) {
     this.loadAverage = state.clients[this.name]?.load ?? [0, 0, 0];
     this.memory = state.clients[this.name]?.memory ?? { total: 1, free: 1 };
     this.lastUpdate = state.clients[this.name]?.lastUpdate || this.lastUpdate;
+    this.processCount = state.clients[this.name]?.ps?.count ?? 0;
+    this.highestCPUProcesses = state.clients[this.name]?.ps?.highestCpu ?? [];
+    this.highestMemoryProcesses =
+      state.clients[this.name]?.ps?.highestMemory ?? [];
   }
 
   private renderLastUpdate() {
@@ -206,7 +229,25 @@ export class OmHost extends connect()(LitElement) {
       </div>
       <div class="disk-usage">Disk: 0%</div>
       <div class="network-usage">Network: 0%</div>
-      <div class="processes">Processes: 0</div>
+      <div class="processes">Processes: ${this.processCount}</div>
+      <div class="process-list">
+        <div class="highest-cpu">
+          <strong>CPU</strong>
+          ${repeat(
+      this.highestCPUProcesses,
+      (p) => p.pid,
+      (p) => html`<div>${p.cpu.toFixed(1)}% ${p.name}</div>`,
+    )}
+        </div>
+        <div class="highest-memory">
+          <strong>Memory</strong>
+          ${repeat(
+      this.highestMemoryProcesses,
+      (p) => p.pid,
+      (p) => html`<div>${p.memory.toFixed(1)}% ${p.name}</div>`,
+    )}
+        </div>
+      </div>
     `;
   }
 }

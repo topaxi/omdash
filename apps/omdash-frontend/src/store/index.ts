@@ -55,6 +55,19 @@ export function reducer(
       };
     }
 
+    case 'ps': {
+      return {
+        clients: {
+          ...state.clients,
+          [action.client]: {
+            ...state.clients[action.client],
+            ps: action.payload,
+            lastUpdate: Date.now(),
+          },
+        },
+      };
+    }
+
     default:
       return state;
   }
