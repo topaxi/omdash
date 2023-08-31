@@ -39,10 +39,10 @@ export class OmHost extends connect()(LitElement) {
   name = '';
 
   @state()
-  cpus: readonly CpuInfo[] = [];
+  private cpus: readonly CpuInfo[] = [];
 
   @state()
-  pcpus: readonly CpuInfo[] = [];
+  private pcpus: readonly CpuInfo[] = [];
 
   @state()
   private lastUpdate = Date.now();
@@ -52,6 +52,9 @@ export class OmHost extends connect()(LitElement) {
 
   @state()
   private memory = { total: 1, free: 1 };
+
+  @state()
+  private addr = '';
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -67,6 +70,7 @@ export class OmHost extends connect()(LitElement) {
   }
 
   override stateChanged(state: RootState): void {
+    this.addr = state.clients[this.name]?.addr ?? '';
     this.cpus = state.clients[this.name]?.cpus ?? [];
     this.pcpus = state.clients[this.name]?.pcpus ?? [];
     this.loadAverage = state.clients[this.name]?.load ?? [0, 0, 0];
@@ -188,7 +192,10 @@ export class OmHost extends connect()(LitElement) {
 
   render() {
     return html`
-      <div class="hostname">${this.name} ${this.renderLastUpdate()}</div>
+      <div class="hostname">
+        <div>${this.name} ${this.renderLastUpdate()}</div>
+        <small>${this.addr}</small>
+      </div>
       <div class="latency">Latency: 0ms</div>
       <div class="uptime">Uptime: 0:00</div>
       <div style="display: flex">

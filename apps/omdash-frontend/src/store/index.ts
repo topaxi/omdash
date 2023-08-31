@@ -20,14 +20,11 @@ export function reducer(
 ) {
   switch (action.type) {
     case 'register':
-      if (state.clients[action.payload.name]) {
-        return state;
-      }
-
       return {
         clients: {
           ...state.clients,
           [action.payload.name]: {
+            addr: action.payload.addr,
             lastUpdate: Date.now(),
           },
         },

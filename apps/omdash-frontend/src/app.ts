@@ -57,8 +57,7 @@ export class OmApp extends connect()(LitElement) {
     const now = Date.now();
 
     return this.hostNames.filter(
-      (hostName) =>
-        now - (this.lastUpdatedHosts[hostName] || 0) < 300_000,
+      (hostName) => now - (this.lastUpdatedHosts[hostName] || 0) < 300_000,
     );
   }
 
