@@ -4,6 +4,7 @@ import { repeat } from 'lit/directives/repeat.js';
 
 import './components/host.js';
 import { connect } from './store/connect.js';
+import { RootState } from './store/index.js';
 
 const identity = <T>(value: T) => value;
 
@@ -13,6 +14,9 @@ export class OmApp extends connect()(LitElement) {
 
   @state()
   private hostNames: readonly string[] = [];
+
+  @state()
+  private lastUpdatedHosts: Record<string, number> = {};
 
   connectedCallback() {
     // Probably want to handle this in a more robust way.
@@ -40,9 +44,17 @@ export class OmApp extends connect()(LitElement) {
     super.connectedCallback();
   }
 
+  override stateChanged(state: RootState) {
+    this.lastUpdatedHosts = Object.fromEntries(Object.entries(state.clients).map(([client, { lastUpdate }]) => [client, lastUpdate]));
+  }
+
+  private get activeHosts() {
+    return this.hostNames.filter((hostName) => Date.now() - (this.lastUpdatedHosts[hostName] || 0) < 300_000);
+  }
+
   render() {
     return repeat(
-      this.hostNames,
+      this.activeHosts,
       identity,
       (hostName) => html` <om-host name=${hostName}></om-host> `,
     );
