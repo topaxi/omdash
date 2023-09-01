@@ -6,6 +6,7 @@ import { RootState } from '../store/index.js';
 
 import './ago.js';
 import './gauge.js';
+import './os-icon.js';
 
 interface CpuInfo {
   model: string;
@@ -49,6 +50,12 @@ export class OmHost extends connect()(LitElement) {
   name = '';
 
   @state()
+  private platform = '';
+
+  @state()
+  private release = '';
+
+  @state()
   private cpus: readonly CpuInfo[] = [];
 
   @state()
@@ -90,6 +97,8 @@ export class OmHost extends connect()(LitElement) {
 
   override stateChanged(state: RootState): void {
     this.addr = state.clients[this.name]?.addr ?? '';
+    this.platform = state.clients[this.name]?.platform ?? '';
+    this.release = state.clients[this.name]?.release ?? '';
     this.cpus = state.clients[this.name]?.cpus ?? [];
     this.pcpus = state.clients[this.name]?.pcpus ?? [];
     this.loadAverage = state.clients[this.name]?.load ?? [0, 0, 0];
@@ -239,7 +248,13 @@ export class OmHost extends connect()(LitElement) {
   render() {
     return html`
       <div class="hostname">
-        <div>${this.name} ${this.renderLastUpdate()}</div>
+        <div>
+          <om-os-icon
+            platform="${this.platform}"
+            release="${this.release}"
+          ></om-os-icon>
+          ${this.name} ${this.renderLastUpdate()}
+        </div>
         <small>${this.addr}</small>
       </div>
       <div class="latency">Latency: 0ms</div>
