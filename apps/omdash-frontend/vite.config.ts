@@ -5,10 +5,6 @@ import { resolve } from 'path';
 export default defineConfig({
   build: {
     outDir: 'build',
-    lib: {
-      entry: 'src/app.ts',
-      formats: ['es'],
-    },
     manifest: true,
     rollupOptions: {
       input: {
