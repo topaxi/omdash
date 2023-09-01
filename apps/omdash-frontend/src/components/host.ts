@@ -1,6 +1,7 @@
 import { LitElement, css, html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
+import { ClockController } from '../controllers/clock.js';
 import { connect } from '../store/connect.js';
 import { RootState } from '../store/index.js';
 
@@ -41,10 +42,7 @@ export class OmHost extends connect()(LitElement) {
     }
   `;
 
-  private interval: ReturnType<typeof setInterval> | undefined;
-
-  @state()
-  private now = 0;
+  private now = new ClockController(this, 5000);
 
   @property()
   name = '';
@@ -82,19 +80,6 @@ export class OmHost extends connect()(LitElement) {
   @state()
   private highestMemoryProcesses: any[] = [];
 
-  override connectedCallback(): void {
-    super.connectedCallback();
-
-    this.interval = setInterval(() => {
-      this.now = Date.now();
-    }, 5000);
-  }
-
-  override disconnectedCallback(): void {
-    clearInterval(this.interval);
-    this.interval = undefined;
-  }
-
   override stateChanged(state: RootState): void {
     this.addr = state.clients[this.name]?.addr ?? '';
     this.platform = state.clients[this.name]?.platform ?? '';
@@ -111,7 +96,7 @@ export class OmHost extends connect()(LitElement) {
   }
 
   private renderLastUpdate() {
-    if (this.now - this.lastUpdate > 10_000) {
+    if (this.now.value - this.lastUpdate > 10_000) {
       return html`
         <span class="last-update">
           (<om-ago date="${this.lastUpdate}"></om-ago>)

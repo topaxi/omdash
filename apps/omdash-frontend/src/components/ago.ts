@@ -1,5 +1,6 @@
 import { LitElement } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
+import { ClockController } from '../controllers/clock';
 
 function timeDifference(
   previous: number,
@@ -37,25 +38,9 @@ export class OmAgo extends LitElement {
   @property()
   date = 0;
 
-  @state()
-  now = Date.now();
-
-  private interval: ReturnType<typeof setInterval> | undefined;
-
-  override connectedCallback(): void {
-    super.connectedCallback();
-
-    this.interval = setInterval(() => {
-      this.now = Date.now();
-    }, 1000);
-  }
-
-  override disconnectedCallback(): void {
-    clearInterval(this.interval);
-    this.interval = undefined;
-  }
+  now = new ClockController(this, 1000);
 
   render() {
-    return timeDifference(this.date);
+    return timeDifference(this.now.value);
   }
 }

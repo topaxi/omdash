@@ -26,3 +26,9 @@ export class OmOsIcon extends LitElement {
     }
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'om-os-icon': OmOsIcon;
+  }
+}
