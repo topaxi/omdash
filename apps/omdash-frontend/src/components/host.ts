@@ -22,7 +22,8 @@ export class OmHost extends connect()(LitElement) {
       flex: 0 1 calc(50% - 0.5rem / 2);
       border-radius: 6px;
       border: 1px solid var(--ctp-macchiato-lavender);
-      background-color: rgb(var(--ctp-macchiato-base-raw), 90%);
+      background-color: rgb(var(--ctp-macchiato-base-raw), 66.6%);
+      backdrop-filter: blur(8px) grayscale(1);
 
       padding: 0.2rem 0.33rem;
     }

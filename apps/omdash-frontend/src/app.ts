@@ -34,7 +34,7 @@ export class OmApp extends connect()(LitElement) {
       background-image: url(https://source.unsplash.com/random/1280×400/?pcb);
       background-size: cover;
 
-      filter: grayscale() blur(2px) brightness(0.2);
+      filter: grayscale(0.5) brightness(0.25);
 
       z-index: -1;
     }
