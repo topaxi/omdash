@@ -74,20 +74,22 @@ wssClients.on('connection', (ws, req) => {
 wssDashboard.on('connection', (ws) => {
   console.log('Dashboard connected');
 
-  wssClients.clients.forEach((client) => {
-    const metadata = clientMetadata.get(client)!;
+  Array.from(wssClients.clients)
+    .filter((c) => c.readyState === WebSocket.OPEN)
+    .forEach((client) => {
+      const metadata = clientMetadata.get(client)!;
 
-    ws.send(
-      encode({
-        type: 'register',
-        payload: {
-          name: metadata.name,
-          addr: metadata.addr,
-        },
-      }),
-      { binary: false },
-    );
-  });
+      ws.send(
+        encode({
+          type: 'register',
+          payload: {
+            name: metadata.name,
+            addr: metadata.addr,
+          },
+        }),
+        { binary: false },
+      );
+    });
 
   ws.once('close', () => {
     console.log('Dashboard disconnected');
