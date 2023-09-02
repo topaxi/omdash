@@ -45,6 +45,9 @@ export class OmHost extends connect()(LitElement) {
 
     .process-list > div {
       flex: 1 0 50%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .process-list .very-high {
