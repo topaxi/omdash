@@ -1,4 +1,5 @@
 import os from 'os';
+import { ProcessDescriptor } from 'ps-list';
 import WebSocket from 'ws';
 
 const UPDATE_INTERVAL = 5000;
@@ -75,20 +76,56 @@ const omdashServerHost = process.env.OMDASH_SERVER_HOST || 'localhost:3200';
 
 connect(`ws://${omdashServerHost}`);
 
+function normalizeName(name: string) {
+  if (name === 'Isolated Web Co') {
+    return 'firefox';
+  }
+
+  if (name.startsWith('wezterm')) {
+    return 'wezterm';
+  }
+
+  return name;
+}
+
+function mergeProcesses(processes: ProcessDescriptor[]) {
+  const merged: Record<
+    string,
+    { name: string; cpu: number | undefined; memory: number | undefined }
+  > = {};
+
+  for (const process of processes) {
+    const name = normalizeName(process.name);
+    const { cpu, memory } = process;
+
+    if (!merged[name]) {
+      merged[name] = {
+        name,
+        cpu,
+        memory,
+      };
+    } else {
+      merged[name].cpu! += cpu!;
+      merged[name].memory! += memory!;
+    }
+  }
+
+  return Object.values(merged);
+}
+
 async function getProcesses() {
   const processes = await psList();
+  const merged = mergeProcesses(processes);
 
   return {
     type: 'ps',
     payload: {
       count: processes.length,
-      highestCpu: processes
+      highestCpu: merged
         .filter((p) => p.name != 'ps')
         .sort((a, b) => b.cpu! - a.cpu!)
         .slice(0, 3),
-      highestMemory: processes
-        .sort((a, b) => b.memory! - a.memory!)
-        .slice(0, 3),
+      highestMemory: merged.sort((a, b) => b.memory! - a.memory!).slice(0, 3),
     },
   };
 }
