@@ -2,9 +2,11 @@ import { LitElement, css, html } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 
-import './components/host.js';
 import { connect } from './store/connect.js';
 import { RootState } from './store/index.js';
+
+import './components/global.js';
+import './components/host.js';
 
 const identity = <T>(value: T) => value;
 
@@ -92,10 +94,13 @@ export class OmApp extends connect()(LitElement) {
   }
 
   render() {
-    return repeat(
-      this.activeHosts,
-      identity,
-      (hostName) => html` <om-host name=${hostName}></om-host> `,
-    );
+    return html`
+      <om-global></om-global>
+      ${repeat(
+        this.activeHosts,
+        identity,
+        (hostName) => html` <om-host name=${hostName}></om-host> `,
+      )}
+    `;
   }
 }
