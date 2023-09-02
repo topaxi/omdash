@@ -243,7 +243,7 @@ export class OmHost extends connect()(LitElement) {
     return 100 - (100 * idleDifference) / totalDifference;
   }
 
-  private highUsageToClassName(usage: number) {
+  private cpuHighUsageToClassName(usage: number) {
     if (usage > 90) {
       return 'very-high';
     } else if (usage > 75) {
@@ -253,6 +253,22 @@ export class OmHost extends connect()(LitElement) {
     } else if (usage > 25) {
       return 'low';
     } else if (usage > 10) {
+      return 'very-low';
+    }
+
+    return 'normal';
+  }
+
+  private memoryHighUsageToClassName(usage: number) {
+    if (usage > 50) {
+      return 'very-high';
+    } else if (usage > 25) {
+      return 'high';
+    } else if (usage > 10) {
+      return 'medium';
+    } else if (usage > 5) {
+      return 'low';
+    } else if (usage > 2) {
       return 'very-low';
     }
 
@@ -275,7 +291,7 @@ export class OmHost extends connect()(LitElement) {
             this.highestCPUProcesses,
             (p) => p.pid,
             (p) =>
-              html`<div class="${this.highUsageToClassName(p.cpu)}">
+              html`<div class="${this.cpuHighUsageToClassName(p.cpu)}">
                 ${p.cpu.toFixed(1)}% ${p.name}
               </div>`,
           )}
@@ -286,7 +302,7 @@ export class OmHost extends connect()(LitElement) {
             this.highestMemoryProcesses,
             (p) => p.pid,
             (p) =>
-              html`<div class="${this.highUsageToClassName(p.memory)}">
+              html`<div class="${this.memoryHighUsageToClassName(p.memory)}">
                 ${p.memory.toFixed(1)}% ${p.name}
               </div>`,
           )}
