@@ -3,7 +3,7 @@ After=omdash-server.service
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/node /home/topaxi/projects/omdash/apps/omdash-server/build/server.js
+ExecStart=/usr/bin/npx serve /home/topaxi/projects/omdash/apps/omdash-frontend/build/
 Restart=on-failure
 
 [Install]
