@@ -52,23 +52,23 @@ export class OmHost extends connect()(LitElement) {
     }
 
     .process-list .high {
-      color: var(--ctp-macchiato-orange);
+      color: var(--ctp-macchiato-maroon);
     }
 
     .process-list .medium {
-      color: var(--ctp-macchiato-yellow);
+      color: var(--ctp-macchiato-peach);
     }
 
     .process-list .low {
-      color: var(--ctp-macchiato-green);
+      color: var(--ctp-macchiato-yellow);
     }
 
     .process-list .very-low {
-      color: var(--ctp-macchiato-blue);
+      color: var(--ctp-macchiato-green);
     }
 
     .process-list .normal {
-      color: var(--ctp-macchiato-mauve);
+      color: var(--ctp-macchiato-teal);
     }
   `;
 
@@ -250,9 +250,9 @@ export class OmHost extends connect()(LitElement) {
       return 'high';
     } else if (usage > 50) {
       return 'medium';
-    } else if (usage > 25) {
+    } else if (usage > 30) {
       return 'low';
-    } else if (usage > 10) {
+    } else if (usage > 15) {
       return 'very-low';
     }
 
