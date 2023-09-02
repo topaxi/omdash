@@ -105,8 +105,15 @@ function executableExists(cmd: string) {
 
 if (executableExists('swaymsg')) {
   setInterval(() => {
+    const hasOpenClients =
+      wssClients.clients.size == 0 ||
+      Array.from(wssClients.clients).every(
+        (c) =>
+          c.readyState == WebSocket.CLOSED || c.readyState == WebSocket.CLOSING,
+      );
+
     childProcess.exec(
-      `swaymsg output HDMI-A-1 dpms ${wssClients.clients.size ? 'on' : 'off'}`,
+      `swaymsg output HDMI-A-1 dpms ${hasOpenClients ? 'on' : 'off'}`,
     );
   }, 1000);
 }
