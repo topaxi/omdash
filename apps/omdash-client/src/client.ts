@@ -115,6 +115,10 @@ function normalizeName(name: string) {
     return 'wezterm';
   }
 
+  if (name.includes('#') && /#\d+$/.test(name)) {
+    return name.replace(/#\d+$/, '');
+  }
+
   return name;
 }
 
