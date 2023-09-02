@@ -89,14 +89,12 @@ function normalizeName(name: string) {
 }
 
 function mergeProcesses(processes: ProcessDescriptor[]) {
-  const merged: Record<
-    string,
-    { name: string; cpu: number | undefined; memory: number | undefined }
-  > = {};
+  const merged: Record<string, { name: string; cpu: number; memory: number }> =
+    {};
 
   for (const process of processes) {
     const name = normalizeName(process.name);
-    const { cpu, memory } = process;
+    const { cpu = 0, memory = 0 } = process;
 
     if (!merged[name]) {
       merged[name] = {
@@ -105,8 +103,8 @@ function mergeProcesses(processes: ProcessDescriptor[]) {
         memory,
       };
     } else {
-      merged[name].cpu! += cpu!;
-      merged[name].memory! += memory!;
+      merged[name].cpu += cpu;
+      merged[name].memory += memory;
     }
   }
 
