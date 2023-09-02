@@ -82,7 +82,10 @@ async function getProcesses() {
     type: 'ps',
     payload: {
       count: processes.length,
-      highestCpu: processes.sort((a, b) => b.cpu! - a.cpu!).slice(0, 3),
+      highestCpu: processes
+        .filter((p) => p.name != 'ps')
+        .sort((a, b) => b.cpu! - a.cpu!)
+        .slice(0, 3),
       highestMemory: processes
         .sort((a, b) => b.memory! - a.memory!)
         .slice(0, 3),
