@@ -7,6 +7,7 @@ import { RootState } from '../store/index.js';
 
 import './ago.js';
 import './gauge.js';
+import './line-graph.js';
 import './os-icon.js';
 
 interface CpuInfo {
@@ -165,12 +166,8 @@ export class OmHost extends connect()(LitElement) {
 
     return html`
       <div class="cpu-usage">
-        <om-gauge
-          style="width:160px;--color: var(--ctp-macchiato-red)"
-          percent="${averageCPUUsage.toFixed(2)}"
-        >
-          CPU ${Math.round(averageCPUUsage)}%
-        </om-gauge>
+        <om-line-graph dataPoint="${averageCPUUsage}"></om-line-graph>
+        CPU ${Math.round(averageCPUUsage)}%
       </div>
     `;
   }

@@ -12,6 +12,7 @@
   "author": "Damian Senn <damian.senn@topaxi.codes>",
   "license": "ISC",
   "dependencies": {
+    "apexcharts": "^3.42.0",
     "lit": "^2.8.0",
     "redux": "^4.2.1",
     "redux-devtools-extension": "^2.13.9",
