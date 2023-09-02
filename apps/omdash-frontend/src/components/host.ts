@@ -28,6 +28,11 @@ export class OmHost extends connect()(LitElement) {
       padding: 0.2rem 0.33rem;
     }
 
+    :host(.offline) {
+      opacity: 0.8;
+      filter: grayscale();
+    }
+
     .load-average,
     .available-memory {
       text-align: center;
@@ -118,10 +123,16 @@ export class OmHost extends connect()(LitElement) {
     this.highestCPUProcesses = state.clients[this.name]?.ps?.highestCpu ?? [];
     this.highestMemoryProcesses =
       state.clients[this.name]?.ps?.highestMemory ?? [];
+
+    this.classList.toggle('offline', this.isOffline);
+  }
+
+  private get isOffline() {
+    return this.now.value - this.lastUpdate > 10_000;
   }
 
   private renderLastUpdate() {
-    if (this.now.value - this.lastUpdate > 10_000) {
+    if (this.isOffline) {
       return html`
         <span class="last-update">
           (<om-ago date="${this.lastUpdate}"></om-ago>)
