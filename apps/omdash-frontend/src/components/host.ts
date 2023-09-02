@@ -209,6 +209,13 @@ export class OmHost extends connect()(LitElement) {
   }
 
   private renderProcessList() {
+    if (
+      this.highestCPUProcesses.length === 0 &&
+      this.highestMemoryProcesses.length === 0
+    ) {
+      return '';
+    }
+
     return html`
       <div class="process-list">
         <div class="highest-cpu">
