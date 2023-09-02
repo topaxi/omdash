@@ -41,6 +41,30 @@ export class OmHost extends connect()(LitElement) {
     .process-list > div {
       flex: 1 0 50%;
     }
+
+    .process-list .very-high {
+      color: var(--ctp-macchiato-red);
+    }
+
+    .process-list .high {
+      color: var(--ctp-macchiato-orange);
+    }
+
+    .process-list .medium {
+      color: var(--ctp-macchiato-yellow);
+    }
+
+    .process-list .low {
+      color: var(--ctp-macchiato-green);
+    }
+
+    .process-list .very-low {
+      color: var(--ctp-macchiato-blue);
+    }
+
+    .process-list .normal {
+      color: var(--ctp-macchiato-mauve);
+    }
   `;
 
   private now = new ClockController(this, 5000);
@@ -208,6 +232,22 @@ export class OmHost extends connect()(LitElement) {
     return 100 - (100 * idleDifference) / totalDifference;
   }
 
+  private highUsageToClassName(usage: number) {
+    if (usage > 90) {
+      return 'very-high';
+    } else if (usage > 75) {
+      return 'high';
+    } else if (usage > 50) {
+      return 'medium';
+    } else if (usage > 25) {
+      return 'low';
+    } else if (usage > 10) {
+      return 'very-low';
+    }
+
+    return 'normal';
+  }
+
   private renderProcessList() {
     if (
       this.highestCPUProcesses.length === 0 &&
@@ -223,7 +263,10 @@ export class OmHost extends connect()(LitElement) {
           ${repeat(
             this.highestCPUProcesses,
             (p) => p.pid,
-            (p) => html`<div>${p.cpu.toFixed(1)}% ${p.name}</div>`,
+            (p) =>
+              html`<div class="${this.highUsageToClassName(p.cpu)}">
+                ${p.cpu.toFixed(1)}% ${p.name}
+              </div>`,
           )}
         </div>
         <div class="highest-memory">
@@ -231,7 +274,10 @@ export class OmHost extends connect()(LitElement) {
           ${repeat(
             this.highestMemoryProcesses,
             (p) => p.pid,
-            (p) => html`<div>${p.memory.toFixed(1)}% ${p.name}</div>`,
+            (p) =>
+              html`<div class="${this.highUsageToClassName(p.memory)}">
+                ${p.memory.toFixed(1)}% ${p.name}
+              </div>`,
           )}
         </div>
       </div>
