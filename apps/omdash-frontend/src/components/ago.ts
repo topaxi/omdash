@@ -41,6 +41,6 @@ export class OmAgo extends LitElement {
   now = new ClockController(this, 1000);
 
   render() {
-    return timeDifference(this.now.value);
+    return timeDifference(this.date, this.now.value);
   }
 }
