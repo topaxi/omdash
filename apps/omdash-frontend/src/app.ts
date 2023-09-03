@@ -1,12 +1,15 @@
+import { Router } from '@vaadin/router';
 import { LitElement, css, html } from 'lit';
-import { customElement } from 'lit/decorators.js';
+import { customElement, query } from 'lit/decorators.js';
 
 import { connect } from './store/connect.js';
 
 import './components/global.js';
 import './routes/hosts.js';
+import './routes/settings.js';
 
 @customElement('om-app')
+
 export class OmApp extends connect()(LitElement) {
   static styles = css`
     :host {
@@ -36,9 +39,19 @@ export class OmApp extends connect()(LitElement) {
 
       z-index: -1;
     }
+
+    #outlet {
+      display: contents;
+    }
   `;
 
   private ws: WebSocket | null = null;
+
+  @query('#outlet')
+  // @ts-ignore
+  private outlet: HTMLDivElement;
+
+  private router: Router | null = null;
 
   connectedCallback() {
     // Probably want to handle this in a more robust way.
@@ -56,10 +69,24 @@ export class OmApp extends connect()(LitElement) {
     super.connectedCallback();
   }
 
+  protected override updated() {
+    this.router = new Router(this.outlet);
+    this.setupRoutes(this.router);
+  }
+
+  private setupRoutes(router: Router) {
+    router.setRoutes([
+      { path: '/', component: 'om-hosts' },
+      { path: '/network', component: 'om-network' },
+      { path: '/spotify', component: 'om-spotify' },
+      { path: '/settings', component: 'om-settings' },
+    ]);
+  }
+
   render() {
     return html`
       <om-global></om-global>
-      <om-hosts></om-hosts>
+      <div id="outlet"></div>
     `;
   }
 }

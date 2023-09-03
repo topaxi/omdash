@@ -1,6 +1,8 @@
 import { LitElement, css, html } from 'lit';
 import { customElement } from 'lit/decorators.js';
-import { ClockController } from '../controllers/clock';
+import { ClockController } from '../controllers/clock.js';
+
+import './link.js';
 
 @customElement('om-global-clock')
 export class OmGlobalClock extends LitElement {
@@ -39,7 +41,7 @@ export class OmOsIcon extends LitElement {
       opacity: 0.4;
     }
 
-    om-app-icon[aria-selected='true'] {
+    om-link[aria-selected="true"] om-app-icon {
       opacity: 0.9;
     }
   `;
@@ -47,10 +49,18 @@ export class OmOsIcon extends LitElement {
   protected override render(): unknown {
     return html`
       <om-global-clock></om-global-clock>
-      <om-app-icon name="host-dashboard" aria-selected="true">󰊚</om-app-icon>
-      <om-app-icon name="network-diagnostics">󰛳</om-app-icon>
-      <om-app-icon name="spotify-controls">󰓇</om-app-icon>
-      <om-app-icon name="settings">󰒓</om-app-icon>
+      <om-link to="/">
+        <om-app-icon name="host-dashboard">󰊚</om-app-icon>
+      </om-link>
+      <om-link to="/network">
+        <om-app-icon name="network-diagnostics">󰛳</om-app-icon>
+      </om-link>
+      <om-link to="/spotify">
+        <om-app-icon name="spotify-controls">󰓇</om-app-icon>
+      </om-link>
+      <om-link to="/settings">
+        <om-app-icon name="settings">󰒓</om-app-icon>
+      </om-link>
     `;
   }
 }
