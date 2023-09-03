@@ -1,14 +1,10 @@
 import { LitElement, css, html } from 'lit';
-import { customElement, state } from 'lit/decorators.js';
-import { repeat } from 'lit/directives/repeat.js';
+import { customElement } from 'lit/decorators.js';
 
 import { connect } from './store/connect.js';
-import { RootState } from './store/index.js';
 
 import './components/global.js';
-import './components/host.js';
-
-const identity = <T>(value: T) => value;
+import './routes/hosts.js';
 
 @customElement('om-app')
 export class OmApp extends connect()(LitElement) {
@@ -44,12 +40,6 @@ export class OmApp extends connect()(LitElement) {
 
   private ws: WebSocket | null = null;
 
-  @state()
-  private hostNames: readonly string[] = [];
-
-  @state()
-  private lastUpdatedHosts: Record<string, number> = {};
-
   connectedCallback() {
     // Probably want to handle this in a more robust way.
     // Currently the WebSocket to server connection is always on the same host,
@@ -59,16 +49,6 @@ export class OmApp extends connect()(LitElement) {
 
     this.ws.addEventListener('message', (event) => {
       const action = JSON.parse(event.data);
-      const { type, client, payload } = action;
-
-      if (type === 'register' && !this.hostNames.includes(payload.name)) {
-        this.hostNames = [...this.hostNames, payload.name];
-      }
-
-      // Somehow missed the register event, but got a metric event.
-      if (client && !this.hostNames.includes(client)) {
-        this.hostNames = [...this.hostNames, client];
-      }
 
       this.store.dispatch(action);
     });
@@ -76,31 +56,10 @@ export class OmApp extends connect()(LitElement) {
     super.connectedCallback();
   }
 
-  override stateChanged(state: RootState) {
-    this.lastUpdatedHosts = Object.fromEntries(
-      Object.entries(state.clients).map(([client, { lastUpdate }]) => [
-        client,
-        lastUpdate,
-      ]),
-    );
-  }
-
-  private get activeHosts() {
-    const now = Date.now();
-
-    return this.hostNames.filter(
-      (hostName) => now - (this.lastUpdatedHosts[hostName] || 0) < 300_000,
-    );
-  }
-
   render() {
     return html`
       <om-global></om-global>
-      ${repeat(
-        this.activeHosts,
-        identity,
-        (hostName) => html` <om-host name=${hostName}></om-host> `,
-      )}
+      <om-hosts></om-hosts>
     `;
   }
 }
