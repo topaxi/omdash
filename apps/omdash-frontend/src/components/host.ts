@@ -92,6 +92,14 @@ export class OmHost extends connect()(LitElement) {
     return this.now.value - this.lastUpdate > 10_000;
   }
 
+  private formatIp(addr: string) {
+    if (addr.startsWith('::ffff:')) {
+      return addr.slice(7);
+    } else {
+      return addr;
+    }
+  }
+
   private renderLastUpdate() {
     if (this.isOffline) {
       return html`
@@ -214,7 +222,7 @@ export class OmHost extends connect()(LitElement) {
           ></om-os-icon>
           ${this.name} ${this.renderLastUpdate()}
         </div>
-        <small>${this.addr}</small>
+        <small>${this.formatIp(this.addr)}</small>
       </div>
       <div style="display: flex">
         <div style="margin-right: 0.5rem">
