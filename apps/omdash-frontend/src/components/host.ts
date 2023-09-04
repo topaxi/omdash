@@ -19,7 +19,8 @@ interface CpuInfo {
 export class OmHost extends connect()(LitElement) {
   static styles = css`
     :host {
-      flex: 0 1 calc(50% - 0.5rem);
+      flex: 1 1 0;
+      max-width: calc(50% - 0.5rem);
       border-radius: 6px;
       border: 1px solid var(--ctp-macchiato-lavender);
       background-color: rgb(var(--ctp-macchiato-base-raw), 66.6%);
