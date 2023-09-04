@@ -6,10 +6,8 @@ import { connect } from './store/connect.js';
 
 import './components/global.js';
 import './routes/hosts.js';
-import './routes/settings.js';
 
 @customElement('om-app')
-
 export class OmApp extends connect()(LitElement) {
   static styles = css`
     :host {

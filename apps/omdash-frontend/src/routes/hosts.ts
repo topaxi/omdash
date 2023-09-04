@@ -16,7 +16,7 @@ export class Hosts extends connect()(LitElement) {
       gap: 0.5rem;
       flex-grow: 1;
     }
-  `
+  `;
 
   @state()
   private hostNames: string[] = [];
@@ -48,6 +48,6 @@ export class Hosts extends connect()(LitElement) {
       this.activeHosts,
       identity,
       (hostName) => html` <om-host name=${hostName}></om-host> `,
-    )
+    );
   }
 }

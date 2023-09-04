@@ -41,7 +41,7 @@ export class OmOsIcon extends LitElement {
       opacity: 0.4;
     }
 
-    om-link[aria-selected="true"] om-app-icon {
+    om-link[aria-selected='true'] om-app-icon {
       opacity: 0.9;
     }
   `;

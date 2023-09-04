@@ -1,6 +1,6 @@
-import { Router } from "@vaadin/router";
-import { LitElement, html } from "lit";
-import { customElement, property } from "lit/decorators.js";
+import { Router } from '@vaadin/router';
+import { LitElement, html } from 'lit';
+import { customElement, property } from 'lit/decorators.js';
 
 @customElement('om-link')
 export class OmLink extends LitElement {
@@ -31,7 +31,7 @@ export class OmLink extends LitElement {
         this.removeAttribute('aria-selected');
       }
     }, 10);
-  }
+  };
 
   protected render(): unknown {
     return html`<slot></slot>`;
