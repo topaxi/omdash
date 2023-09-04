@@ -1,42 +1,11 @@
 import childProcess from 'child_process';
-import WebSocket, { WebSocketServer } from 'ws';
-
-const createWebSocketServer = (port: number) => {
-  const wss = new WebSocketServer({
-    port,
-    perMessageDeflate: {
-      zlibDeflateOptions: {
-        // See zlib defaults.
-        chunkSize: 1024,
-        memLevel: 7,
-        level: 3,
-      },
-      zlibInflateOptions: {
-        chunkSize: 10 * 1024,
-      },
-      clientNoContextTakeover: true, // Defaults to negotiated value.
-      serverNoContextTakeover: true, // Defaults to negotiated value.
-      serverMaxWindowBits: 10, // Defaults to negotiated value.
-      concurrencyLimit: 10, // Limits zlib concurrency for perf.
-      threshold: 1024, // Size (in bytes) below which messages
-    },
-  });
-
-  return wss;
-};
+import WebSocket from 'ws';
+import { createWebSocketServer, decode, encode } from './utils/socket';
 
 const wssClients = createWebSocketServer(3200);
 const wssDashboard = createWebSocketServer(3300);
 
 const clientMetadata = new WeakMap<WebSocket, Record<string, any>>();
-
-function encode(val: any) {
-  return JSON.stringify(val);
-}
-
-function decode(val: any) {
-  return JSON.parse(val);
-}
 
 wssClients.on('connection', (ws, req) => {
   console.log('Client connected', req.socket.remoteAddress);
