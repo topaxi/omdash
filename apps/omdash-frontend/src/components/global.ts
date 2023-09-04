@@ -17,7 +17,7 @@ export class OmGlobalClock extends LitElement {
 }
 
 @customElement('om-global')
-export class OmOsIcon extends LitElement {
+export class OmGlobal extends LitElement {
   static styles = css`
     :host {
       display: flex;
@@ -68,7 +68,7 @@ export class OmOsIcon extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'om-global': OmOsIcon;
+    'om-global': OmGlobal;
     'om-global-clock': OmGlobalClock;
   }
 }
