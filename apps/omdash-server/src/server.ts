@@ -7,10 +7,27 @@ const wssDashboard = createWebSocketServer(3300);
 
 const clientMetadata = new WeakMap<WebSocket, Record<string, any>>();
 
+const heartbeat = setInterval(() => {
+  wssClients.clients.forEach((ws) => {
+    const metadata = clientMetadata.get(ws)!;
+
+    if (metadata.isAlive === false) {
+      return ws.terminate();
+    }
+
+    metadata.isAlive = false;
+    ws.ping();
+  });
+}, 10_000);
+
+wssClients.on('close', () => {
+  clearInterval(heartbeat);
+});
+
 wssClients.on('connection', (ws, req) => {
   console.log('Client connected', req.socket.remoteAddress);
 
-  const metadata = { addr: req.socket.remoteAddress } as Record<string, any>;
+  const metadata = { isAlive: true, addr: req.socket.remoteAddress } as Record<string, any>;
   clientMetadata.set(ws, metadata);
 
   ws.on('message', (message) => {
@@ -33,6 +50,10 @@ wssClients.on('connection', (ws, req) => {
       console.error(err);
       console.log(message);
     }
+  });
+
+  ws.on('pong', () => {
+    metadata.isAlive = true;
   });
 
   ws.once('close', () => {

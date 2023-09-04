@@ -5,6 +5,16 @@ import WebSocket from 'ws';
 const UPDATE_INTERVAL = 5000;
 const PS_UPDATE_INTERVAL = 5000;
 
+let pingTimer: NodeJS.Timeout | null = null;
+
+function heartbeat(this: WebSocket) {
+  clearTimeout(pingTimer!);
+
+  pingTimer = setTimeout(() => {
+    this.terminate();
+  }, 10_000 + 1000);
+}
+
 function encode(val: any) {
   return JSON.stringify(val);
 }
@@ -15,7 +25,7 @@ function setIntervalImmediate(callback: () => void, interval: number) {
   return setInterval(callback, interval);
 }
 
-const psList = async function (...args: any[]) {
+const psList = async function(...args: any[]) {
   const m = (await Function('return import("ps-list")')()) as Promise<
     typeof import('ps-list')
   >;
@@ -76,6 +86,7 @@ function connect(url: string) {
     );
   }
 
+  ws.on('open', heartbeat);
   ws.on('open', () => {
     console.log('Connected');
 
@@ -97,11 +108,14 @@ function connect(url: string) {
     }, PS_UPDATE_INTERVAL);
   });
 
+  ws.on('ping', heartbeat);
+
   ws.once('close', () => {
     console.log('Connection closed');
 
-    clearTimeout(timeout!);
-    clearTimeout(psTimeout!);
+    clearTimeout(pingTimer!);
+    clearInterval(timeout!);
+    clearInterval(psTimeout!);
 
     setTimeout(() => {
       connect(url);
