@@ -24,7 +24,6 @@ const psList = async function (...args: any[]) {
   return m.default(...args);
 } as typeof import('ps-list').default;
 
-
 let wmiClient: any = null;
 
 async function wmiProcessList(): Promise<ProcessDescriptor[]> {
@@ -35,23 +34,31 @@ async function wmiProcessList(): Promise<ProcessDescriptor[]> {
     wmiClient = new WmiClient();
   }
 
-  const query = 'SELECT Name, PercentProcessorTime, WorkingSet FROM Win32_PerfFormattedData_PerfProc_Process';
+  const query =
+    'SELECT Name, PercentProcessorTime, WorkingSet FROM Win32_PerfFormattedData_PerfProc_Process';
 
-  const processes: any[] = await new Promise((resolve, reject) => wmiClient.query(query, (err: any, result: any) => {
-    if (err) {
-      reject(err);
-    } else {
-      resolve(result);
-    }
-  }));
+  const processes: any[] = await new Promise((resolve, reject) =>
+    wmiClient.query(query, (err: any, result: any) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(result);
+      }
+    }),
+  );
 
   const totalmem = os.totalmem();
 
-  return processes.filter(p => p.Name != 'Idle' && p.Name != '_Total').map((process: any) => ({
-    name: process.Name,
-    cpu: process.PercentProcessorTime,
-    memory: process.WorkingSet / totalmem * 100,
-  } as any));
+  return processes
+    .filter((p) => p.Name != 'Idle' && p.Name != '_Total')
+    .map(
+      (process: any) =>
+        ({
+          name: process.Name,
+          cpu: process.PercentProcessorTime,
+          memory: (process.WorkingSet / totalmem) * 100,
+        }) as any,
+    );
 }
 
 function connect(url: string) {
@@ -146,20 +153,21 @@ function mergeProcesses(processes: ProcessDescriptor[]) {
 }
 
 async function getProcesses() {
-    const processes = process.platform == 'win32' ? await wmiProcessList() : await psList();
-    const merged = mergeProcesses(processes);
+  const processes =
+    process.platform == 'win32' ? await wmiProcessList() : await psList();
+  const merged = mergeProcesses(processes);
 
-    return {
-      type: 'ps',
-      payload: {
-        count: processes.length,
-        highestCpu: merged
-          .filter((p) => p.name != 'ps')
-          .sort((a, b) => b.cpu! - a.cpu!)
-          .slice(0, 3),
-        highestMemory: merged.sort((a, b) => b.memory! - a.memory!).slice(0, 3),
-      },
-    };
+  return {
+    type: 'ps',
+    payload: {
+      count: processes.length,
+      highestCpu: merged
+        .filter((p) => p.name != 'ps')
+        .sort((a, b) => b.cpu! - a.cpu!)
+        .slice(0, 3),
+      highestMemory: merged.sort((a, b) => b.memory! - a.memory!).slice(0, 3),
+    },
+  };
 }
 
 function getMetrics() {
