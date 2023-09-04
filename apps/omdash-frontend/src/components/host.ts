@@ -332,16 +332,12 @@ export class OmHost extends connect()(LitElement) {
         </div>
         <small>${this.addr}</small>
       </div>
-      <div class="latency">Latency: 0ms</div>
-      <div class="uptime">Uptime: 0:00</div>
       <div style="display: flex">
         <div style="margin-right: 0.5rem">
           ${this.renderCPUUsage()} ${this.renderLoadAverage()}
         </div>
         <div>${this.renderMemoryUsage()} ${this.renderAvailableMemory()}</div>
       </div>
-      <div class="disk-usage">Disk: 0%</div>
-      <div class="network-usage">Network: 0%</div>
       <div class="processes">Processes: ${this.processCount}</div>
       ${this.renderProcessList()}
     `;

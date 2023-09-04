@@ -1,4 +1,4 @@
-import { WebSocketServer } from "ws";
+import { WebSocketServer } from 'ws';
 
 export function createWebSocketServer(port: number) {
   const wss = new WebSocketServer({
@@ -22,7 +22,7 @@ export function createWebSocketServer(port: number) {
   });
 
   return wss;
-};
+}
 
 export function encode(val: any) {
   return JSON.stringify(val);
