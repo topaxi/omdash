@@ -11,6 +11,7 @@ export interface Action<T, P> extends ReduxAction<T> {
 }
 
 export type RegisterAction = Action<'register', { addr: string; name: string }>;
+export type UnregisterAction = Action<'unregister', {}>;
 export type MetricAction = Action<'metric', Record<string, any>>;
 export type PsAction = Action<
   'ps',
@@ -31,11 +32,12 @@ export const initialState: RootState = {
 
 export function reducer(
   state: RootState = initialState,
-  action: RegisterAction | MetricAction | PsAction,
+  action: RegisterAction | UnregisterAction | MetricAction | PsAction,
 ) {
   switch (action.type) {
     case 'register':
       return {
+        ...state,
         clients: {
           ...state.clients,
           [action.payload.name]: {
@@ -46,8 +48,15 @@ export function reducer(
         },
       };
 
+    case 'unregister': {
+      const { [action.client]: _, ...clients } = state.clients;
+
+      return { ...state, clients };
+    }
+
     case 'metric': {
       return {
+        ...state,
         clients: {
           ...state.clients,
           [action.client]: {
@@ -65,6 +74,7 @@ export function reducer(
 
     case 'ps': {
       return {
+        ...state,
         clients: {
           ...state.clients,
           [action.client]: {

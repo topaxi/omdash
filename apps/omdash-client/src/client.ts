@@ -68,16 +68,16 @@ function connect(url: string) {
   let psTimeout: NodeJS.Timeout | null = null;
   const ws = new WebSocket(url);
 
+  function unregister() {
+    ws.send(
+      encode({
+        type: 'unregister',
+      }),
+    );
+  }
+
   ws.on('open', () => {
     console.log('Connected');
-
-    timeout = setIntervalImmediate(() => {
-      ws.send(encode(getMetrics()));
-    }, UPDATE_INTERVAL);
-
-    psTimeout = setIntervalImmediate(async () => {
-      ws.send(encode(await getProcesses()));
-    }, PS_UPDATE_INTERVAL);
 
     ws.send(
       encode({
@@ -87,6 +87,14 @@ function connect(url: string) {
         },
       }),
     );
+
+    timeout = setIntervalImmediate(() => {
+      ws.send(encode(getMetrics()));
+    }, UPDATE_INTERVAL);
+
+    psTimeout = setIntervalImmediate(async () => {
+      ws.send(encode(await getProcesses()));
+    }, PS_UPDATE_INTERVAL);
   });
 
   ws.once('close', () => {
@@ -105,6 +113,10 @@ function connect(url: string) {
 
     ws.close();
   });
+
+  process.on('beforeExit', unregister);
+  process.on('SIGINT', unregister);
+  process.on('SIGTERM', unregister);
 
   return ws;
 }
