@@ -27,6 +27,7 @@ export class OmHost extends connect()(LitElement) {
       backdrop-filter: blur(8px) grayscale(1);
 
       padding: 0.2rem 0.33rem;
+      overflow: hidden;
     }
 
     :host(.offline) {
