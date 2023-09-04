@@ -2,10 +2,16 @@ import childProcess from 'child_process';
 import WebSocket from 'ws';
 import { createWebSocketServer, decode, encode } from './utils/socket';
 
+interface ClientMetadata {
+  name?: string;
+  isAlive: boolean;
+  addr: string;
+}
+
 const wssClients = createWebSocketServer(3200);
 const wssDashboard = createWebSocketServer(3300);
 
-const clientMetadata = new WeakMap<WebSocket, Record<string, any>>();
+const clientMetadata = new WeakMap<WebSocket, ClientMetadata>();
 
 const heartbeat = setInterval(() => {
   wssClients.clients.forEach((ws) => {
@@ -27,7 +33,7 @@ wssClients.on('close', () => {
 wssClients.on('connection', (ws, req) => {
   console.log('Client connected', req.socket.remoteAddress);
 
-  const metadata = { isAlive: true, addr: req.socket.remoteAddress } as Record<string, any>;
+  const metadata: ClientMetadata = { isAlive: true, addr: req.socket.remoteAddress ?? '' };
   clientMetadata.set(ws, metadata);
 
   ws.on('message', (message) => {

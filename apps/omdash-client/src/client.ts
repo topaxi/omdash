@@ -128,9 +128,16 @@ function connect(url: string) {
     ws.close();
   });
 
+  function signalhandler() {
+    unregister();
+
+    process.exit();
+  }
+
   process.on('beforeExit', unregister);
-  process.on('SIGINT', unregister);
-  process.on('SIGTERM', unregister);
+  process.on('SIGINT', signalhandler);
+  process.on('SIGTERM', signalhandler);
+  process.on('SIGQUIT', signalhandler);
 
   return ws;
 }
