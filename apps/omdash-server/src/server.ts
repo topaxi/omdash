@@ -33,7 +33,10 @@ wssClients.on('close', () => {
 wssClients.on('connection', (ws, req) => {
   console.log('Client connected', req.socket.remoteAddress);
 
-  const metadata: ClientMetadata = { isAlive: true, addr: req.socket.remoteAddress ?? '' };
+  const metadata: ClientMetadata = {
+    isAlive: true,
+    addr: req.socket.remoteAddress ?? '',
+  };
   clientMetadata.set(ws, metadata);
 
   ws.on('message', (message) => {
