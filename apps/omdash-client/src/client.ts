@@ -1,4 +1,4 @@
-import os from 'os';
+import os from 'node:os';
 import { ProcessDescriptor } from 'ps-list';
 import WebSocket from 'ws';
 
@@ -148,6 +148,7 @@ connect(`ws://${omdashServerHost}`);
 
 const normalizationNameMap: Record<string, string> = {
   'Isolated Web Co': 'firefox',
+  'Isolated Servic': 'firefox',
   'firefox': 'firefox',
   'WebExtensions': 'firefox',
   'Web Content': 'firefox',

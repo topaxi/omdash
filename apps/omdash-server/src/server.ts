@@ -1,4 +1,4 @@
-import childProcess from 'child_process';
+import childProcess from 'node:child_process';
 import WebSocket from 'ws';
 import { createWebSocketServer, decode, encode } from './utils/socket';
 
