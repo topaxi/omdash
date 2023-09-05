@@ -146,13 +146,23 @@ const omdashServerHost = process.env.OMDASH_SERVER_HOST || 'localhost:3200';
 
 connect(`ws://${omdashServerHost}`);
 
-function normalizeName(name: string) {
-  if (name.startsWith('Isolated Web Co') || name.startsWith('firefox')) {
-    return 'firefox';
-  }
+const normalizationNameMap: Record<string, string> = {
+  'Isolated Web Co': 'firefox',
+  'firefox': 'firefox',
+  'WebExtensions': 'firefox',
+  'Web Content': 'firefox',
+  'RDD Process': 'firefox',
+  'Socket Process': 'firefox',
+  'telegram-deskt': 'telegram',
+  'wezterm': 'wezterm',
+};
 
-  if (name.startsWith('wezterm')) {
-    return 'wezterm';
+function normalizeName(name: string) {
+  let key: string | undefined;
+  if (
+    (key = Object.keys(normalizationNameMap).find((n) => name.startsWith(n)))
+  ) {
+    return normalizationNameMap[key];
   }
 
   if (name.includes('#') && /#\d+$/.test(name)) {
