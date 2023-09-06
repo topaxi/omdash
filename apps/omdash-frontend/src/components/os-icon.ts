@@ -12,6 +12,10 @@ export class OmOsIcon extends LitElement {
   protected override render(): unknown {
     switch (this.platform) {
       case 'linux':
+        if (this.release.includes('rpi')) {
+          return ' ';
+        }
+
         if (this.release.includes('arch')) {
           return ' ';
         }
