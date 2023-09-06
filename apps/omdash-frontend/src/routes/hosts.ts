@@ -43,9 +43,28 @@ export class Hosts extends connect()(LitElement) {
     );
   }
 
+  /**
+   * Alphabetically sorted list of active hosts. Prefer "ompi" over any other hosts.
+   */
+  private get sortedHosts(): string[] {
+    return this.activeHosts.sort((a, b) => {
+
+      if (a === 'ompi') {
+        return -1;
+      }
+
+      if (b === 'ompi') {
+        return 1;
+      }
+
+      return a.localeCompare(b);
+    });
+  }
+
+
   protected render(): unknown {
     return repeat(
-      this.activeHosts,
+      this.sortedHosts,
       identity,
       (hostName) => html` <om-host name=${hostName}></om-host> `,
     );
