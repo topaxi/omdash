@@ -37,7 +37,7 @@ export function clientsReducer(
       };
 
     case 'unregister': {
-      const { [action.client]: _, ...clients } = state.clients;
+      const { [action.client]: _, ...clients } = state;
 
       return clients;
     }
