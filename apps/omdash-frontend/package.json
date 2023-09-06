@@ -12,10 +12,10 @@
   "author": "Damian Senn <damian.senn@topaxi.codes>",
   "license": "ISC",
   "dependencies": {
+    "@redux-devtools/extension": "^3.2.5",
     "@vaadin/router": "^1.7.5",
     "lit": "^2.8.0",
     "redux": "^4.2.1",
-    "redux-devtools-extension": "^2.13.9",
     "serve": "^14.2.1",
     "svg-gauge": "^1.0.7"
   },

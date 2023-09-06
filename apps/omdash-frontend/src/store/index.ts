@@ -1,5 +1,5 @@
 import { Action as ReduxAction, legacy_createStore } from 'redux';
-import { composeWithDevTools } from 'redux-devtools-extension';
+import { composeWithDevTools } from '@redux-devtools/extension';
 
 // TODO: Refactoring into several reducers.
 //       One for client registration and one for metrics.
