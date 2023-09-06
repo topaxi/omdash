@@ -4,8 +4,8 @@ import WebSocket from 'ws';
 
 process.title = 'omdash-client';
 
-const UPDATE_INTERVAL = 5000;
-const PS_UPDATE_INTERVAL = 5000;
+const UPDATE_INTERVAL = 2000;
+const PS_UPDATE_INTERVAL = 4000;
 
 let pingTimer: NodeJS.Timeout | null = null;
 
