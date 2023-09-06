@@ -5,6 +5,7 @@ import { connect } from '../store/connect.js';
 import { RootState } from '../store/index.js';
 
 import './ago.js';
+import { OmBox } from './box.js';
 import './gauge.js';
 import './os-icon.js';
 import './process-list.js';
@@ -17,30 +18,26 @@ interface CpuInfo {
 
 @customElement('om-host')
 export class OmHost extends connect()(LitElement) {
-  static styles = css`
-    :host {
-      flex: 1 1 0;
-      max-width: calc(50% - 0.5rem);
-      border-radius: 6px;
-      border: 1px solid var(--ctp-macchiato-lavender);
-      background-color: rgb(var(--ctp-macchiato-base-raw), 66.6%);
-      -webkit-backdrop-filter: blur(8px) grayscale(1);
-      backdrop-filter: blur(8px) grayscale(1);
+  static styles = [
+    OmBox.styles,
+    css`
+      :host {
+        flex: 1 1 0;
+        max-width: calc(50% - 0.5rem);
+        overflow: hidden;
+      }
 
-      padding: 0.2rem 0.33rem;
-      overflow: hidden;
-    }
+      :host(.offline) {
+        opacity: 0.8;
+        filter: grayscale();
+      }
 
-    :host(.offline) {
-      opacity: 0.8;
-      filter: grayscale();
-    }
-
-    .load-average,
-    .available-memory {
-      text-align: center;
-    }
-  `;
+      .load-average,
+      .available-memory {
+        text-align: center;
+      }
+    `,
+  ];
 
   private now = new ClockController(this, 5000);
 

@@ -2,6 +2,7 @@ import { LitElement, css, html } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { ClockController } from '../controllers/clock.js';
 
+import { OmBox } from './box.js';
 import './link.js';
 
 @customElement('om-global-clock')
@@ -18,34 +19,30 @@ export class OmGlobalClock extends LitElement {
 
 @customElement('om-global')
 export class OmGlobal extends LitElement {
-  static styles = css`
-    :host {
-      display: flex;
-      flex-direction: column;
-      flex: 0 0 5ch;
-      border-radius: 6px;
-      border: 1px solid var(--ctp-macchiato-lavender);
-      background-color: rgb(var(--ctp-macchiato-base-raw), 66.6%);
-      -webkit-backdrop-filter: blur(8px) grayscale(1);
-      backdrop-filter: blur(8px) grayscale(1);
+  static styles = [
+    OmBox.styles,
+    css`
+      :host {
+        display: flex;
+        flex-direction: column;
+        flex: 0 0 5ch;
+      }
 
-      padding: 0.2rem 0.33rem;
-    }
+      om-app-icon {
+        display: block;
 
-    om-app-icon {
-      display: block;
+        padding-left: 0.5rem;
 
-      padding-left: 0.5rem;
+        font-size: 4ch;
 
-      font-size: 4ch;
+        opacity: 0.4;
+      }
 
-      opacity: 0.4;
-    }
-
-    om-link[aria-selected='true'] om-app-icon {
-      opacity: 0.9;
-    }
-  `;
+      om-link[aria-selected='true'] om-app-icon {
+        opacity: 0.9;
+      }
+    `,
+  ];
 
   protected override render(): unknown {
     return html`
