@@ -4,6 +4,8 @@ import os from 'node:os';
 import WebSocket from 'ws';
 import { createWebSocketServer, decode, encode } from './utils/socket';
 
+process.title = 'omdash-server';
+
 interface ClientMetadata {
   name?: string;
   isAlive: boolean;

@@ -2,6 +2,8 @@ import os from 'node:os';
 import { ProcessDescriptor } from 'ps-list';
 import WebSocket from 'ws';
 
+process.title = 'omdash-client';
+
 const UPDATE_INTERVAL = 5000;
 const PS_UPDATE_INTERVAL = 5000;
 

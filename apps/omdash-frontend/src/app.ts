@@ -69,7 +69,7 @@ export class OmApp extends connect()(LitElement) {
       this.ws.addEventListener('close', () => {
         setTimeout(connectWebSocket, 2000);
       });
-    }
+    };
 
     connectWebSocket();
 
