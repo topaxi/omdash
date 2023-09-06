@@ -23,8 +23,6 @@ export class OmLink extends LitElement {
   }
 
   handleEvent(event: Event) {
-    console.log(event);
-
     if (event.type === 'click' || event.type === 'touchstart') {
       Router.go(this.to);
 
