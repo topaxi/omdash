@@ -23,6 +23,7 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
+    "traceroute": "*",
     "ws": "^8.13.0"
   }
 }

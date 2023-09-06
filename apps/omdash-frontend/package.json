@@ -14,11 +14,13 @@
   "dependencies": {
     "@vaadin/router": "^1.7.5",
     "lit": "^2.8.0",
+    "plotly.js-dist": "^2.26.0",
     "redux": "^4.2.1",
     "redux-devtools-extension": "^2.13.9",
     "serve": "^14.2.1"
   },
   "devDependencies": {
+    "@types/plotly.js": "^2.12.26",
     "vite": "^4.4.9"
   }
 }

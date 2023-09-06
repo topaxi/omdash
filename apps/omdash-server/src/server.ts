@@ -1,5 +1,6 @@
 import childProcess from 'node:child_process';
 import WebSocket from 'ws';
+import Traceroute from 'traceroute';
 import { createWebSocketServer, decode, encode } from './utils/socket';
 
 interface ClientMetadata {
@@ -118,3 +119,13 @@ if (executableExists('swaymsg')) {
     );
   }, 1000);
 }
+
+setInterval(() => {
+  const tracer = new Traceroute();
+
+  tracer.on('hop', (hop) => {
+    console.log(`hop: ${JSON.stringify(hop)}`);
+  });
+
+  tracer.trace('topaxi.ch');
+}, 1000);
