@@ -109,9 +109,7 @@ if (executableExists('swaymsg')) {
     const clients = Array.from(wssClients.clients).filter(
       (c) => clientMetadata.get(c)?.name !== 'ompi',
     );
-    const hasOpenClients =
-      clients.length !== 0 &&
-      clients.every((c) => c.readyState === WebSocket.OPEN);
+    const hasOpenClients = clients.some((c) => c.readyState === WebSocket.OPEN);
 
     childProcess.exec(
       `swaymsg output HDMI-A-1 dpms ${hasOpenClients ? 'on' : 'off'}`,
