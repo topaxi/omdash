@@ -53,17 +53,25 @@ export class OmApp extends connect()(LitElement) {
   private router: Router | null = null;
 
   connectedCallback() {
-    // Probably want to handle this in a more robust way.
-    // Currently the WebSocket to server connection is always on the same host,
-    // therefore we don't need to worry too much about connection issues.
-    // Worst case, we can just reload the page.
-    this.ws = new WebSocket(`ws://${window.location.hostname}:3300`);
+    const connectWebSocket = () => {
+      // Probably want to handle this in a more robust way.
+      // Currently the WebSocket to server connection is always on the same host,
+      // therefore we don't need to worry too much about connection issues.
+      // Worst case, we can just reload the page.
+      this.ws = new WebSocket(`ws://${window.location.hostname}:3300`);
 
-    this.ws.addEventListener('message', (event) => {
-      const action = JSON.parse(event.data);
+      this.ws.addEventListener('message', (event) => {
+        const action = JSON.parse(event.data);
 
-      this.store.dispatch(action);
-    });
+        this.store.dispatch(action);
+      });
+
+      this.ws.addEventListener('close', () => {
+        setTimeout(connectWebSocket, 2000);
+      });
+    }
+
+    connectWebSocket();
 
     super.connectedCallback();
   }
