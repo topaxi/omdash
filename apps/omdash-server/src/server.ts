@@ -119,6 +119,7 @@ function dpms(toggle: boolean) {
 
 if (executableExists('swaymsg')) {
   const uid = process.getuid?.() || 1000;
+
   fs.readdir(`/run/user/${uid}`)
     .then((files) => files.find((f) => f.startsWith('sway-ipc')))
     .then((SWAYSOCK) => {
