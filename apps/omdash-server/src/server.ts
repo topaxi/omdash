@@ -1,3 +1,4 @@
+import fs from 'node:fs/promises';
 import childProcess from 'node:child_process';
 import WebSocket from 'ws';
 import { createWebSocketServer, decode, encode } from './utils/socket';
@@ -117,9 +118,24 @@ function dpms(toggle: boolean) {
 }
 
 if (executableExists('swaymsg')) {
-  setInterval(() => {
-    childProcess.exec(dpms(hasOpenClients()));
-  }, 1000);
+  const uid = process.getuid?.() || 1000;
+  fs.readdir(`/run/user/${uid}`)
+    .then((files) => files.find((f) => f.startsWith('sway-ipc')))
+    .then((SWAYSOCK) => {
+      SWAYSOCK = process.env.SWAYSOCK || SWAYSOCK;
+
+      if (!SWAYSOCK) {
+        return;
+      }
+
+      setInterval(() => {
+        childProcess.exec(dpms(hasOpenClients()), {
+          env: {
+            SWAYSOCK,
+          },
+        });
+      }, 1000);
+    });
 } else if (process.env.DEBUG_DPMS) {
   setInterval(() => {
     console.log(dpms(hasOpenClients()));
