@@ -134,16 +134,32 @@ async function getSwaySocket() {
   return SWAYSOCK;
 }
 
+let hadOpenClients = false;
+function setDPMSInterval(
+  callback: (hasOpenClients: boolean) => void,
+  interval: number,
+) {
+  return setInterval(async () => {
+    const hasCurrentlyOpenClients = hasOpenClients();
+
+    if (hadOpenClients !== hasCurrentlyOpenClients) {
+      callback(hasCurrentlyOpenClients);
+
+      hadOpenClients = hasCurrentlyOpenClients;
+    }
+  }, interval);
+}
+
 if (executableExists('swaymsg')) {
-  setInterval(async () => {
-    childProcess.exec(dpms(hasOpenClients()), {
+  setDPMSInterval(async (hasCurrentlyOpenClients) => {
+    childProcess.exec(dpms(hasCurrentlyOpenClients), {
       env: {
         SWAYSOCK: await getSwaySocket(),
       },
     });
-  }, 5000);
+  }, 5_000);
 } else if (process.env.DEBUG_DPMS) {
-  setInterval(() => {
-    console.log(dpms(hasOpenClients()));
-  }, 5000);
+  setDPMSInterval((hasOpenClients) => {
+    console.log(dpms(hasOpenClients));
+  }, 5_000);
 }
