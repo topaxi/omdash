@@ -14,8 +14,10 @@
   "dependencies": {
     "@redux-devtools/extension": "^3.2.5",
     "@reduxjs/toolkit": "^1.9.5",
+    "@types/lodash-es": "^4.17.9",
     "@vaadin/router": "^1.7.5",
     "lit": "^2.8.0",
+    "lodash-es": "^4.17.21",
     "serve": "^14.2.1",
     "svg-gauge": "^1.0.7"
   },

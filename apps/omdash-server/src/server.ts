@@ -35,6 +35,16 @@ wssClients.on('close', () => {
   clearInterval(heartbeat);
 });
 
+function broadcastToDashboards(message: string) {
+  wssDashboard.clients.forEach((client) => {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(message, { binary: false });
+    }
+  });
+}
+
+const dashboardMessageQueue: string[] = [];
+
 wssClients.on('connection', (ws, req) => {
   console.log('Client connected', req.socket.remoteAddress);
 
@@ -55,11 +65,7 @@ wssClients.on('connection', (ws, req) => {
 
       const enhancedPayload = encode({ type, client: metadata.name, payload });
 
-      wssDashboard.clients.forEach((client) => {
-        if (client.readyState === WebSocket.OPEN) {
-          client.send(enhancedPayload, { binary: false });
-        }
-      });
+      dashboardMessageQueue.push(enhancedPayload);
     } catch (err) {
       console.error(err);
       console.log(message);
@@ -74,6 +80,12 @@ wssClients.on('connection', (ws, req) => {
     console.log('Client disconnected', req.socket.remoteAddress);
   });
 });
+
+setInterval(() => {
+  while (dashboardMessageQueue.length > 0) {
+    broadcastToDashboards(dashboardMessageQueue.shift()!);
+  }
+}, 1000);
 
 wssDashboard.on('connection', (ws, req) => {
   console.log('Dashboard connected', req.socket.remoteAddress);
