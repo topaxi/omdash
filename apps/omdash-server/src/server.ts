@@ -157,9 +157,9 @@ if (executableExists('swaymsg')) {
         SWAYSOCK: await getSwaySocket(),
       },
     });
-  }, 5_000);
+  }, 10_000);
 } else if (process.env.DEBUG_DPMS) {
   setDPMSInterval((hasOpenClients) => {
     console.log(dpms(hasOpenClients));
-  }, 5_000);
+  }, 10_000);
 }
