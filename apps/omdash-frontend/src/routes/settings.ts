@@ -31,6 +31,10 @@ export class OmSettings extends LitElement {
     return html`
       <om-box class="content">
         <button @click=${this.refresh}>󰑐</button>
+        <dl class="debug-info">
+          <dt>Hardware Concurrency</dt>
+          <dd>${window.navigator.hardwareConcurrency}</dd>
+        </dl>
       </om-box>
     `;
   }

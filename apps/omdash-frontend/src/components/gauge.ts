@@ -68,6 +68,10 @@ export class OmGauge extends LitElement {
   protected updated(
     _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>,
   ): void {
-    this.gauge.setValueAnimated(this.percent, 0.5);
+    if (window.navigator.hardwareConcurrency > 4) {
+      this.gauge.setValueAnimated(this.percent, 0.5);
+    } else {
+      this.gauge.setValue(this.percent);
+    }
   }
 }
