@@ -48,7 +48,6 @@ export class Hosts extends connect()(LitElement) {
    */
   private get sortedHosts(): string[] {
     return this.activeHosts.sort((a, b) => {
-
       if (a === 'ompi') {
         return -1;
       }
@@ -60,7 +59,6 @@ export class Hosts extends connect()(LitElement) {
       return a.localeCompare(b);
     });
   }
-
 
   protected render(): unknown {
     return repeat(

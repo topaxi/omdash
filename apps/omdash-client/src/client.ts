@@ -210,7 +210,9 @@ async function getProcesses() {
         .filter((p) => p.name != 'ps')
         .sort((a, b) => b.cpu! - a.cpu!)
         .slice(0, processCount),
-      highestMemory: merged.sort((a, b) => b.memory! - a.memory!).slice(0, processCount),
+      highestMemory: merged
+        .sort((a, b) => b.memory! - a.memory!)
+        .slice(0, processCount),
     },
   };
 }

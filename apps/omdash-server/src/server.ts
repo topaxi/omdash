@@ -107,10 +107,9 @@ function executableExists(cmd: string) {
 if (executableExists('swaymsg')) {
   setInterval(() => {
     const hasOpenClients =
-      wssClients.clients.size == 0 ||
+      wssClients.clients.size > 1 &&
       Array.from(wssClients.clients).every(
-        (c) =>
-          c.readyState == WebSocket.CLOSED || c.readyState == WebSocket.CLOSING,
+        (c) => c.readyState === WebSocket.OPEN,
       );
 
     childProcess.exec(
