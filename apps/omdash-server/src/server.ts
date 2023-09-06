@@ -106,11 +106,10 @@ function executableExists(cmd: string) {
 
 if (executableExists('swaymsg')) {
   setInterval(() => {
-    const hasOpenClients =
-      wssClients.clients.size > 1 &&
-      Array.from(wssClients.clients).every(
-        (c) => c.readyState === WebSocket.OPEN,
-      );
+    const clients = Array.from(wssClients.clients);
+    const hasOpenClients = clients
+      .filter((c) => clientMetadata.get(c)?.name !== 'ompi')
+      .every((c) => c.readyState === WebSocket.OPEN);
 
     childProcess.exec(
       `swaymsg output HDMI-A-1 dpms ${hasOpenClients ? 'on' : 'off'}`,
