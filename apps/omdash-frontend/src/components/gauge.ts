@@ -23,7 +23,7 @@ export class OmGauge extends LitElement {
       padding: 5px 10px;
     }
     .gauge .dial {
-      stroke: #334455;
+      stroke: rgba(var(--ctp-macchiato-crust-raw), 0.5);
       stroke-width: 10;
       fill: rgba(0, 0, 0, 0);
     }
