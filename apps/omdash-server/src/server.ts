@@ -104,15 +104,24 @@ function executableExists(cmd: string) {
   }
 }
 
+function hasOpenClients() {
+  const clients = Array.from(wssClients.clients).filter(
+    (c) => clientMetadata.get(c)?.name !== 'ompi',
+  );
+
+  return clients.some((c) => c.readyState === WebSocket.OPEN);
+}
+
+function dpms(toggle: boolean) {
+  return `swaymsg output HDMI-A-1 dpms ${toggle ? 'on' : 'off'}`;
+}
+
 if (executableExists('swaymsg')) {
   setInterval(() => {
-    const clients = Array.from(wssClients.clients).filter(
-      (c) => clientMetadata.get(c)?.name !== 'ompi',
-    );
-    const hasOpenClients = clients.some((c) => c.readyState === WebSocket.OPEN);
-
-    childProcess.exec(
-      `swaymsg output HDMI-A-1 dpms ${hasOpenClients ? 'on' : 'off'}`,
-    );
+    childProcess.exec(dpms(hasOpenClients()));
+  }, 1000);
+} else if (process.env.DEBUG_DPMS) {
+  setInterval(() => {
+    console.log(dpms(hasOpenClients()));
   }, 1000);
 }
