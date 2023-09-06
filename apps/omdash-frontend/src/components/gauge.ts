@@ -30,7 +30,7 @@ export class OmGauge extends LitElement {
     .gauge .value {
       stroke: var(--color);
       stroke-width: 13;
-      stroke-dasharray: 25 1;
+      stroke-dasharray: 30.65 1;
       fill: rgba(0, 0, 0, 0);
     }
     .gauge .value-text {
