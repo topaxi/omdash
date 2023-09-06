@@ -73,6 +73,7 @@ async function wmiProcessList(): Promise<ProcessDescriptor[]> {
     );
 }
 
+let connectTimeout = 1000;
 function connect(url: string) {
   console.log('Connecting to', url);
 
@@ -91,6 +92,8 @@ function connect(url: string) {
   ws.on('open', heartbeat);
   ws.on('open', () => {
     console.log('Connected');
+
+    connectTimeout = 1000;
 
     ws.send(
       encode({
@@ -120,8 +123,12 @@ function connect(url: string) {
     clearInterval(psTimeout!);
 
     setTimeout(() => {
+      if (connectTimeout < 32_000) {
+        connectTimeout *= 2;
+      }
+
       connect(url);
-    }, 1000);
+    }, connectTimeout);
   });
 
   ws.on('error', (error) => {
