@@ -95,6 +95,14 @@ export class OmProcessList extends connect()(LitElement) {
     return 'normal';
   }
 
+  private keyForProcess(process: any) {
+    return process.pid;
+  }
+
+  private formatPercent(value: number) {
+    return `${value.toFixed(1).padStart(4, '\u00A0')}%`;
+  }
+
   render() {
     if (
       this.highestCPUProcesses.length === 0 &&
@@ -108,10 +116,10 @@ export class OmProcessList extends connect()(LitElement) {
         <strong>CPU</strong>
         ${repeat(
           this.highestCPUProcesses,
-          (p) => p.pid,
+          this.keyForProcess,
           (p) =>
             html`<div class="${this.cpuHighUsageToClassName(p.cpu)}">
-              ${p.cpu.toFixed(1)}% ${p.name}
+              ${this.formatPercent(p.cpu)} ${p.name}
             </div>`,
         )}
       </div>
@@ -119,10 +127,10 @@ export class OmProcessList extends connect()(LitElement) {
         <strong>Memory</strong>
         ${repeat(
           this.highestMemoryProcesses,
-          (p) => p.pid,
+          this.keyForProcess,
           (p) =>
             html`<div class="${this.memoryHighUsageToClassName(p.memory)}">
-              ${p.memory.toFixed(1)}% ${p.name}
+              ${this.formatPercent(p.memory)} ${p.name}
             </div>`,
         )}
       </div>
