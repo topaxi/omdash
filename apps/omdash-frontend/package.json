@@ -16,7 +16,8 @@
     "lit": "^2.8.0",
     "redux": "^4.2.1",
     "redux-devtools-extension": "^2.13.9",
-    "serve": "^14.2.1"
+    "serve": "^14.2.1",
+    "svg-gauge": "^1.0.7"
   },
   "devDependencies": {
     "vite": "^4.4.9"

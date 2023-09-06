@@ -129,10 +129,9 @@ export class OmHost extends connect()(LitElement) {
       <div class="memory-usage">
         <om-gauge
           style="width:160px;--color: var(--ctp-macchiato-mauve)"
+          label="Mem"
           percent="${memoryPercentage.toFixed(2)}"
-        >
-          Mem ${Math.round(memoryPercentage)}%
-        </om-gauge>
+        ></om-gauge>
       </div>
     `;
   }
@@ -168,10 +167,9 @@ export class OmHost extends connect()(LitElement) {
       <div class="cpu-usage">
         <om-gauge
           style="width:160px;--color: var(--ctp-macchiato-red)"
+          label="CPU"
           percent="${averageCPUUsage.toFixed(2)}"
-        >
-          CPU ${Math.round(averageCPUUsage)}%
-        </om-gauge>
+        ></om-gauge>
       </div>
     `;
   }
