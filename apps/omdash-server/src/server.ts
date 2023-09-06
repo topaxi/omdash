@@ -1,5 +1,6 @@
-import fs from 'node:fs/promises';
 import childProcess from 'node:child_process';
+import fs from 'node:fs/promises';
+import os from 'node:os';
 import WebSocket from 'ws';
 import { createWebSocketServer, decode, encode } from './utils/socket';
 
@@ -9,6 +10,7 @@ interface ClientMetadata {
   addr: string;
 }
 
+const hostname = os.hostname();
 const wssClients = createWebSocketServer(3200);
 const wssDashboard = createWebSocketServer(3300);
 
@@ -107,7 +109,7 @@ function executableExists(cmd: string) {
 
 function hasOpenClients() {
   const clients = Array.from(wssClients.clients).filter(
-    (c) => clientMetadata.get(c)?.name !== 'ompi',
+    (c) => clientMetadata.get(c)?.name !== hostname,
   );
 
   return clients.some((c) => c.readyState === WebSocket.OPEN);
