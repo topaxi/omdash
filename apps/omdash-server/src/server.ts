@@ -67,7 +67,7 @@ wssClients.on('connection', (ws, req) => {
   });
 
   ws.once('close', () => {
-    console.log('Client disconnected');
+    console.log('Client disconnected', req.socket.remoteAddress);
   });
 });
 
@@ -92,7 +92,7 @@ wssDashboard.on('connection', (ws, req) => {
     });
 
   ws.once('close', () => {
-    console.log('Dashboard disconnected');
+    console.log('Dashboard disconnected', req.socket.remoteAddress);
   });
 });
 
