@@ -117,28 +117,32 @@ function dpms(toggle: boolean) {
   return `swaymsg output HDMI-A-1 dpms ${toggle ? 'on' : 'off'}`;
 }
 
-if (executableExists('swaymsg')) {
+let SWAYSOCK = process.env.SWAYSOCK;
+async function getSwaySocket() {
+  if (SWAYSOCK) {
+    return SWAYSOCK;
+  }
+
   const uid = process.getuid?.() || 1000;
 
-  fs.readdir(`/run/user/${uid}`)
+  SWAYSOCK = await fs
+    .readdir(`/run/user/${uid}`)
     .then((files) => files.find((f) => f.startsWith('sway-ipc')))
-    .then((SWAYSOCK) => {
-      SWAYSOCK = process.env.SWAYSOCK || SWAYSOCK;
+    .then((SWAYSOCK) => process.env.SWAYSOCK || SWAYSOCK);
 
-      if (!SWAYSOCK) {
-        return;
-      }
+  return SWAYSOCK;
+}
 
-      setInterval(() => {
-        childProcess.exec(dpms(hasOpenClients()), {
-          env: {
-            SWAYSOCK,
-          },
-        });
-      }, 1000);
+if (executableExists('swaymsg')) {
+  setInterval(async () => {
+    childProcess.exec(dpms(hasOpenClients()), {
+      env: {
+        SWAYSOCK: await getSwaySocket(),
+      },
     });
+  }, 5000);
 } else if (process.env.DEBUG_DPMS) {
   setInterval(() => {
     console.log(dpms(hasOpenClients()));
-  }, 1000);
+  }, 5000);
 }
