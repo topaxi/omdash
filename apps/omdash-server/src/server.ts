@@ -71,8 +71,8 @@ wssClients.on('connection', (ws, req) => {
   });
 });
 
-wssDashboard.on('connection', (ws) => {
-  console.log('Dashboard connected');
+wssDashboard.on('connection', (ws, req) => {
+  console.log('Dashboard connected', req.socket.remoteAddress);
 
   Array.from(wssClients.clients)
     .filter((c) => c.readyState === WebSocket.OPEN)
