@@ -25,6 +25,7 @@ export class OmHost extends connect()(LitElement) {
         flex: 1 1 0;
         max-width: calc(50% - 0.5rem);
         overflow: hidden;
+        container: host / inline-size;
       }
 
       :host(.offline) {
@@ -44,6 +45,22 @@ export class OmHost extends connect()(LitElement) {
       .load-average,
       .available-memory {
         text-align: center;
+        font-size: 0.8rem;
+      }
+
+      om-gauge {
+        width: 134px;
+      }
+
+      @container host (min-width: 330px) {
+        om-gauge {
+          width: 160px;
+        }
+
+        .load-average,
+        .available-memory {
+          font-size: 1rem;
+        }
       }
     `,
   ];
@@ -142,7 +159,7 @@ export class OmHost extends connect()(LitElement) {
     return html`
       <div class="memory-usage">
         <om-gauge
-          style="width:160px;--color: var(--ctp-macchiato-mauve)"
+          style="--color: var(--ctp-macchiato-mauve)"
           label="Mem"
           percent="${Math.round(memoryPercentage)}"
         ></om-gauge>
@@ -180,7 +197,7 @@ export class OmHost extends connect()(LitElement) {
     return html`
       <div class="cpu-usage">
         <om-gauge
-          style="width:160px;--color: var(--ctp-macchiato-red)"
+          style="--color: var(--ctp-macchiato-red)"
           label="CPU"
           percent="${Math.round(averageCPUUsage)}"
         ></om-gauge>
