@@ -42,10 +42,6 @@ export class OmProcessList extends connect()(LitElement) {
     .very-low {
       color: var(--ctp-macchiato-green);
     }
-
-    .normal {
-      color: var(--ctp-macchiato-teal);
-    }
   `;
 
   @property()
