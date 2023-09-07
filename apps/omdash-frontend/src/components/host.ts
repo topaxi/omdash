@@ -221,6 +221,19 @@ export class OmHost extends connect()(LitElement) {
     return 100 - (100 * idleDifference) / totalDifference;
   }
 
+  private getBatteryLevelIcon(battery: {
+    isCharging: boolean;
+    percent: number;
+  }) {
+    if (battery.isCharging) {
+      return '';
+    }
+
+    const icons = ['', '', '', '', ''];
+
+    return icons[Math.floor((battery.percent / 100) * icons.length)];
+  }
+
   private renderBattery() {
     if (this.battery == null) {
       return '';
@@ -228,7 +241,7 @@ export class OmHost extends connect()(LitElement) {
 
     return html`
       <div class="battery">
-        ${this.battery.isCharging ? '⚡🔋' : '🔋'} ${this.battery.percent}%
+        ${this.getBatteryLevelIcon(this.battery)} ${this.battery.percent}%
       </div>
     `;
   }
