@@ -48,6 +48,12 @@ export class OmHost extends connect()(LitElement) {
         font-size: 0.8rem;
       }
 
+      .memory-usage,
+      .cpu-usage {
+        display: flex;
+        justify-content: center;
+      }
+
       om-gauge {
         width: 134px;
       }
@@ -60,6 +66,12 @@ export class OmHost extends connect()(LitElement) {
         .load-average,
         .available-memory {
           font-size: 1rem;
+        }
+      }
+
+      @container host (min-width: 420px) {
+        om-gauge {
+          width: 220px;
         }
       }
     `,
@@ -279,10 +291,12 @@ export class OmHost extends connect()(LitElement) {
         <small>${this.formatIp(this.addr)}</small>
       </div>
       <div style="display: flex">
-        <div style="margin-right: 0.5rem">
+        <div style="flex: 1 1 0;margin-right: 0.5rem">
           ${this.renderCPUUsage()} ${this.renderLoadAverage()}
         </div>
-        <div>${this.renderMemoryUsage()} ${this.renderAvailableMemory()}</div>
+        <div style="flex: 1 1 0">
+          ${this.renderMemoryUsage()} ${this.renderAvailableMemory()}
+        </div>
       </div>
       <div class="processes">Processes: ${this.processCount}</div>
       <om-process-list name=${this.hostname}></om-process-list>
