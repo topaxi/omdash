@@ -19,13 +19,13 @@ export class Hosts extends connect()(LitElement) {
   `;
 
   @state()
-  private hostNames: string[] = [];
+  private hostnames: string[] = [];
 
   @state()
   private lastUpdatedHosts: Record<string, number> = {};
 
   override stateChanged(state: RootState) {
-    this.hostNames = Object.keys(state.clients);
+    this.hostnames = Object.keys(state.clients);
 
     this.lastUpdatedHosts = Object.fromEntries(
       Object.entries(state.clients).map(([client, { lastUpdate }]) => [
@@ -38,8 +38,8 @@ export class Hosts extends connect()(LitElement) {
   private get activeHosts() {
     const now = Date.now();
 
-    return this.hostNames.filter(
-      (hostName) => now - (this.lastUpdatedHosts[hostName] || 0) < 300_000,
+    return this.hostnames.filter(
+      (hostname) => now - (this.lastUpdatedHosts[hostname] || 0) < 300_000,
     );
   }
 
@@ -64,7 +64,7 @@ export class Hosts extends connect()(LitElement) {
     return repeat(
       this.sortedHosts,
       identity,
-      (hostName) => html` <om-host name=${hostName}></om-host> `,
+      (hostname) => html` <om-host hostname=${hostname}></om-host> `,
     );
   }
 }

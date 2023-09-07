@@ -1,11 +1,22 @@
 import os from 'node:os';
 import { ProcessDescriptor } from 'ps-list';
 import WebSocket from 'ws';
+import si from 'systeminformation';
 
 process.title = 'omdash-client';
 
 const UPDATE_INTERVAL = 2000;
 const PS_UPDATE_INTERVAL = 4000;
+
+function pick<T, K extends keyof T>(obj: T, keys: K[]): Pick<T, K> {
+  const result: Partial<Pick<T, K>> = {};
+
+  for (const key of keys) {
+    result[key] = obj[key];
+  }
+
+  return result as Pick<T, K>;
+}
 
 let pingTimer: NodeJS.Timeout | null = null;
 
@@ -77,8 +88,7 @@ let connectTimeout = 1000;
 function connect(url: string) {
   console.log('Connecting to', url);
 
-  let timeout: NodeJS.Timeout | null = null;
-  let psTimeout: NodeJS.Timeout | null = null;
+  const timers: NodeJS.Timeout[] = [];
   const ws = new WebSocket(url);
 
   function unregister() {
@@ -90,7 +100,7 @@ function connect(url: string) {
   }
 
   ws.on('open', heartbeat);
-  ws.on('open', () => {
+  ws.on('open', async () => {
     console.log('Connected');
 
     connectTimeout = 1000;
@@ -107,13 +117,32 @@ function connect(url: string) {
       }),
     );
 
-    timeout = setIntervalImmediate(() => {
-      ws.send(encode(getMetrics()));
-    }, UPDATE_INTERVAL);
+    timers.push(
+      setIntervalImmediate(() => {
+        ws.send(encode(getMetrics()));
+      }, UPDATE_INTERVAL),
+    );
 
-    psTimeout = setIntervalImmediate(async () => {
-      ws.send(encode(await getProcesses()));
-    }, PS_UPDATE_INTERVAL);
+    timers.push(
+      setIntervalImmediate(async () => {
+        ws.send(encode(await getProcesses()));
+      }, PS_UPDATE_INTERVAL),
+    );
+
+    // If the connection closes before the first battery update, this probably introduces
+    // a memory leak. The timer should be cleaned up on the next close event though.
+    if ((await si.battery()).hasBattery) {
+      timers.push(
+        setIntervalImmediate(async () => {
+          ws.send(
+            encode({
+              type: 'battery',
+              payload: pick(await si.battery(), ['isCharging', 'percent']),
+            }),
+          );
+        }, 10_000),
+      );
+    }
   });
 
   ws.on('ping', heartbeat);
@@ -122,8 +151,10 @@ function connect(url: string) {
     console.log('Connection closed');
 
     clearTimeout(pingTimer!);
-    clearInterval(timeout!);
-    clearInterval(psTimeout!);
+
+    while (timers.length !== 0) {
+      clearInterval(timers.pop()!);
+    }
 
     setTimeout(() => {
       if (connectTimeout < 32_000) {

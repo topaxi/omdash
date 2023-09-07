@@ -32,6 +32,15 @@ export class OmHost extends connect()(LitElement) {
         filter: grayscale();
       }
 
+      .host-title {
+        display: flex;
+        gap: 1ch;
+      }
+
+      .battery {
+        margin-left: auto;
+      }
+
       .load-average,
       .available-memory {
         text-align: center;
@@ -42,7 +51,7 @@ export class OmHost extends connect()(LitElement) {
   private now = new ClockController(this, 5000);
 
   @property()
-  name = '';
+  hostname = '';
 
   @state()
   private platform = '';
@@ -71,16 +80,21 @@ export class OmHost extends connect()(LitElement) {
   @state()
   private processCount = 0;
 
+  @state()
+  private battery: { isCharging: boolean; percent: number } | null = null;
+
   override stateChanged(state: RootState): void {
-    this.addr = state.clients[this.name]?.addr ?? '';
-    this.platform = state.clients[this.name]?.platform ?? '';
-    this.release = state.clients[this.name]?.release ?? '';
-    this.cpus = state.clients[this.name]?.cpus ?? [];
-    this.pcpus = state.clients[this.name]?.pcpus ?? [];
-    this.loadAverage = state.clients[this.name]?.load ?? [0, 0, 0];
-    this.memory = state.clients[this.name]?.memory ?? { total: 1, free: 1 };
-    this.lastUpdate = state.clients[this.name]?.lastUpdate || this.lastUpdate;
-    this.processCount = state.clients[this.name]?.ps?.count ?? 0;
+    this.addr = state.clients[this.hostname]?.addr ?? '';
+    this.platform = state.clients[this.hostname]?.platform ?? '';
+    this.release = state.clients[this.hostname]?.release ?? '';
+    this.cpus = state.clients[this.hostname]?.cpus ?? [];
+    this.pcpus = state.clients[this.hostname]?.pcpus ?? [];
+    this.loadAverage = state.clients[this.hostname]?.load ?? [0, 0, 0];
+    this.memory = state.clients[this.hostname]?.memory ?? { total: 1, free: 1 };
+    this.lastUpdate =
+      state.clients[this.hostname]?.lastUpdate || this.lastUpdate;
+    this.processCount = state.clients[this.hostname]?.ps?.count ?? 0;
+    this.battery = state.clients[this.hostname]?.battery ?? null;
 
     this.classList.toggle('offline', this.isOffline);
   }
@@ -207,15 +221,30 @@ export class OmHost extends connect()(LitElement) {
     return 100 - (100 * idleDifference) / totalDifference;
   }
 
+  private renderBattery() {
+    if (this.battery == null) {
+      return '';
+    }
+
+    return html`
+      <div class="battery">
+        ${this.battery.isCharging ? '⚡🔋' : '🔋'} ${this.battery.percent}%
+      </div>
+    `;
+  }
+
   render() {
     return html`
-      <div class="hostname">
-        <div>
+      <div class="host-info">
+        <div class="host-title">
           <om-os-icon
             platform="${this.platform}"
             release="${this.release}"
           ></om-os-icon>
-          ${this.name} ${this.renderLastUpdate()}
+          <div class="hostname">
+            ${this.hostname} ${this.renderLastUpdate()}
+          </div>
+          ${this.renderBattery()}
         </div>
         <small>${this.formatIp(this.addr)}</small>
       </div>
@@ -226,7 +255,7 @@ export class OmHost extends connect()(LitElement) {
         <div>${this.renderMemoryUsage()} ${this.renderAvailableMemory()}</div>
       </div>
       <div class="processes">Processes: ${this.processCount}</div>
-      <om-process-list name=${this.name}></om-process-list>
+      <om-process-list name=${this.hostname}></om-process-list>
     `;
   }
 }

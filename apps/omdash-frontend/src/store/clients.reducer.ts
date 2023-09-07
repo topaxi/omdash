@@ -14,6 +14,13 @@ export type PsAction = OmClientAction<
     highestMemory: any[];
   }
 >;
+export type BatteryAction = OmClientAction<
+  'battery',
+  {
+    isCharging: boolean;
+    percent: number;
+  }
+>;
 
 export interface ClientsState {
   [key: string]: any;
@@ -23,7 +30,12 @@ export const initialClientsState: ClientsState = {};
 
 export function clientsReducer(
   state: ClientsState = initialClientsState,
-  action: RegisterAction | UnregisterAction | MetricAction | PsAction,
+  action:
+    | RegisterAction
+    | UnregisterAction
+    | MetricAction
+    | PsAction
+    | BatteryAction,
 ): ClientsState {
   switch (action.type) {
     case 'register':
@@ -63,6 +75,16 @@ export function clientsReducer(
           ...state[action.client],
           ps: action.payload,
           lastUpdate: Date.now(),
+        },
+      };
+    }
+
+    case 'battery': {
+      return {
+        ...state,
+        [action.client]: {
+          ...state[action.client],
+          battery: action.payload,
         },
       };
     }
