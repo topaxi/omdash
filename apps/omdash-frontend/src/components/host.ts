@@ -42,6 +42,13 @@ export class OmHost extends connect()(LitElement) {
         margin-left: auto;
       }
 
+      .load-average {
+        display: flex;
+        gap: 1ch;
+        width: max-content;
+        margin: 0 auto;
+      }
+
       .load-average,
       .available-memory {
         text-align: center;
@@ -73,6 +80,30 @@ export class OmHost extends connect()(LitElement) {
         om-gauge {
           width: 220px;
         }
+      }
+
+      .very-high {
+        color: var(--ctp-macchiato-red);
+      }
+
+      .high {
+        color: var(--ctp-macchiato-maroon);
+      }
+
+      .medium {
+        color: var(--ctp-macchiato-peach);
+      }
+
+      .low {
+        color: var(--ctp-macchiato-yellow);
+      }
+
+      .very-low {
+        color: var(--ctp-macchiato-green);
+      }
+
+      .normal {
+        color: var(--ctp-macchiato-teal);
       }
     `,
   ];
@@ -160,9 +191,40 @@ export class OmHost extends connect()(LitElement) {
 
     return html`
       <div class="load-average">
-        ${this.loadAverage.map((n) => n.toFixed(2)).join(' ')}
+        ${this.loadAverage.map(
+          (n) =>
+            html`<div class="${this.getLoadAverageClass(n)}">
+              ${n.toFixed(2)}
+            </div>`,
+        )}
       </div>
     `;
+  }
+
+  private getLoadAverageClass(value: number) {
+    const cpus = this.cpus.length;
+
+    if (value > cpus) {
+      return 'very-high';
+    }
+
+    if (value > cpus / 2) {
+      return 'high';
+    }
+
+    if (value > cpus / 4) {
+      return 'medium';
+    }
+
+    if (value > cpus / 8) {
+      return 'low';
+    }
+
+    if (value > cpus / 16) {
+      return 'very-low';
+    }
+
+    return 'normal';
   }
 
   private renderMemoryUsage() {
