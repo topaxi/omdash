@@ -109,7 +109,7 @@ wssDashboard.on('connection', (ws, req) => {
         encode({
           type: 'register',
           payload: {
-            name: metadata.hostname,
+            hostname: metadata.hostname,
             arch: metadata.arch,
             platform: metadata.platform,
             release: metadata.release,

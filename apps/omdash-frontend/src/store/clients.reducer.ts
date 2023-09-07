@@ -2,7 +2,7 @@ import { OmClientAction } from './action';
 
 export type RegisterAction = OmClientAction<
   'register',
-  { addr: string; name: string }
+  { addr: string; hostname: string }
 >;
 export type UnregisterAction = OmClientAction<'unregister', {}>;
 export type MetricAction = OmClientAction<'metric', Record<string, any>>;
@@ -41,8 +41,8 @@ export function clientsReducer(
     case 'register':
       return {
         ...state,
-        [action.payload.name]: {
-          ...state[action.payload.name],
+        [action.payload.hostname]: {
+          ...state[action.payload.hostname],
           ...action.payload,
           lastUpdate: Date.now(),
         },
