@@ -31,7 +31,7 @@ export function clientsReducer(
         ...state,
         [action.payload.name]: {
           ...state[action.payload.name],
-          addr: action.payload.addr,
+          ...action.payload,
           lastUpdate: Date.now(),
         },
       };

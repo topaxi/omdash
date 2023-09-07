@@ -7,7 +7,10 @@ import { createWebSocketServer, decode, encode } from './utils/socket';
 process.title = 'omdash-server';
 
 interface ClientMetadata {
-  name?: string;
+  arch?: string;
+  platform?: string;
+  release?: string;
+  hostname?: string;
   isAlive: boolean;
   addr: string;
 }
@@ -59,11 +62,18 @@ wssClients.on('connection', (ws, req) => {
       const { type, payload } = decode(message);
 
       if (type === 'register') {
-        metadata.name = payload.name;
+        metadata.hostname = payload.hostname;
+        metadata.arch = payload.arch;
+        metadata.platform = payload.platform;
+        metadata.release = payload.release;
         payload.addr = metadata.addr;
       }
 
-      const enhancedPayload = encode({ type, client: metadata.name, payload });
+      const enhancedPayload = encode({
+        type,
+        client: metadata.hostname,
+        payload,
+      });
 
       dashboardMessageQueue.push(enhancedPayload);
     } catch (err) {
@@ -99,7 +109,10 @@ wssDashboard.on('connection', (ws, req) => {
         encode({
           type: 'register',
           payload: {
-            name: metadata.name,
+            name: metadata.hostname,
+            arch: metadata.arch,
+            platform: metadata.platform,
+            release: metadata.release,
             addr: metadata.addr,
           },
         }),
@@ -123,7 +136,7 @@ function executableExists(cmd: string) {
 
 function hasOpenClients() {
   const clients = Array.from(wssClients.clients).filter(
-    (c) => clientMetadata.get(c)?.name !== hostname,
+    (c) => clientMetadata.get(c)?.hostname !== hostname,
   );
 
   return clients.some((c) => c.readyState === WebSocket.OPEN);

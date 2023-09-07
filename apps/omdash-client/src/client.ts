@@ -99,7 +99,10 @@ function connect(url: string) {
       encode({
         type: 'register',
         payload: {
-          name: os.hostname(),
+          arch: os.arch(),
+          platform: os.platform(),
+          release: os.release(),
+          hostname: os.hostname(),
         },
       }),
     );
@@ -230,10 +233,6 @@ function getMetrics() {
   return {
     type: 'metric',
     payload: {
-      // TODO: Move static values into register event.
-      arch: os.arch(),
-      platform: os.platform(),
-      release: os.release(),
       cpus: os.cpus(),
       load: os.loadavg(),
       memory: {
