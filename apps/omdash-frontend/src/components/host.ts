@@ -98,6 +98,25 @@ export class OmHost extends connect()(LitElement) {
         }
       }
 
+      @keyframes pulse {
+        0% {
+          opacity: 1;
+        }
+
+        50% {
+          opacity: 0.2;
+        }
+
+        100% {
+          opacity: 1;
+        }
+      }
+
+      .critical {
+        animation: pulse 1s infinite;
+      }
+
+      .critical,
       .very-high {
         color: var(--ctp-macchiato-red);
       }
@@ -225,6 +244,10 @@ export class OmHost extends connect()(LitElement) {
 
   private getLoadAverageClass(value: number) {
     const cpus = this.cpus.length;
+
+    if (value > cpus * 2) {
+      return 'critical';
+    }
 
     if (value > cpus) {
       return 'very-high';
