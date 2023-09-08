@@ -245,7 +245,7 @@ export class OmHost extends connect()(LitElement) {
   private getLoadAverageClass(value: number) {
     const cpus = this.cpus.length;
 
-    if (value > cpus * 2) {
+    if (value > cpus * 1.5) {
       return 'critical';
     }
 
