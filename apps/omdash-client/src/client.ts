@@ -239,23 +239,32 @@ function mergeProcesses(processes: ProcessDescriptor[]) {
   return Object.values(merged);
 }
 
+const processNameFilters = ['ps', '0'];
+
+function filterProcesses(processes: ProcessDescriptor[]) {
+  return processes.filter((p) => !processNameFilters.includes(p.name));
+}
+
+function byCpu(a: { cpu: number }, b: { cpu: number }) {
+  return b.cpu - a.cpu;
+}
+
+function byMemory(a: { memory: number }, b: { memory: number }) {
+  return b.memory - a.memory;
+}
+
 async function getProcesses() {
   const processes =
     process.platform == 'win32' ? await wmiProcessList() : await psList();
-  const merged = mergeProcesses(processes);
+  const merged = mergeProcesses(filterProcesses(processes));
   const processCount = 5;
 
   return {
     type: 'ps',
     payload: {
       count: processes.length,
-      highestCpu: merged
-        .filter((p) => p.name != 'ps')
-        .sort((a, b) => b.cpu! - a.cpu!)
-        .slice(0, processCount),
-      highestMemory: merged
-        .sort((a, b) => b.memory! - a.memory!)
-        .slice(0, processCount),
+      highestCpu: merged.sort(byCpu).slice(0, processCount),
+      highestMemory: merged.sort(byMemory).slice(0, processCount),
     },
   };
 }
