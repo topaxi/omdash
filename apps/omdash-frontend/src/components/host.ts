@@ -57,8 +57,16 @@ export class OmHost extends connect()(LitElement) {
 
       .memory-usage,
       .cpu-usage {
+        position: relative;
         display: flex;
         justify-content: center;
+      }
+
+      .cpu-speed {
+        position: absolute;
+        top: 2.75em;
+        font-size: 0.8rem;
+        color: var(--ctp-macchiato-red);
       }
 
       om-gauge {
@@ -70,6 +78,10 @@ export class OmHost extends connect()(LitElement) {
           width: 160px;
         }
 
+        .cpu-speed {
+          font-size: 1rem;
+        }
+
         .load-average,
         .available-memory {
           font-size: 1rem;
@@ -79,6 +91,10 @@ export class OmHost extends connect()(LitElement) {
       @container host (min-width: 420px) {
         om-gauge {
           width: 220px;
+        }
+
+        .cpu-speed {
+          top: 4em;
         }
       }
 
@@ -153,6 +169,16 @@ export class OmHost extends connect()(LitElement) {
     this.battery = state.clients[this.hostname]?.battery ?? null;
 
     this.classList.toggle('offline', this.isOffline);
+  }
+
+  private averageCPUSpeed() {
+    if (this.cpus.length === 0) {
+      return 0;
+    }
+
+    return (
+      this.cpus.reduce((acc, cpu) => acc + cpu.speed, 0) / this.cpus.length
+    );
   }
 
   private get isOffline() {
@@ -249,6 +275,18 @@ export class OmHost extends connect()(LitElement) {
     return `${bytes.toFixed(1)}${units[unitIndex]}`;
   }
 
+  private formatMegahertz(megahertz: number) {
+    const units = ['MHz', 'GHz'];
+
+    let unitIndex = 0;
+    while (megahertz > 1000) {
+      megahertz /= 1000;
+      unitIndex++;
+    }
+
+    return `${megahertz.toFixed(unitIndex == 0 ? 0 : 1)}${units[unitIndex]}`;
+  }
+
   private renderAvailableMemory() {
     const { total, free } = this.memory;
 
@@ -266,6 +304,9 @@ export class OmHost extends connect()(LitElement) {
 
     return html`
       <div class="cpu-usage">
+        <div class="cpu-speed">
+          ${this.formatMegahertz(this.averageCPUSpeed())}
+        </div>
         <om-gauge
           style="--color: var(--ctp-macchiato-red)"
           label="CPU"
