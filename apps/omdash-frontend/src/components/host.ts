@@ -145,6 +145,9 @@ export class OmHost extends connect()(LitElement) {
   hostname = '';
 
   @state()
+  private cpuTemperature = 0;
+
+  @state()
   private platform = '';
 
   @state()
@@ -186,6 +189,9 @@ export class OmHost extends connect()(LitElement) {
       state.clients[this.hostname]?.lastUpdate || this.lastUpdate;
     this.processCount = state.clients[this.hostname]?.ps?.count ?? 0;
     this.battery = state.clients[this.hostname]?.battery ?? null;
+    this.cpuTemperature = Math.round(
+      state.clients[this.hostname]?.temperature?.max ?? 0,
+    );
 
     this.classList.toggle('offline', this.isOffline);
   }
@@ -327,6 +333,9 @@ export class OmHost extends connect()(LitElement) {
 
     return html`
       <div class="cpu-usage">
+        ${this.cpuTemperature > 0
+          ? html`<div class="cpu-temperature">${this.cpuTemperature}°C</div>`
+          : ''}
         <div class="cpu-speed">
           ${this.formatMegahertz(this.averageCPUSpeed())}
         </div>

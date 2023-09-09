@@ -21,6 +21,18 @@ export type BatteryAction = OmClientAction<
     percent: number;
   }
 >;
+export type TemperatureAction = OmClientAction<
+  'temperature',
+  {
+    cpu: {
+      main: number;
+      cores: number[];
+      max: number;
+      socket: number[];
+      chipset: number;
+    };
+  }
+>;
 
 export interface ClientsState {
   [key: string]: any;
@@ -35,7 +47,8 @@ export function clientsReducer(
     | UnregisterAction
     | MetricAction
     | PsAction
-    | BatteryAction,
+    | BatteryAction
+    | TemperatureAction,
 ): ClientsState {
   switch (action.type) {
     case 'register':
@@ -85,6 +98,16 @@ export function clientsReducer(
         [action.client]: {
           ...state[action.client],
           battery: action.payload,
+        },
+      };
+    }
+
+    case 'temperature': {
+      return {
+        ...state,
+        [action.client]: {
+          ...state[action.client],
+          temperature: action.payload,
         },
       };
     }

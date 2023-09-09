@@ -129,6 +129,12 @@ function connect(url: string) {
       }, PS_UPDATE_INTERVAL),
     );
 
+    timers.push(
+      setIntervalImmediate(async () => {
+        ws.send(encode(await getTemperatures()));
+      }, 10_000),
+    );
+
     // If the connection closes before the first battery update, this probably introduces
     // a memory leak. The timer should be cleaned up on the next close event though.
     if ((await si.battery()).hasBattery) {
@@ -265,6 +271,17 @@ async function getProcesses() {
       count: processes.length,
       highestCpu: merged.sort(byCpu).slice(0, processCount),
       highestMemory: merged.sort(byMemory).slice(0, processCount),
+    },
+  };
+}
+
+async function getTemperatures() {
+  const cpuTemperature = await si.cpuTemperature();
+
+  return {
+    type: 'temperature',
+    payload: {
+      cpu: cpuTemperature,
     },
   };
 }
