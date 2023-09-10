@@ -7,6 +7,7 @@ import { RootState } from '../store/index.js';
 import './ago.js';
 import { OmBox } from './box.js';
 import './gauge.js';
+import './memory.js';
 import './os-icon.js';
 import './process-list.js';
 
@@ -49,13 +50,11 @@ export class OmHost extends connect()(LitElement) {
         margin: 0 auto;
       }
 
-      .load-average,
-      .available-memory {
+      .load-average {
         text-align: center;
         font-size: 0.8rem;
       }
 
-      .memory-usage,
       .cpu-usage {
         position: relative;
         display: flex;
@@ -176,9 +175,6 @@ export class OmHost extends connect()(LitElement) {
   private loadAverage: [number, number, number] = [0, 0, 0];
 
   @state()
-  private memory = { total: 1, free: 1 };
-
-  @state()
   private addr = '';
 
   @state()
@@ -194,7 +190,6 @@ export class OmHost extends connect()(LitElement) {
     this.cpus = state.clients[this.hostname]?.cpus ?? [];
     this.pcpus = state.clients[this.hostname]?.pcpus ?? [];
     this.loadAverage = state.clients[this.hostname]?.load ?? [0, 0, 0];
-    this.memory = state.clients[this.hostname]?.memory ?? { total: 1, free: 1 };
     this.lastUpdate =
       state.clients[this.hostname]?.lastUpdate || this.lastUpdate;
     this.processCount = state.clients[this.hostname]?.ps?.count ?? 0;
@@ -288,32 +283,6 @@ export class OmHost extends connect()(LitElement) {
     return 'normal';
   }
 
-  private renderMemoryUsage() {
-    const memoryPercentage =
-      ((this.memory.total - this.memory.free) / this.memory.total) * 100;
-    return html`
-      <div class="memory-usage">
-        <om-gauge
-          style="--color: var(--ctp-macchiato-mauve)"
-          label="Mem"
-          percent="${Math.round(memoryPercentage)}"
-        ></om-gauge>
-      </div>
-    `;
-  }
-
-  private formatBytes(bytes: number) {
-    const units = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB'];
-
-    let unitIndex = 0;
-    while (bytes > 1024) {
-      bytes /= 1024;
-      unitIndex++;
-    }
-
-    return `${bytes.toFixed(1)}${units[unitIndex]}`;
-  }
-
   private formatMegahertz(megahertz: number) {
     const units = ['MHz', 'GHz'];
 
@@ -324,18 +293,6 @@ export class OmHost extends connect()(LitElement) {
     }
 
     return `${megahertz.toFixed(unitIndex == 0 ? 0 : 1)}${units[unitIndex]}`;
-  }
-
-  private renderAvailableMemory() {
-    const { total, free } = this.memory;
-
-    if (total === 1 && free === 1) {
-      return '';
-    }
-
-    return html`<div class="available-memory">
-      ${this.formatBytes(total - free)}/${this.formatBytes(total)}
-    </div>`;
   }
 
   private renderCPUUsage() {
@@ -439,9 +396,7 @@ export class OmHost extends connect()(LitElement) {
         <div style="flex: 1 1 0;margin-right: 0.5rem">
           ${this.renderCPUUsage()} ${this.renderLoadAverage()}
         </div>
-        <div style="flex: 1 1 0">
-          ${this.renderMemoryUsage()} ${this.renderAvailableMemory()}
-        </div>
+        <om-memory style="flex: 1 1 0" hostname=${this.hostname}></om-memory>
       </div>
       <div class="processes">Processes: ${this.processCount}</div>
       <om-process-list name=${this.hostname}></om-process-list>
