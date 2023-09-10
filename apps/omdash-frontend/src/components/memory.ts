@@ -55,7 +55,9 @@ export class OmMemory extends connect()(LitElement) {
       }
 
       .swap {
-        width: 130px;
+        width: 132px;
+        bottom: 2px;
+        --stroke-width: 2;
       }
 
       .available-memory {
@@ -69,8 +71,9 @@ export class OmMemory extends connect()(LitElement) {
       }
 
       .swap {
-        width: 182px;
+        width: 180px;
         bottom: 2px;
+        --stroke-width: 3;
       }
     }
   `;
