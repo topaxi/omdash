@@ -88,6 +88,10 @@ export class OmHost extends connect()(LitElement) {
           font-size: 1rem;
         }
 
+        .cpu-temperature {
+          top: 0.5rem;
+        }
+
         .load-average,
         .available-memory {
           font-size: 1rem;
