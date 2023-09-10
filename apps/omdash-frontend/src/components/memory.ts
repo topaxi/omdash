@@ -70,10 +70,21 @@ export class OmMemory extends connect()(LitElement) {
   hostname = '';
 
   @state()
-  memory: { total: number; free: number } = { total: 1, free: 1 };
+  memory: { total: number; free: number; swaptotal: number; swapfree: number } =
+    {
+      total: 1,
+      free: 1,
+      swaptotal: 0,
+      swapfree: 0,
+    };
 
   override stateChanged(state: RootState) {
-    this.memory = state.clients[this.hostname]?.memory ?? { total: 1, free: 1 };
+    this.memory = state.clients[this.hostname]?.memory ?? {
+      total: 1,
+      free: 1,
+      swaptotal: 0,
+      swapfree: 0,
+    };
   }
 
   private formatBytes(bytes: number) {
@@ -103,6 +114,12 @@ export class OmMemory extends connect()(LitElement) {
   render() {
     const memoryPercentage =
       ((this.memory.total - this.memory.free) / this.memory.total) * 100;
+    const swapPercentage =
+      this.memory.swaptotal === 0
+        ? 0
+        : ((this.memory.swaptotal - this.memory.swapfree) /
+          this.memory.swaptotal) *
+        100;
 
     return html`
       <div class="memory-usage ${memoryPercentage > 90 ? 'critical' : ''}">
@@ -114,7 +131,7 @@ export class OmMemory extends connect()(LitElement) {
         <om-gauge
           class="swap"
           style="--color: var(--ctp-macchiato-yellow)"
-          percent="0"
+          percent="${Math.round(swapPercentage)}"
         ></om-gauge>
       </div>
       ${this.renderAvailableMemory()}

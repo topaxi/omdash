@@ -76,6 +76,10 @@ export function clientsReducer(
           pcpus: action.payload.cpus
             ? state[action.client]?.cpus ?? state[action.client]?.pcpus
             : state[action.client]?.pcpus,
+          memory: {
+            ...state[action.client]?.memory,
+            ...action.payload.memory,
+          },
           lastUpdate: Date.now(),
         },
       };

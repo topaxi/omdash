@@ -135,6 +135,12 @@ function connect(url: string) {
       }, 10_000),
     );
 
+    timers.push(
+      setIntervalImmediate(async () => {
+        ws.send(encode(await getMemory()));
+      }, 10_000),
+    );
+
     // If the connection closes before the first battery update, this probably introduces
     // a memory leak. The timer should be cleaned up on the next close event though.
     if ((await si.battery()).hasBattery) {
@@ -283,6 +289,15 @@ async function getTemperatures() {
     payload: {
       cpu: cpuTemperature,
     },
+  };
+}
+
+async function getMemory() {
+  const memory = await si.mem();
+
+  return {
+    type: 'metric',
+    payload: { memory },
   };
 }
 
