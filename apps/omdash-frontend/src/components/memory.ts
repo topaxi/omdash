@@ -10,6 +10,16 @@ export class OmMemory extends connect()(LitElement) {
       width: 134px;
     }
 
+    .swap {
+      width: 110px;
+      position: absolute;
+      bottom: 1px;
+      z-index: -1;
+
+      --dial-stroke-width: 0;
+      --stroke-width: 2;
+    }
+
     .memory-usage {
       position: relative;
       display: flex;
@@ -19,6 +29,24 @@ export class OmMemory extends connect()(LitElement) {
     .available-memory {
       text-align: center;
       font-size: 0.8rem;
+    }
+
+    @keyframes pulse {
+      0% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.2;
+      }
+
+      100% {
+        opacity: 1;
+      }
+    }
+
+    .critical {
+      animation: pulse 1s infinite;
     }
 
     @container host (min-width: 330px) {
@@ -77,11 +105,16 @@ export class OmMemory extends connect()(LitElement) {
       ((this.memory.total - this.memory.free) / this.memory.total) * 100;
 
     return html`
-      <div class="memory-usage">
+      <div class="memory-usage ${memoryPercentage > 90 ? 'critical' : ''}">
         <om-gauge
           style="--color: var(--ctp-macchiato-mauve)"
           label="Mem"
           percent="${Math.round(memoryPercentage)}"
+        ></om-gauge>
+        <om-gauge
+          class="swap"
+          style="--color: var(--ctp-macchiato-yellow)"
+          percent="0"
         ></om-gauge>
       </div>
       ${this.renderAvailableMemory()}

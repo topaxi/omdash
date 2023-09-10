@@ -25,17 +25,17 @@ export class OmGauge extends LitElement {
     }
     .gauge .dial {
       stroke: rgba(var(--ctp-macchiato-crust-raw), 0.5);
-      stroke-width: 10;
+      stroke-width: var(--dial-stroke-width, 10);
       fill: rgba(0, 0, 0, 0);
     }
     .gauge .value {
       stroke: var(--color);
-      stroke-width: 13;
+      stroke-width: var(--stroke-width, 13);
       stroke-dasharray: 30.65 1;
       fill: rgba(0, 0, 0, 0);
     }
     .gauge .value-text {
-      fill: var(--color);
+      fill: var(--color, var(--color));
       font-weight: bold;
       font-size: 0.6em;
     }
@@ -62,7 +62,7 @@ export class OmGauge extends LitElement {
       dialStartAngle: 180,
       dialEndAngle: 0,
       viewBox: '0 0 100 55',
-      label: this.renderLabel.bind(this),
+      label: this.label ? this.renderLabel.bind(this) : () => '',
     });
   }
 
