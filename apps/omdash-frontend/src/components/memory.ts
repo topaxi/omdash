@@ -141,11 +141,13 @@ export class OmMemory extends connect()(LitElement) {
           label="Mem"
           percent="${Math.round(memoryPercentage)}"
         ></om-gauge>
-        <om-gauge
-          class="swap"
-          style="--color: var(--ctp-macchiato-yellow)"
-          percent="${Math.round(swapPercentage)}"
-        ></om-gauge>
+        ${swapPercentage > 1
+        ? html`<om-gauge
+              class="swap"
+              style="--color: var(--ctp-macchiato-yellow)"
+              percent="${Math.round(swapPercentage)}"
+            ></om-gauge>`
+        : ''}
       </div>
       ${this.renderAvailableMemory()}
     `;
