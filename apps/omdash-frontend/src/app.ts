@@ -86,7 +86,7 @@ export class OmApp extends connect()(LitElement) {
       .then((res) => (res.ok ? res : Promise.reject(res)))
       .then((res) => res.text());
 
-    if (this.manifest !== manifest) {
+    if (this.manifest != null && this.manifest !== manifest) {
       window.location.reload();
     }
 
