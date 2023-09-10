@@ -1,4 +1,4 @@
-import { LitElement, PropertyValueMap, css } from 'lit';
+import { LitElement, PropertyValueMap, css, html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import Gauge, { GaugeInstance } from 'svg-gauge';
 
@@ -7,6 +7,7 @@ export class OmGauge extends LitElement {
   static styles = css`
     :host {
       display: block;
+      position: relative;
     }
 
     text {
@@ -73,5 +74,9 @@ export class OmGauge extends LitElement {
     } else {
       this.gauge.setValue(this.percent);
     }
+  }
+
+  protected render(): unknown {
+    return html`<slot></slot>`;
   }
 }

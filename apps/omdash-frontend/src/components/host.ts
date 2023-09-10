@@ -69,6 +69,12 @@ export class OmHost extends connect()(LitElement) {
         color: var(--ctp-macchiato-red);
       }
 
+      .cpu-temperature {
+        position: absolute;
+        left: 0;
+        font-size: 0.8rem;
+      }
+
       om-gauge {
         width: 134px;
       }
@@ -145,6 +151,9 @@ export class OmHost extends connect()(LitElement) {
   hostname = '';
 
   @state()
+  private cpuTemperature = 0;
+
+  @state()
   private platform = '';
 
   @state()
@@ -186,6 +195,9 @@ export class OmHost extends connect()(LitElement) {
       state.clients[this.hostname]?.lastUpdate || this.lastUpdate;
     this.processCount = state.clients[this.hostname]?.ps?.count ?? 0;
     this.battery = state.clients[this.hostname]?.battery ?? null;
+    this.cpuTemperature = Math.round(
+      state.clients[this.hostname]?.temperature?.cpu?.max ?? 0,
+    );
 
     this.classList.toggle('offline', this.isOffline);
   }
@@ -334,7 +346,13 @@ export class OmHost extends connect()(LitElement) {
           style="--color: var(--ctp-macchiato-red)"
           label="CPU"
           percent="${Math.round(averageCPUUsage)}"
-        ></om-gauge>
+        >
+          ${this.cpuTemperature > 0
+            ? html`
+                <div class="cpu-temperature"> ${this.cpuTemperature}°C</div>
+              `
+            : ''}
+        </om-gauge>
       </div>
     `;
   }
