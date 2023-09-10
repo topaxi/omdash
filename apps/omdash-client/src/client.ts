@@ -137,7 +137,7 @@ function connect(url: string) {
 
     timers.push(
       setIntervalImmediate(async () => {
-        ws.send(encode(await getMemory()));
+        ws.send(encode(await getSwap()));
       }, 10_000),
     );
 
@@ -292,12 +292,17 @@ async function getTemperatures() {
   };
 }
 
-async function getMemory() {
+async function getSwap() {
   const memory = await si.mem();
 
   return {
     type: 'metric',
-    payload: { memory },
+    payload: {
+      memory: {
+        swaptotal: memory.swaptotal,
+        swapfree: memory.swapfree,
+      },
+    },
   };
 }
 
