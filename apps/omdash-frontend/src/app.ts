@@ -51,6 +51,7 @@ export class OmApp extends connect()(LitElement) {
   private outlet: HTMLDivElement;
 
   private router: Router | null = null;
+  private manifest: string | undefined;
 
   connectedCallback() {
     const connectWebSocket = () => {
@@ -73,7 +74,23 @@ export class OmApp extends connect()(LitElement) {
 
     connectWebSocket();
 
+    if (process.env.NODE_ENV === 'production') {
+      setInterval(this.checkForUpdates.bind(this), 1000 * 60);
+    }
+
     super.connectedCallback();
+  }
+
+  protected async checkForUpdates() {
+    const manifest = await fetch('/manifest.json')
+      .then((res) => (res.ok ? res : Promise.reject(res)))
+      .then((res) => res.text());
+
+    if (this.manifest !== manifest) {
+      window.location.reload();
+    }
+
+    this.manifest = manifest;
   }
 
   protected override updated() {
