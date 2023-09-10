@@ -402,11 +402,12 @@ export class OmHost extends connect()(LitElement) {
       <div class="host-info">
         <div class="host-title">
           <om-os-icon
+            hostname="${this.hostname}"
             platform="${this.platform}"
             release="${this.release}"
           ></om-os-icon>
           <div class="hostname">
-            ${this.hostname} ${this.renderLastUpdate()}
+            ${this.hostname.split('.')[0]} ${this.renderLastUpdate()}
           </div>
           ${this.renderBattery()}
         </div>
