@@ -1,9 +1,11 @@
 import { LitElement, css, html } from 'lit';
-import { customElement } from 'lit/decorators.js';
+import { customElement, state } from 'lit/decorators.js';
 import { ClockController } from '../controllers/clock.js';
 
 import { OmBox } from './box.js';
 import './link.js';
+import { connect } from '../store/connect.js';
+import { RootState } from '../store/index.js';
 
 @customElement('om-global-clock')
 export class OmGlobalClock extends LitElement {
@@ -14,6 +16,82 @@ export class OmGlobalClock extends LitElement {
       hour: '2-digit',
       minute: '2-digit',
     });
+  }
+}
+
+function sum(arr: number[]) {
+  return arr.reduce((sum, x) => sum + x, 0);
+}
+
+function mean(arr: number[]) {
+  return sum(arr) / arr.length;
+}
+
+function std(arr: number[]) {
+  const m = mean(arr);
+
+  return Math.sqrt(sum(arr.map((x) => (x - m) ** 2)) / arr.length);
+}
+
+function quantile(arr: number[], q: number) {
+  const sorted = arr.sort((a, b) => a - b);
+
+  const pos = (sorted.length - 1) * q;
+  const base = Math.floor(pos);
+  const rest = pos - base;
+
+  if (sorted[base + 1] !== undefined) {
+    return sorted[base] + rest * (sorted[base + 1] - sorted[base]);
+  } else {
+    return sorted[base];
+  }
+}
+
+@customElement('om-global-network-icon')
+class OmGlobalNetworkIcon extends connect()(LitElement) {
+  static styles = css`
+    .high {
+      color: var(--ctp-machhiato-red);
+    }
+
+    .medium {
+      color: var(--ctp-machhiato-yellow);
+    }
+
+    .low {
+      color: var(--ctp-machhiato-green);
+    }
+  `;
+
+  private q75 = 0;
+
+  @state()
+  private networkQuality: 'high' | 'medium' | 'low' | 'verylow' = 'verylow';
+
+  stateChanged(state: RootState): void {
+    const pingTimings = Object.values(state.pings)
+      .flat()
+      .map((ping) => ping.time)
+      .sort((a, b) => a - b);
+
+    this.q75 = quantile(pingTimings, 0.75);
+
+    this.networkQuality =
+      this.q75 > 200
+        ? 'high'
+        : this.q75 > 100
+        ? 'medium'
+        : this.q75 > 50
+        ? 'low'
+        : 'verylow';
+  }
+
+  protected render(): unknown {
+    return html`
+      <om-app-icon class=${this.networkQuality} name="network-diagnostics">
+        󰛳
+      </om-app-icon>
+    `;
   }
 }
 
@@ -51,7 +129,7 @@ export class OmGlobal extends LitElement {
         <om-app-icon name="host-dashboard">󰊚</om-app-icon>
       </om-link>
       <om-link to="/network">
-        <om-app-icon name="network-diagnostics">󰛳</om-app-icon>
+        <om-global-network-icon></om-global-network-icon>
       </om-link>
       <om-link to="/spotify">
         <om-app-icon name="spotify-controls">󰓇</om-app-icon>

@@ -102,7 +102,8 @@ export class OmNetwork extends connect()(LitElement) {
             (d) => d.host,
             (d) =>
               html`<div style="color: ${d.color}">
-                ${String(d.average).padStart(3, '\u00A0')}ms ${d.host} (${d.addr})
+                ${String(d.average).padStart(3, '\u00A0')}ms ${d.host}
+                (${d.addr})
               </div>`,
           )}
         </div>
