@@ -244,6 +244,8 @@ async function* ping(
       host,
     ]);
 
+    console.log(p.spawnargs.join(' '));
+
     for await (const data of p.stdout) {
       const line = data.toString();
       const parsed = parsePingOutput(line);
@@ -252,6 +254,8 @@ async function* ping(
         yield { host, ...parsed };
       }
     }
+  } catch (err) {
+    console.error(err);
   } finally {
     await sleep(options.interval * 1000);
 
