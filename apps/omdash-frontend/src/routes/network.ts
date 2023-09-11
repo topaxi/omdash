@@ -1,5 +1,6 @@
 import { LitElement, PropertyValueMap, css, html } from 'lit';
 import { customElement, query, state } from 'lit/decorators.js';
+import { repeat } from 'lit/directives/repeat.js';
 
 import '../components/box.js';
 import '../components/line-graph.js';
@@ -67,6 +68,7 @@ export class OmNetwork extends connect()(LitElement) {
     host: string;
     addr: string;
     color: string;
+    average: number;
     values: { x: number; y: number }[];
   }> = [];
 
@@ -81,6 +83,9 @@ export class OmNetwork extends connect()(LitElement) {
       host,
       addr: pings.at(-1)?.ip || '',
       color: this.colors[i % this.colors.length],
+      average: Math.round(
+        pings.reduce((acc, curr) => acc + curr.time, 0) / pings.length,
+      ),
       values: pings.map((ping) => ({
         x: ping.timestamp,
         y: ping.time,
@@ -92,9 +97,13 @@ export class OmNetwork extends connect()(LitElement) {
     return html`
       <om-box class="content">
         <div class="legend">
-          ${this.data.map(
+          ${repeat(
+            Array.from(this.data).sort((a, b) => a.average - b.average),
+            (d) => d.host,
             (d) =>
-              html`<div style="color: ${d.color}">${d.host} (${d.addr})</div>`,
+              html`<div style="color: ${d.color}">
+                ${String(d.average).padStart(2)}ms ${d.host} (${d.addr})
+              </div>`,
           )}
         </div>
         <om-line-graph .data=${this.data}></om-line-graph>
