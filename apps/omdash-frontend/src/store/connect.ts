@@ -15,9 +15,9 @@ export interface ConnectOptions<S extends Store<any, any>> {
 }
 
 export const connect =
-  <S extends Store<any, any>, A extends Action>({
+  <S, A extends Action>({
     store = defaultStore as any,
-  }: ConnectOptions<S> = {}) =>
+  }: ConnectOptions<Store<S, A>> = {}) =>
   <T extends Constructor<CustomElement>>(BaseElement: T) =>
     class extends BaseElement {
       private _storeUnsubscribe: Unsubscribe | null = null;

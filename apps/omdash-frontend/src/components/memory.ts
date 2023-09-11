@@ -130,8 +130,8 @@ export class OmMemory extends connect()(LitElement) {
       this.memory.swaptotal === 0
         ? 0
         : ((this.memory.swaptotal - this.memory.swapfree) /
-          this.memory.swaptotal) *
-        100;
+            this.memory.swaptotal) *
+          100;
 
     return html`
       <div class="memory-usage">
@@ -142,12 +142,12 @@ export class OmMemory extends connect()(LitElement) {
           percent="${Math.round(memoryPercentage)}"
         ></om-gauge>
         ${swapPercentage > 1
-        ? html`<om-gauge
+          ? html`<om-gauge
               class="swap"
               style="--color: var(--ctp-macchiato-yellow)"
               percent="${Math.round(swapPercentage)}"
             ></om-gauge>`
-        : ''}
+          : ''}
       </div>
       ${this.renderAvailableMemory()}
     `;

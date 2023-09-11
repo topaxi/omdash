@@ -192,3 +192,67 @@ if (executableExists('swaymsg')) {
     console.log(dpms(hasOpenClients));
   }, 10_000);
 }
+
+async function pingHosts() {
+  const hosts = ['cerberus', 'topaxi.ch'];
+
+  for (const host of hosts) {
+    broadcastPing(host);
+  }
+}
+
+async function broadcastPing(host: string) {
+  for await (const payload of ping(host)) {
+    broadcastToDashboards(
+      encode({
+        type: 'ping',
+        payload: {
+          timestamp: Math.floor(Date.now() / 1000),
+          ...payload,
+        },
+      }),
+    );
+  }
+}
+
+pingHosts();
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+function parsePingOutput(line: string): { ip: string; time: number } | null {
+  const match = /from .*?\((.*?)\).*?time=(.*?) ms/.exec(line);
+
+  if (!match) {
+    return null;
+  }
+
+  const [, ip, time] = match;
+
+  return { ip, time: Number(time) };
+}
+
+async function* ping(
+  host: string,
+  options = { count: 10, interval: 2 },
+): AsyncGenerator<{ host: string; ip: string; time: number }> {
+  const p = childProcess.spawn('ping', [
+    '-c',
+    String(options.count),
+    '-i',
+    String(options.interval),
+    host,
+  ]);
+
+  for await (const data of p.stdout) {
+    const line = data.toString();
+    const parsed = parsePingOutput(line);
+
+    if (parsed) {
+      yield { host, ...parsed };
+    }
+  }
+
+  await sleep(options.interval * 1000);
+
+  yield* ping(host);
+}
