@@ -51,15 +51,15 @@ function quantile(arr: number[], q: number) {
 class OmGlobalNetworkIcon extends connect()(LitElement) {
   static styles = css`
     .high {
-      color: var(--ctp-machhiato-red);
+      color: var(--ctp-macchiato-red);
     }
 
     .medium {
-      color: var(--ctp-machhiato-yellow);
+      color: var(--ctp-macchiato-yellow);
     }
 
     .low {
-      color: var(--ctp-machhiato-green);
+      color: var(--ctp-macchiato-green);
     }
   `;
 
@@ -106,7 +106,7 @@ export class OmGlobal extends LitElement {
         flex: 0 0 5ch;
       }
 
-      om-app-icon {
+      .icon-button {
         display: block;
 
         padding-left: 0.5rem;
@@ -126,16 +126,16 @@ export class OmGlobal extends LitElement {
     return html`
       <om-global-clock></om-global-clock>
       <om-link to="/">
-        <om-app-icon name="host-dashboard">󰊚</om-app-icon>
+        <om-app-icon class="icon-button" name="host-dashboard">󰊚</om-app-icon>
       </om-link>
       <om-link to="/network">
-        <om-global-network-icon></om-global-network-icon>
+        <om-global-network-icon class="icon-button"></om-global-network-icon>
       </om-link>
       <om-link to="/spotify">
-        <om-app-icon name="spotify-controls">󰓇</om-app-icon>
+        <om-app-icon class="icon-button" name="spotify-controls">󰓇</om-app-icon>
       </om-link>
       <om-link to="/settings">
-        <om-app-icon name="settings">󰒓</om-app-icon>
+        <om-app-icon class="icon-button" name="settings">󰒓</om-app-icon>
       </om-link>
     `;
   }
