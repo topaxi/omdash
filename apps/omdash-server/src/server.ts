@@ -239,6 +239,7 @@ async function* ping(
 ): AsyncGenerator<{ host: string; ip: string; time: number }> {
   try {
     const p = childProcess.spawn('ping', [
+      '-n',
       '-c',
       String(options.count),
       '-i',
