@@ -222,7 +222,7 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 function parsePingOutput(line: string): { ip: string; time: number } | null {
   let match =
     /from .*?\((.*?)\).*?time=(.*?) ms/.exec(line) ||
-    /from (.*?):.*?time=(.*?) ms/.exec(line);
+    /from (.*?): .*?time=(.*?) ms/.exec(line);
 
   if (!match) {
     return null;
