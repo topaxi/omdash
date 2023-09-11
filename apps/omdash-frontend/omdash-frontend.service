@@ -4,7 +4,7 @@ After=omdash-server.service
 [Service]
 Type=simple
 WorkingDirectory=/home/topaxi/projects/omdash/apps/omdash-frontend/
-ExecStart=/usr/bin/npx serve -p 3000 build/
+ExecStart=/usr/bin/npx serve -s -p 3000 build/
 Restart=on-failure
 
 [Install]

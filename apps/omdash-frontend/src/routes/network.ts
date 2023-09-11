@@ -98,11 +98,11 @@ export class OmNetwork extends connect()(LitElement) {
       <om-box class="content">
         <div class="legend">
           ${repeat(
-            Array.from(this.data).sort((a, b) => a.average - b.average),
+            Array.from(this.data).sort((a, b) => b.average - a.average),
             (d) => d.host,
             (d) =>
               html`<div style="color: ${d.color}">
-                ${String(d.average).padStart(2)}ms ${d.host} (${d.addr})
+                ${String(d.average).padStart(3, '\u00A0')}ms ${d.host} (${d.addr})
               </div>`,
           )}
         </div>

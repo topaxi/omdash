@@ -4,7 +4,7 @@
   "description": "Raspi dashboard for Om - Frontend",
   "main": "index.js",
   "scripts": {
-    "start": "serve -p 3000 build/",
+    "start": "serve -s -p 3000 build/",
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview"
