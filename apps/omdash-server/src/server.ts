@@ -194,7 +194,7 @@ if (executableExists('swaymsg')) {
 }
 
 async function pingHosts() {
-  const hosts = ['cerberus', 'topaxi.ch'];
+  const hosts = ['cerberus', 'topaxi.ch', 'meet.google.com'];
 
   for (const host of hosts) {
     broadcastPing(host);
