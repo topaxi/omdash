@@ -34,10 +34,19 @@ export class OmNetwork extends connect()(LitElement) {
   @query('om-line-graph')
   lineGraph!: OmLineGraph;
 
+  private resizeObserver = new ResizeObserver(() => this.resizeGraph());
+
+  disconnectedCallback(): void {
+    super.disconnectedCallback();
+
+    this.resizeObserver.disconnect();
+  }
+
   protected firstUpdated(
     _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>,
   ): void {
     this.resizeGraph();
+    this.resizeObserver.observe(this.content);
   }
 
   private resizeGraph() {
