@@ -17,6 +17,7 @@ export class OmNetwork extends connect()(LitElement) {
     }
 
     .content {
+      position: absolute;
       flex-grow: 1;
     }
 
