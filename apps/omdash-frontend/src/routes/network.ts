@@ -19,6 +19,12 @@ export class OmNetwork extends connect()(LitElement) {
     .content {
       flex-grow: 1;
     }
+
+    .legend {
+      position: absolute;
+      left: 36px;
+      font-size: 0.9rem;
+    }
   `;
 
   @query('.content')
@@ -47,7 +53,12 @@ export class OmNetwork extends connect()(LitElement) {
   }
 
   @state()
-  data: Array<{ color: string; values: { x: number; y: number }[] }> = [];
+  data: Array<{
+    host: string;
+    addr: string;
+    color: string;
+    values: { x: number; y: number }[];
+  }> = [];
 
   colors = [
     'var(--ctp-macchiato-green)',
@@ -56,7 +67,9 @@ export class OmNetwork extends connect()(LitElement) {
   ];
 
   stateChanged(state: RootState): void {
-    this.data = Object.values(state.pings).map((pings, i) => ({
+    this.data = Object.entries(state.pings).map(([host, pings], i) => ({
+      host,
+      addr: pings.at(-1)?.ip || '',
       color: this.colors[i % this.colors.length],
       values: pings.map((ping) => ({
         x: ping.timestamp,
@@ -68,6 +81,12 @@ export class OmNetwork extends connect()(LitElement) {
   protected render(): unknown {
     return html`
       <om-box class="content">
+        <div class="legend">
+          ${this.data.map(
+            (d) =>
+              html`<div style="color: ${d.color}">${d.host} (${d.addr})</div>`,
+          )}
+        </div>
         <om-line-graph .data=${this.data}></om-line-graph>
       </om-box>
     `;
