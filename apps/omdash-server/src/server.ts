@@ -235,24 +235,26 @@ async function* ping(
   host: string,
   options = { count: 10, interval: 2 },
 ): AsyncGenerator<{ host: string; ip: string; time: number }> {
-  const p = childProcess.spawn('ping', [
-    '-c',
-    String(options.count),
-    '-i',
-    String(options.interval),
-    host,
-  ]);
+  try {
+    const p = childProcess.spawn('ping', [
+      '-c',
+      String(options.count),
+      '-i',
+      String(options.interval),
+      host,
+    ]);
 
-  for await (const data of p.stdout) {
-    const line = data.toString();
-    const parsed = parsePingOutput(line);
+    for await (const data of p.stdout) {
+      const line = data.toString();
+      const parsed = parsePingOutput(line);
 
-    if (parsed) {
-      yield { host, ...parsed };
+      if (parsed) {
+        yield { host, ...parsed };
+      }
     }
+  } finally {
+    await sleep(options.interval * 1000);
+
+    yield* ping(host);
   }
-
-  await sleep(options.interval * 1000);
-
-  yield* ping(host);
 }
