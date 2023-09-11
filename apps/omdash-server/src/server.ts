@@ -220,7 +220,9 @@ pingHosts();
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 function parsePingOutput(line: string): { ip: string; time: number } | null {
-  const match = /from .*?\((.*?)\).*?time=(.*?) ms/.exec(line);
+  let match =
+    /from .*?\((.*?)\).*?time=(.*?) ms/.exec(line) ||
+    /from (.*?):.*?time=(.*?) ms/.exec(line);
 
   if (!match) {
     return null;
