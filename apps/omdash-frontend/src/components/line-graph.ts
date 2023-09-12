@@ -4,6 +4,9 @@ import { customElement, property, query } from 'lit/decorators.js';
 
 const MARGIN_LEFT = 24;
 
+const getx = <T>(d: { x: T }) => d.x;
+const gety = <T>(d: { y: T }) => d.y;
+
 @customElement('om-line-graph')
 export class OmLineGraph extends LitElement {
   static styles = css`
@@ -38,12 +41,12 @@ export class OmLineGraph extends LitElement {
 
   private d3svg!: d3.Selection<SVGSVGElement, unknown, null, undefined>;
   private g!: d3.Selection<SVGGElement, unknown, null, undefined>;
+  private gl!: d3.Selection<SVGGElement, unknown, null, undefined>;
 
   protected firstUpdated(
     _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>,
   ): void {
     this.d3svg = d3.select(this.svg);
-    this.g = this.d3svg.append('g');
 
     const xScale = this.createXScale();
     const yScale = this.createYScale();
@@ -51,9 +54,21 @@ export class OmLineGraph extends LitElement {
     const xAxis = d3.axisBottom(xScale).tickSize(5);
     const yAxis = d3.axisLeft(yScale).tickSize(5);
 
+    this.d3svg
+      .append('defs')
+      .append('clipPath')
+      .attr('id', 'clip')
+      .append('rect')
+      .attr('id', 'clip-rect')
+      .attr('width', this.width)
+      .attr('height', this.height);
+
+    this.g = this.d3svg.append('g');
+
     this.g
       .append('g')
       .attr('class', 'axis x-axis')
+      .attr('clip-path', 'url(#clip)')
       .attr('transform', `translate(0, ${0})`)
       .call(xAxis);
     this.g
@@ -61,6 +76,8 @@ export class OmLineGraph extends LitElement {
       .attr('class', 'axis y-axis')
       .attr('transform', `translate(${MARGIN_LEFT}, 0)`)
       .call(yAxis);
+
+    this.gl = this.g.append('g');
   }
 
   get allValues() {
@@ -71,17 +88,17 @@ export class OmLineGraph extends LitElement {
     return d3
       .scaleLinear()
       .range([MARGIN_LEFT, this.width])
-      .domain([
-        d3.min(this.allValues, (d) => d.x),
-        d3.max(this.allValues, (d) => d.x),
-      ] as [number, number]);
+      .domain([d3.min(this.allValues, getx), d3.max(this.allValues, getx)] as [
+        number,
+        number,
+      ]);
   }
 
   private createYScale() {
     return d3
       .scaleLinear()
       .range([this.height, 0])
-      .domain([0, (d3.max(this.allValues, (d) => d.y) || 100) * 1.25] as [
+      .domain([0, (d3.max(this.allValues, gety) || 100) * 1.25] as [
         number,
         number,
       ]);
@@ -90,7 +107,19 @@ export class OmLineGraph extends LitElement {
   protected updated(
     changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>,
   ): void {
+    if (changedProperties.has('width') || changedProperties.has('height')) {
+      this.d3svg
+        .select('#clip-rect')
+        .attr('width', this.width)
+        .attr('height', this.height);
+    }
+
     if (changedProperties.has('data')) {
+      // TODO: Push the new data onto the old data, translate the lines to the left
+      //       and then remove the old data.
+      //       https://codepen.io/browles/pen/mPMBjw
+      //       or
+      //       https://embed.plnkr.co/plunk/yHpw7U
       const xScale = this.createXScale();
       const yScale = this.createYScale();
 
@@ -100,8 +129,8 @@ export class OmLineGraph extends LitElement {
 
       const lineFn = d3
         .line<{ x: number; y: number }>()
-        .x((d) => xScale(d.x))
-        .y((d) => yScale(d.y))
+        .x((d) => xScale(getx(d)))
+        .y((d) => yScale(gety(d)))
         .curve(d3.curveMonotoneX);
 
       for (const [i, data] of this.data.entries()) {
@@ -116,7 +145,7 @@ export class OmLineGraph extends LitElement {
     const line = this.g.select(`.line-${i}`);
 
     if (line.empty()) {
-      this.g
+      this.gl
         .append('path')
         .attr('d', d)
         .attr('stroke', color)
@@ -134,7 +163,7 @@ export class OmLineGraph extends LitElement {
     if (lines > this.data.length) {
       this.g
         .selectAll('.line')
-        .filter((d, i) => i >= this.data.length)
+        .filter((_d, i) => i >= this.data.length)
         .remove();
     }
   }
