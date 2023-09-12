@@ -292,7 +292,7 @@ export class OmHost extends connect()(LitElement) {
       unitIndex++;
     }
 
-    return `${megahertz.toFixed(unitIndex == 0 ? 0 : 1)}${units[unitIndex]}`;
+    return `${megahertz.toFixed(unitIndex === 0 ? 0 : 1)}${units[unitIndex]}`;
   }
 
   private renderCPUUsage() {
@@ -359,9 +359,9 @@ export class OmHost extends connect()(LitElement) {
       return '';
     }
 
-    const icons = ['', '', '', '', ''];
+    const icons = ['', '', '', '', '', '', '', ''];
 
-    return icons[Math.floor((battery.percent / 100) * icons.length)];
+    return icons[Math.floor((battery.percent / 100) * (icons.length - 1))];
   }
 
   private renderBattery() {
