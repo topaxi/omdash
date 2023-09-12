@@ -220,7 +220,7 @@ pingHosts();
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 function parsePingOutput(line: string): { ip: string; time: number } | null {
-  let match =
+  const match =
     /from .*?\((.*?)\).*?time=(.*?) ms/.exec(line) ||
     /from (.*?): .*?time=(.*?) ms/.exec(line);
 
@@ -257,8 +257,29 @@ async function* ping(
         yield { host, ...parsed };
       }
     }
+
+    await new Promise((resolve, reject) => {
+      p.once('exit', (exitCode) => {
+        if (exitCode === 0) {
+          resolve(null);
+        } else {
+          reject(
+            Object.assign(
+              new Error(
+                `"${p.spawnargs.join(' ')}" exited with code ${exitCode}`,
+              ),
+              {
+                exitCode,
+              },
+            ),
+          );
+        }
+      });
+    });
   } catch (err) {
     console.error(err);
+
+    await sleep(options.interval * 1000 * 4);
   } finally {
     await sleep(options.interval * 1000);
 
