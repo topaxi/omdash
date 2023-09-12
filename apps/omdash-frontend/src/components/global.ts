@@ -48,7 +48,7 @@ function quantile(arr: number[], q: number) {
 }
 
 @customElement('om-global-network-icon')
-class OmGlobalNetworkIcon extends connect()(LitElement) {
+export class OmGlobalNetworkIcon extends connect()(LitElement) {
   static styles = css`
     .high {
       color: var(--ctp-macchiato-red);

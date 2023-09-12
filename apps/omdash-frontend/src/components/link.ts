@@ -1,9 +1,15 @@
 import { Router } from '@vaadin/router';
-import { LitElement, html } from 'lit';
+import { LitElement, css, html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 
 @customElement('om-link')
 export class OmLink extends LitElement {
+  static styles = css`
+    :host {
+      cursor: pointer;
+    }
+  `;
+
   @property()
   to = '';
 
