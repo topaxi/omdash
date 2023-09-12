@@ -114,7 +114,7 @@ export class OmProcessList extends connect()(LitElement) {
           this.highestCPUProcesses,
           this.keyForProcess,
           (p) =>
-            html`<div class="${this.cpuHighUsageToClassName(p.cpu)}">
+            html`<div class=${this.cpuHighUsageToClassName(p.cpu)}>
               ${this.formatPercent(p.cpu)} ${p.name}
             </div>`,
         )}
@@ -125,7 +125,7 @@ export class OmProcessList extends connect()(LitElement) {
           this.highestMemoryProcesses,
           this.keyForProcess,
           (p) =>
-            html`<div class="${this.memoryHighUsageToClassName(p.memory)}">
+            html`<div class=${this.memoryHighUsageToClassName(p.memory)}>
               ${this.formatPercent(p.memory)} ${p.name}
             </div>`,
         )}

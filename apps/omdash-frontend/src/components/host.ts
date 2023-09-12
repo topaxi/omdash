@@ -227,7 +227,7 @@ export class OmHost extends connect()(LitElement) {
     if (this.isOffline) {
       return html`
         <span class="last-update">
-          (<om-ago date="${this.lastUpdate}"></om-ago>)
+          (<om-ago date=${this.lastUpdate}></om-ago>)
         </span>
       `;
     }
@@ -245,7 +245,7 @@ export class OmHost extends connect()(LitElement) {
       <div class="load-average">
         ${this.loadAverage.map(
           (n) =>
-            html`<div class="${this.getLoadAverageClass(n)}">
+            html`<div class=${this.getLoadAverageClass(n)}>
               ${n.toFixed(2)}
             </div>`,
         )}
@@ -306,7 +306,7 @@ export class OmHost extends connect()(LitElement) {
         <om-gauge
           style="--color: var(--ctp-macchiato-red)"
           label="CPU"
-          percent="${Math.round(averageCPUUsage)}"
+          percent=${Math.round(averageCPUUsage)}
         >
           ${this.cpuTemperature > 0
             ? html`
@@ -381,9 +381,9 @@ export class OmHost extends connect()(LitElement) {
       <div class="host-info">
         <div class="host-title">
           <om-os-icon
-            hostname="${this.hostname}"
-            platform="${this.platform}"
-            release="${this.release}"
+            hostname=${this.hostname}
+            platform=${this.platform}
+            release=${this.release}
           ></om-os-icon>
           <div class="hostname">
             ${this.hostname.split('.')[0]} ${this.renderLastUpdate()}

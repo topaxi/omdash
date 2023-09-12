@@ -64,7 +64,7 @@ export class Hosts extends connect()(LitElement) {
     return repeat(
       this.sortedHosts,
       identity,
-      (hostname) => html` <om-host hostname=${hostname}></om-host> `,
+      (hostname) => html`<om-host hostname=${hostname}></om-host>`,
     );
   }
 }
