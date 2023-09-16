@@ -1,8 +1,9 @@
 import { WebSocketServer } from 'ws';
 
-export function createWebSocketServer(port: number) {
+export function createWebSocketServer(port?: number) {
   const wss = new WebSocketServer({
     port,
+    noServer: port === undefined,
     perMessageDeflate: {
       zlibDeflateOptions: {
         // See zlib defaults.

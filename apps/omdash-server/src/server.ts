@@ -1,5 +1,6 @@
 import childProcess from 'node:child_process';
 import fs from 'node:fs/promises';
+import http from 'node:http';
 import os from 'node:os';
 import WebSocket from 'ws';
 import { createWebSocketServer, decode, encode } from './utils/socket';
@@ -16,8 +17,29 @@ interface ClientMetadata {
 }
 
 const hostname = os.hostname();
-const wssClients = createWebSocketServer(3200);
-const wssDashboard = createWebSocketServer(3300);
+const server = http.createServer();
+const wssClients = createWebSocketServer();
+const wssDashboard = createWebSocketServer();
+
+server.on('upgrade', function onupgrade(request, socket, head) {
+  const { pathname } = new URL(request.url!, 'http://localhost');
+
+  if (pathname === '/dashboard') {
+    wssDashboard.handleUpgrade(request, socket, head, (ws) => {
+      wssDashboard.emit('connection', ws, request);
+    });
+  } else if (pathname === '/' || pathname === '/client') {
+    wssClients.handleUpgrade(request, socket, head, (ws) => {
+      wssClients.emit('connection', ws, request);
+    });
+  } else {
+    socket.destroy();
+  }
+});
+
+server.listen(process.env.PORT || 3200, () => {
+  console.info(`Listening on ${(server.address() as any)?.port}`);
+});
 
 const clientMetadata = new WeakMap<WebSocket, ClientMetadata>();
 
