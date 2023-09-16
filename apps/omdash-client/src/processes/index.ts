@@ -3,30 +3,6 @@ import { ProcessDescriptor } from 'ps-list';
 
 const processNameFilters = ['ps', '0'];
 
-export async function getProcesses() {
-  const processes =
-    process.platform == 'win32' ? await wmiProcessList() : await psList();
-  const merged = mergeProcesses(filterProcesses(processes));
-  const processCount = 5;
-
-  return {
-    type: 'ps',
-    payload: {
-      count: processes.length,
-      highestCpu: merged.sort(byCpu).slice(0, processCount),
-      highestMemory: merged.sort(byMemory).slice(0, processCount),
-    },
-  };
-}
-
-function byCpu(a: { cpu: number }, b: { cpu: number }) {
-  return b.cpu - a.cpu;
-}
-
-function byMemory(a: { memory: number }, b: { memory: number }) {
-  return b.memory - a.memory;
-}
-
 const psList = async function(...args: any[]) {
   const m = (await Function('return import("ps-list")')()) as Promise<
     typeof import('ps-list')
@@ -71,6 +47,31 @@ async function wmiProcessList(): Promise<ProcessDescriptor[]> {
           memory: (process.WorkingSet / totalmem) * 100,
         }) as any,
     );
+}
+
+const getProcessList = process.platform == 'win32' ? wmiProcessList : psList;
+
+export async function getProcesses() {
+  const processes = await getProcessList();
+  const merged = mergeProcesses(filterProcesses(processes));
+  const processCount = 5;
+
+  return {
+    type: 'ps',
+    payload: {
+      count: processes.length,
+      highestCpu: merged.sort(byCpu).slice(0, processCount),
+      highestMemory: merged.sort(byMemory).slice(0, processCount),
+    },
+  };
+}
+
+function byCpu(a: { cpu: number }, b: { cpu: number }) {
+  return b.cpu - a.cpu;
+}
+
+function byMemory(a: { memory: number }, b: { memory: number }) {
+  return b.memory - a.memory;
 }
 
 function filterProcesses(processes: ProcessDescriptor[]) {
