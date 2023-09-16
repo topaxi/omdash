@@ -1,10 +1,10 @@
 import childProcess from 'node:child_process';
-import fs from 'node:fs/promises';
 import http from 'node:http';
 import os from 'node:os';
 import WebSocket from 'ws';
 import { createWebSocketServer, decode, encode } from './utils/socket';
 import { ping } from './ping';
+import { dpms, getSwaySocket } from './utils/sway';
 
 process.title = 'omdash-server';
 
@@ -163,27 +163,6 @@ function hasOpenClients() {
   );
 
   return clients.some((c) => c.readyState === WebSocket.OPEN);
-}
-
-function dpms(toggle: boolean) {
-  return `swaymsg output HDMI-A-1 dpms ${toggle ? 'on' : 'off'}`;
-}
-
-let SWAYSOCK = process.env.SWAYSOCK;
-async function getSwaySocket() {
-  if (SWAYSOCK) {
-    return SWAYSOCK;
-  }
-
-  const uid = process.getuid?.() || 1000;
-
-  SWAYSOCK = await fs
-    .readdir(`/run/user/${uid}`)
-    .then((files) => files.find((f) => f.startsWith('sway-ipc')))
-    .then((file) => `/run/user/${uid}/${file}`)
-    .then((SWAYSOCK) => process.env.SWAYSOCK || SWAYSOCK);
-
-  return SWAYSOCK;
 }
 
 let hadOpenClients = false;
