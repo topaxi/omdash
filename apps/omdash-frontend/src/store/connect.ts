@@ -5,7 +5,7 @@ import { LitElement, ReactiveController, ReactiveControllerHost } from 'lit';
 
 type Constructor<T> = new (...args: any[]) => T;
 
-class StoreControler implements ReactiveController {
+class StoreController implements ReactiveController {
   host: ReactiveControllerHost & {
     stateChanged(state: any): void;
   };
@@ -53,7 +53,7 @@ export const connect =
   }: ConnectOptions<Store<S, A>> = {}) =>
   <T extends Constructor<LitElement>>(BaseElement: T) =>
     class extends BaseElement {
-      private _storeController = new StoreControler(this, store);
+      private _storeController = new StoreController(this, store);
 
       stateChanged(_state: S): void {}
 
