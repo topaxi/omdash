@@ -19,20 +19,6 @@ export class OmGlobalClock extends LitElement {
   }
 }
 
-function sum(arr: number[]) {
-  return arr.reduce((sum, x) => sum + x, 0);
-}
-
-function mean(arr: number[]) {
-  return sum(arr) / arr.length;
-}
-
-function std(arr: number[]) {
-  const m = mean(arr);
-
-  return Math.sqrt(sum(arr.map((x) => (x - m) ** 2)) / arr.length);
-}
-
 function quantile(arr: number[], q: number) {
   const sorted = arr.sort((a, b) => a - b);
 
