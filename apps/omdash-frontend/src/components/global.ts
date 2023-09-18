@@ -1,3 +1,4 @@
+import { type TypedArray } from 'd3';
 import { LitElement, css, html } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { ClockController } from '../controllers/clock.js';
@@ -19,8 +20,8 @@ export class OmGlobalClock extends LitElement {
   }
 }
 
-function quantile(arr: number[], q: number) {
-  const sorted = arr.sort((a, b) => a - b);
+function quantile(arr: TypedArray, q: number) {
+  const sorted = arr.sort();
 
   const pos = (sorted.length - 1) * q;
   const base = Math.floor(pos);
@@ -55,9 +56,10 @@ export class OmGlobalNetworkIcon extends connect()(LitElement) {
   private networkQuality: 'high' | 'medium' | 'low' | 'verylow' = 'verylow';
 
   stateChanged(state: RootState): void {
-    const pingTimings = Object.values(state.pings)
-      .flat()
-      .map((ping) => ping.time);
+    const pingTimings = Uint16Array.from(
+      Object.values(state.pings).flat(),
+      (ping) => ping.time,
+    );
 
     this.q75 = quantile(pingTimings, 0.75);
 
