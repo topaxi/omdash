@@ -71,8 +71,7 @@ export class OmGlobalNetworkIcon extends connect()(LitElement) {
   stateChanged(state: RootState): void {
     const pingTimings = Object.values(state.pings)
       .flat()
-      .map((ping) => ping.time)
-      .sort((a, b) => a - b);
+      .map((ping) => ping.time);
 
     this.q75 = quantile(pingTimings, 0.75);
 
