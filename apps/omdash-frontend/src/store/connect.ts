@@ -22,20 +22,20 @@ export const connect =
     class extends BaseElement {
       private _storeUnsubscribe: Unsubscribe | null = null;
 
+      private _triggerStateChanged() {
+        this.stateChanged(store.getState());
+      }
+
       connectedCallback() {
         super.connectedCallback?.();
 
-        const triggerStateChanged = debounce(
-          () => {
-            this.stateChanged(store.getState());
-          },
-          250,
-          { maxWait: 1000 },
+        this._storeUnsubscribe = store.subscribe(
+          debounce(this._triggerStateChanged.bind(this), 250, {
+            maxWait: 1000,
+          }),
         );
 
-        this._storeUnsubscribe = store.subscribe(triggerStateChanged);
-
-        triggerStateChanged();
+        this._triggerStateChanged();
       }
 
       disconnectedCallback(): void {
