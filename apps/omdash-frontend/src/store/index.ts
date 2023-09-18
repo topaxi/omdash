@@ -1,15 +1,11 @@
-import { configureStore } from '@reduxjs/toolkit';
-import { clientsReducer } from './clients.reducer';
-import { pingReducer } from './ping.reducer';
+import { wrap } from 'comlink';
+import { remoteStoreWrapper } from './remote-store';
+import workerUrl from './worker.js?worker&url';
 
-export const store = configureStore({
-  reducer: {
-    // @ts-ignore
-    clients: clientsReducer,
-    // @ts-ignore
-    pings: pingReducer,
-  },
-});
+const remoteStore = await wrap(
+  new Worker(workerUrl, {
+    type: 'module',
+  }),
+);
 
-export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;
+export const store = await remoteStoreWrapper(remoteStore);

@@ -3,7 +3,7 @@ import { ProcessDescriptor } from 'ps-list';
 
 const processNameFilters = ['ps', '0'];
 
-const psList = async function(...args: any[]) {
+const psList = async function (...args: any[]) {
   const m = (await Function('return import("ps-list")')()) as Promise<
     typeof import('ps-list')
   >;

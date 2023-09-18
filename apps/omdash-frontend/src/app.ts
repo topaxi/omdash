@@ -55,28 +55,6 @@ export class OmApp extends connect()(LitElement) {
   private manifest: string | undefined;
 
   connectedCallback() {
-    const connectWebSocket = () => {
-      // Probably want to handle this in a more robust way.
-      // Currently the WebSocket to server connection is always on the same host,
-      // therefore we don't need to worry too much about connection issues.
-      // Worst case, we can just reload the page.
-      this.ws = new WebSocket(
-        `ws://${window.location.hostname}:3200/dashboard`,
-      );
-
-      this.ws.addEventListener('message', (event) => {
-        const action = JSON.parse(event.data);
-
-        this.store.dispatch(action);
-      });
-
-      this.ws.addEventListener('close', () => {
-        setTimeout(connectWebSocket, 2000);
-      });
-    };
-
-    connectWebSocket();
-
     if (process.env.NODE_ENV === 'production') {
       setInterval(this.checkForUpdates.bind(this), 1000 * 60);
     }

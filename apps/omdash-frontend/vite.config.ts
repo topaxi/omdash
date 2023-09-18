@@ -3,8 +3,12 @@ import { resolve } from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  worker: {
+    format: 'es',
+  },
   build: {
     outDir: 'build',
+    target: 'esnext',
     manifest: true,
     rollupOptions: {
       input: {
