@@ -3,14 +3,14 @@ import { proxy } from 'comlink';
 import { Store } from '@reduxjs/toolkit';
 
 export async function remoteStoreWrapper<S extends Store>(store: S) {
-  const subscribers = new Set();
+  const subscribers = new Set<() => void>();
 
   let latestState = await store.getState();
 
   store.subscribe(
     proxy(async () => {
       latestState = await store.getState();
-      subscribers.forEach((f: any) => f());
+      subscribers.forEach((f) => f());
     }),
   );
 
