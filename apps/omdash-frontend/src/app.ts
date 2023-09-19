@@ -74,7 +74,7 @@ export class OmApp extends connect()(LitElement) {
     this.manifest = manifest;
   }
 
-  protected override updated() {
+  protected override firstUpdated() {
     this.router = new Router(this.outlet);
     this.setupRoutes(this.router);
   }
