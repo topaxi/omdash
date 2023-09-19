@@ -11,6 +11,12 @@ export class OmProcessList extends connect()(LitElement) {
       display: flex;
       gap: 1rem;
       white-space: nowrap;
+
+      -webkit-mask-image: linear-gradient(
+        rgba(0, 0, 0, 1) 0 50%,
+        rgba(0, 0, 0, 0.25)
+      );
+      mask-image: linear-gradient(rgba(0, 0, 0, 1) 0 50%, rgba(0, 0, 0, 0.25));
     }
 
     .process-list {
