@@ -13,9 +13,10 @@ import './routes/settings.js';
 export class OmApp extends connect()(LitElement) {
   static styles = css`
     :host {
+      --tile-gap: 1rem;
       display: flex;
-      gap: 0.5rem;
-      padding: 0.5rem;
+      gap: var(--tile-gap);
+      padding: var(--tile-gap);
 
       position: relative;
       isolation: isolate;

@@ -13,7 +13,7 @@ export class Hosts extends connect()(LitElement) {
   static styles = css`
     :host {
       display: flex;
-      gap: 0.5rem;
+      gap: var(--tile-gap);
       flex-grow: 1;
     }
   `;
