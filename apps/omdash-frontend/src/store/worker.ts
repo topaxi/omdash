@@ -42,7 +42,7 @@ function connectWebSocket() {
   // Currently the WebSocket to server connection is always on the same host,
   // therefore we don't need to worry too much about connection issues.
   // Worst case, we can just reload the page.
-  const ws = new WebSocket(`ws://${self.location.hostname}:3200/dashboard`);
+  const ws = new WebSocket(`ws://${import.meta.env.VITE_OMDASH_SERVER ?? self.location.hostname}:3200/dashboard`);
 
   ws.addEventListener('message', onWebSocketMessage);
 
