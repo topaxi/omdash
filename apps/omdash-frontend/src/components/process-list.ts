@@ -10,15 +10,17 @@ export class OmProcessList extends connect()(LitElement) {
     :host {
       display: flex;
       gap: 1rem;
+      white-space: nowrap;
     }
 
-    :host > div {
+    .process-list {
       flex: 0 0 50%;
       max-width: 50%;
     }
 
-    :host > div > div {
-      white-space: nowrap;
+    .process {
+      display: flex;
+      gap: 1ch;
       overflow: hidden;
       text-overflow: ellipsis;
     }
@@ -108,25 +110,29 @@ export class OmProcessList extends connect()(LitElement) {
     }
 
     return html`
-      <div class="highest-cpu">
+      <div class="process-list highest-cpu">
         <strong>CPU</strong>
         ${repeat(
           this.highestCPUProcesses,
           this.keyForProcess,
           (p) =>
-            html`<div class=${this.cpuHighUsageToClassName(p.cpu)}>
-              ${this.formatPercent(p.cpu)} ${p.name}
+            html`<div class="process ${this.cpuHighUsageToClassName(p.cpu)}">
+              <span class="percent">${this.formatPercent(p.cpu)}</span>
+              <span>${p.name}</span>
             </div>`,
         )}
       </div>
-      <div class="highest-memory">
+      <div class="process-list highest-memory">
         <strong>Memory</strong>
         ${repeat(
           this.highestMemoryProcesses,
           this.keyForProcess,
           (p) =>
-            html`<div class=${this.memoryHighUsageToClassName(p.memory)}>
-              ${this.formatPercent(p.memory)} ${p.name}
+            html`<div
+              class="process ${this.memoryHighUsageToClassName(p.memory)}"
+            >
+              <span class="percent">${this.formatPercent(p.memory)}</span>
+              <span>${p.name}</span>
             </div>`,
         )}
       </div>

@@ -27,8 +27,13 @@ export class OmMemory extends connect()(LitElement) {
     }
 
     .available-memory {
-      text-align: center;
+      display: flex;
+      justify-content: center;
       font-size: 0.8rem;
+    }
+
+    .available-memory > span:last-child::before {
+      content: '/';
     }
 
     @keyframes pulse {
@@ -119,7 +124,8 @@ export class OmMemory extends connect()(LitElement) {
     }
 
     return html`<div class="available-memory">
-      ${this.formatBytes(total - free)}/${this.formatBytes(total)}
+      <span>${this.formatBytes(total - free)}</span>
+      <span>${this.formatBytes(total)}</span>
     </div>`;
   }
 
