@@ -10,6 +10,7 @@ export default defineConfig({
     outDir: 'build',
     target: 'esnext',
     manifest: true,
+    sourcemap: true,
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html'),
