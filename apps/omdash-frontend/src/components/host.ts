@@ -184,19 +184,22 @@ export class OmHost extends connect()(LitElement) {
   private battery: { isCharging: boolean; percent: number } | null = null;
 
   override stateChanged(state: RootState): void {
-    this.addr = state.clients[this.hostname]?.addr ?? '';
-    this.platform = state.clients[this.hostname]?.platform ?? '';
-    this.release = state.clients[this.hostname]?.release ?? '';
-    this.cpus = state.clients[this.hostname]?.cpus ?? [];
-    this.pcpus = state.clients[this.hostname]?.pcpus ?? [];
-    this.loadAverage = state.clients[this.hostname]?.load ?? [0, 0, 0];
-    this.lastUpdate =
-      state.clients[this.hostname]?.lastUpdate || this.lastUpdate;
-    this.processCount = state.clients[this.hostname]?.ps?.count ?? 0;
-    this.battery = state.clients[this.hostname]?.battery ?? null;
-    this.cpuTemperature = Math.round(
-      state.clients[this.hostname]?.temperature?.cpu?.max ?? 0,
-    );
+    const client = state.clients[this.hostname];
+
+    if (!client) {
+      return;
+    }
+
+    this.addr = client.addr ?? '';
+    this.platform = client.platform ?? '';
+    this.release = client.release ?? '';
+    this.cpus = client.cpus ?? [];
+    this.pcpus = client.pcpus ?? [];
+    this.loadAverage = client.load ?? [0, 0, 0];
+    this.lastUpdate = client.lastUpdate || this.lastUpdate;
+    this.processCount = client.ps?.count ?? 0;
+    this.battery = client.battery ?? null;
+    this.cpuTemperature = Math.round(client.temperature?.cpu?.max ?? 0);
 
     this.classList.toggle('offline', this.isOffline);
   }

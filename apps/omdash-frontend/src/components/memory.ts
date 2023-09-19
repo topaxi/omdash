@@ -87,21 +87,28 @@ export class OmMemory extends connect()(LitElement) {
   hostname = '';
 
   @state()
-  memory: { total: number; free: number; swaptotal: number; swapfree: number } =
-    {
-      total: 1,
-      free: 1,
-      swaptotal: 0,
-      swapfree: 0,
-    };
+  private total = 1;
+
+  @state()
+  private free = 1;
+
+  @state()
+  private swaptotal = 0;
+
+  @state()
+  private swapfree = 0;
 
   override stateChanged(state: RootState) {
-    this.memory = state.clients[this.hostname]?.memory ?? {
-      total: 1,
-      free: 1,
-      swaptotal: 0,
-      swapfree: 0,
-    };
+    const memory = state.clients[this.hostname]?.memory;
+
+    if (!memory) {
+      return;
+    }
+
+    this.total = memory.total ?? 1;
+    this.free = memory.free ?? 1;
+    this.swaptotal = memory.swaptotal ?? 0;
+    this.swapfree = memory.swapfree ?? 0;
   }
 
   private formatBytes(bytes: number) {
@@ -117,7 +124,7 @@ export class OmMemory extends connect()(LitElement) {
   }
 
   private renderAvailableMemory() {
-    const { total, free } = this.memory;
+    const { total, free } = this;
 
     if (total === 1 && free === 1) {
       return '';
@@ -130,14 +137,11 @@ export class OmMemory extends connect()(LitElement) {
   }
 
   render() {
-    const memoryPercentage =
-      ((this.memory.total - this.memory.free) / this.memory.total) * 100;
+    const { total, free, swaptotal, swapfree } = this;
+
+    const memoryPercentage = ((total - free) / total) * 100;
     const swapPercentage =
-      this.memory.swaptotal === 0
-        ? 0
-        : ((this.memory.swaptotal - this.memory.swapfree) /
-            this.memory.swaptotal) *
-          100;
+      swaptotal === 0 ? 0 : ((swaptotal - swapfree) / swaptotal) * 100;
 
     return html`
       <div class="memory-usage">

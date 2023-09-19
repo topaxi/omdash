@@ -50,8 +50,6 @@ export class OmGlobalNetworkIcon extends connect()(LitElement) {
     }
   `;
 
-  private q75 = 0;
-
   @state()
   private networkQuality: 'high' | 'medium' | 'low' | 'verylow' = 'verylow';
 
@@ -61,16 +59,10 @@ export class OmGlobalNetworkIcon extends connect()(LitElement) {
       (ping) => ping.time,
     );
 
-    this.q75 = quantile(pingTimings, 0.75);
+    const q75 = quantile(pingTimings, 0.75);
 
     this.networkQuality =
-      this.q75 > 200
-        ? 'high'
-        : this.q75 > 100
-        ? 'medium'
-        : this.q75 > 50
-        ? 'low'
-        : 'verylow';
+      q75 > 200 ? 'high' : q75 > 100 ? 'medium' : q75 > 50 ? 'low' : 'verylow';
   }
 
   protected render(): unknown {

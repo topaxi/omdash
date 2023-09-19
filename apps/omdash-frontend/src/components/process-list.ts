@@ -62,9 +62,10 @@ export class OmProcessList extends connect()(LitElement) {
   private highestMemoryProcesses: any[] = [];
 
   override stateChanged(state: RootState): void {
-    this.highestCPUProcesses = state.clients[this.name]?.ps?.highestCpu ?? [];
-    this.highestMemoryProcesses =
-      state.clients[this.name]?.ps?.highestMemory ?? [];
+    const ps = state.clients[this.name]?.ps;
+
+    this.highestCPUProcesses = ps?.highestCpu ?? [];
+    this.highestMemoryProcesses = ps?.highestMemory ?? [];
   }
 
   private cpuHighUsageToClassName(usage: number) {

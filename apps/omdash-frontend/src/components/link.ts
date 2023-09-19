@@ -21,11 +21,13 @@ export class OmLink extends LitElement {
 
     this.onLocationChange();
 
-    window.addEventListener('vaadin-router-go', this.onLocationChange);
+    window.addEventListener('vaadin-router-go', this);
   }
 
   override disconnectedCallback() {
-    window.removeEventListener('vaadin-router-go', this.onLocationChange);
+    this.removeEventListener('click', this);
+    this.removeEventListener('touchstart', this);
+    window.removeEventListener('vaadin-router-go', this);
   }
 
   handleEvent(event: Event) {
@@ -34,9 +36,13 @@ export class OmLink extends LitElement {
 
       event.preventDefault();
     }
+
+    if (event.type === 'vaadin-router-go') {
+      this.onLocationChange();
+    }
   }
 
-  onLocationChange = () => {
+  private onLocationChange() {
     setTimeout(() => {
       if (window.location.pathname === this.to) {
         this.setAttribute('aria-selected', 'true');
@@ -44,7 +50,7 @@ export class OmLink extends LitElement {
         this.removeAttribute('aria-selected');
       }
     }, 10);
-  };
+  }
 
   protected render(): unknown {
     return html`<slot></slot>`;
