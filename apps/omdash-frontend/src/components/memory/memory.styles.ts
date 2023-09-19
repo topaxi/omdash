@@ -63,7 +63,7 @@ export const memoryStyles = css`
     animation: pulse 0.5s infinite ease-in-out;
   }
 
-  @container host (min-width: 330px) {
+  @container host (min-width: 330px) and (min-height: 180px) {
     om-gauge {
       width: 160px;
     }

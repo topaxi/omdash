@@ -2,10 +2,9 @@ import { css } from 'lit';
 
 export const hostStyles = css`
   :host {
-    flex: 1 1 0;
-    max-width: calc(50% - 0.5rem);
     overflow: hidden;
-    container: host / inline-size;
+    container: host / size;
+    contain: layout paint;
   }
 
   :host(.offline) {
@@ -22,6 +21,10 @@ export const hostStyles = css`
     flex: 1 1 0;
   }
 
+  .host-info {
+    font-size: 0.8rem;
+  }
+
   .host-title {
     display: flex;
     gap: 1ch;
@@ -29,6 +32,12 @@ export const hostStyles = css`
 
   .battery {
     margin-left: auto;
+  }
+
+  @container host (min-height: 180px) {
+    .host-info {
+      font-size: unset;
+    }
   }
 
   @keyframes pulse {

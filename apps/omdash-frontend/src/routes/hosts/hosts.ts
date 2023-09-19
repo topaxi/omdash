@@ -28,6 +28,8 @@ export class Hosts extends connect()(LitElement) {
         lastUpdate,
       ]),
     );
+
+    this.classList.toggle('more-than-4', this.activeHosts.length > 4);
   }
 
   private get activeHosts() {
