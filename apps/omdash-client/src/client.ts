@@ -89,7 +89,11 @@ function connect(url: string) {
           ws.send(
             encode({
               type: 'battery',
-              payload: pick(await si.battery(), ['isCharging', 'percent']),
+              payload: pick(await si.battery(), [
+                'isCharging',
+                'percent',
+                'timeRemaining',
+              ]),
             }),
           );
         }, 10_000),
