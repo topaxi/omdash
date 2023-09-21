@@ -5,6 +5,8 @@ export const hostStyles = css`
     overflow: hidden;
     container: host / size;
     contain: layout paint;
+    max-width: 460px;
+    box-sizing: border-box;
   }
 
   :host(.offline) {
@@ -52,6 +54,10 @@ export const hostStyles = css`
     100% {
       opacity: 1;
     }
+  }
+
+  .processes {
+    font-size: 0.8rem;
   }
 
   .critical {
