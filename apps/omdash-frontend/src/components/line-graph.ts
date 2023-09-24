@@ -48,10 +48,11 @@ export class OmLineGraph extends LitElement {
   ): void {
     this.d3svg = d3.select(this.svg);
 
-    const xScale = this.createXScale();
+    // X axis removed for now, will reconsider later
+    // const xScale = this.createXScale();
     const yScale = this.createYScale();
 
-    const xAxis = d3.axisBottom(xScale).tickSize(5);
+    // const xAxis = d3.axisBottom(xScale).tickSize(5);
     const yAxis = d3.axisLeft(yScale).tickSize(5);
 
     this.d3svg
@@ -65,12 +66,13 @@ export class OmLineGraph extends LitElement {
 
     this.g = this.d3svg.append('g');
 
-    this.g
-      .append('g')
-      .attr('class', 'axis x-axis')
-      .attr('clip-path', 'url(#clip)')
-      .attr('transform', `translate(0, ${0})`)
-      .call(xAxis);
+    // this.g
+    //   .append('g')
+    //   .attr('class', 'axis x-axis')
+    //   .attr('clip-path', 'url(#clip)')
+    //   .attr('transform', `translate(0, ${0})`)
+    //   .call(xAxis);
+
     this.g
       .append('g')
       .attr('class', 'axis y-axis')
