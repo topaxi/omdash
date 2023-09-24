@@ -11,11 +11,9 @@ async function* lines(readableStream: NodeJS.ReadableStream) {
 
     const lines = buffer.split('\n');
 
-    for (let i = 0; i < lines.length - 1; i++) {
-      yield lines[i];
-    }
+    yield* lines.slice(0, -1);
 
-    buffer = lines[lines.length - 1];
+    buffer = lines.at(-1) ?? '';
   }
 
   // Yield any remaining data in the buffer
