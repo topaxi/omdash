@@ -6,53 +6,55 @@ export async function* ping(
   host: string,
   options = { count: 10, interval: 2 },
 ): AsyncGenerator<{ host: string; ip: string; time: number }> {
-  try {
-    const p = childProcess.spawn('ping', [
-      '-n',
-      '-c',
-      String(options.count),
-      '-i',
-      String(options.interval),
-      host,
-    ]);
+  // Previously we recursively yielded ping itself which caused a memory leak.
+  // We now use a simple while loop instead.
+  while (true) {
+    try {
+      const p = childProcess.spawn('ping', [
+        '-n',
+        '-c',
+        String(options.count),
+        '-i',
+        String(options.interval),
+        host,
+      ]);
 
-    console.log(p.spawnargs.join(' '));
+      console.log(p.spawnargs.join(' '));
 
-    for await (const data of p.stdout) {
-      const line = data.toString();
-      const parsed = parsePingOutput(line);
+      for await (const data of p.stdout) {
+        const line = data.toString();
+        const parsed = parsePingOutput(line);
 
-      if (parsed) {
-        yield { host, ...parsed };
-      }
-    }
-
-    await new Promise((resolve, reject) => {
-      p.once('exit', (exitCode) => {
-        if (exitCode === 0) {
-          resolve(null);
-        } else {
-          reject(
-            Object.assign(
-              new Error(
-                `"${p.spawnargs.join(' ')}" exited with code ${exitCode}`,
-              ),
-              {
-                exitCode,
-              },
-            ),
-          );
+        if (parsed) {
+          yield { host, ...parsed };
         }
+      }
+
+      await new Promise((resolve, reject) => {
+        p.once('exit', (exitCode) => {
+          if (exitCode === 0) {
+            resolve(null);
+          } else {
+            reject(
+              Object.assign(
+                new Error(
+                  `"${p.spawnargs.join(' ')}" exited with code ${exitCode}`,
+                ),
+                {
+                  exitCode,
+                },
+              ),
+            );
+          }
+        });
       });
-    });
-  } catch (err) {
-    console.error(err);
+    } catch (err) {
+      console.error(err);
 
-    await sleep(options.interval * 1000 * 4);
-  } finally {
-    await sleep(options.interval * 1000);
-
-    yield* ping(host);
+      await sleep(options.interval * 1000 * 4);
+    } finally {
+      await sleep(options.interval * 1000);
+    }
   }
 }
 

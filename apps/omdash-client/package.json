@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "start": "node build/client.js",
-    "dev": "node-dev src/client.ts",
+    "dev": "node-dev --inspect=127.0.0.1:9249 src/client.ts",
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
