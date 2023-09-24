@@ -2,6 +2,28 @@ import childProcess from 'node:child_process';
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
+async function* lines(readableStream: NodeJS.ReadableStream) {
+  const decoder = new TextDecoder('utf-8');
+  let buffer = '';
+
+  for await (const chunk of readableStream) {
+    buffer += decoder.decode(chunk as any, { stream: true });
+
+    const lines = buffer.split('\n');
+
+    for (let i = 0; i < lines.length - 1; i++) {
+      yield lines[i];
+    }
+
+    buffer = lines[lines.length - 1];
+  }
+
+  // Yield any remaining data in the buffer
+  if (buffer.length > 0) {
+    yield buffer;
+  }
+}
+
 export async function* ping(
   host: string,
   options = { count: 10, interval: 2 },
@@ -21,8 +43,24 @@ export async function* ping(
 
       console.log(p.spawnargs.join(' '));
 
-      for await (const data of p.stdout) {
+      for await (const data of lines(p.stdout)) {
         const line = data.toString();
+
+        // Blank line, nothing to do
+        if (line === '') {
+          continue;
+        }
+
+        // Skip the first line
+        if (line.startsWith('PING')) {
+          continue;
+        }
+
+        // Ping summary, we're done
+        if (line.startsWith('---')) {
+          break;
+        }
+
         const parsed = parsePingOutput(line);
 
         if (parsed) {
