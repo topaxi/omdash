@@ -27,6 +27,8 @@ export async function* ping(
 
         if (parsed) {
           yield { host, ...parsed };
+        } else {
+          console.warn(`Could not parse ping output: "${line}"`);
         }
       }
 
