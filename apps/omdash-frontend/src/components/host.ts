@@ -17,6 +17,24 @@ interface CpuInfo {
   times: { user: number; nice: number; sys: number; idle: number; irq: number };
 }
 
+function formatTime(seconds: number) {
+  if (seconds < 60) {
+    return seconds + 's';
+  } else if (seconds < 3600) {
+    const minutes = Math.floor(seconds / 60);
+    const remainderSeconds = seconds % 60;
+    const minuteText = minutes + 'm';
+    const secondText = remainderSeconds + 's';
+    return `${minuteText}${secondText}`;
+  } else {
+    const hours = Math.floor(seconds / 3600);
+    const remainderMinutes = Math.floor((seconds % 3600) / 60);
+    const hourText = hours + 'h';
+    const minuteText = remainderMinutes + 'm';
+    return `${hourText}${minuteText}`;
+  }
+}
+
 @customElement('om-host')
 export class OmHost extends connect()(LitElement) {
   static styles = [
@@ -154,6 +172,9 @@ export class OmHost extends connect()(LitElement) {
   hostname = '';
 
   @state()
+  uptime = 0;
+
+  @state()
   private cpuTemperature = 0;
 
   @state()
@@ -191,6 +212,7 @@ export class OmHost extends connect()(LitElement) {
     }
 
     this.addr = client.addr ?? '';
+    this.uptime = Math.round(client.uptime) ?? 0;
     this.platform = client.platform ?? '';
     this.release = client.release ?? '';
     this.cpus = client.cpus ?? [];
@@ -224,6 +246,14 @@ export class OmHost extends connect()(LitElement) {
     } else {
       return addr;
     }
+  }
+
+  private renderUptime() {
+    if (this.uptime === 0) {
+      return '';
+    }
+
+    return html`<span class="uptime">(up ${formatTime(this.uptime)})</span>`;
   }
 
   private renderLastUpdate() {
@@ -389,7 +419,8 @@ export class OmHost extends connect()(LitElement) {
             release=${this.release}
           ></om-os-icon>
           <div class="hostname">
-            ${this.hostname.split('.')[0]} ${this.renderLastUpdate()}
+            ${this.hostname.split('.')[0]} ${this.renderUptime()}
+            ${this.renderLastUpdate()}
           </div>
           ${this.renderBattery()}
         </div>
