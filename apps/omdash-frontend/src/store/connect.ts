@@ -58,7 +58,7 @@ export const connect =
       stateChanged(_state: S): void {}
 
       get store() {
-        return store;
+        return this._storeController.store;
       }
 
       dispatch(action: A) {
