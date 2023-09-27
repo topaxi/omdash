@@ -1,0 +1,10 @@
+{
+  "name": "omdash-gauge",
+  "description": "A gauge component for om",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w | awk '{gsub(/\\033c/,\"\") system(\"\")}1'"
+  }
+}

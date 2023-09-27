@@ -1,6 +1,6 @@
 import { LitElement, PropertyValueMap, css, html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import Gauge, { GaugeInstance } from 'svg-gauge';
+import { Gauge, GaugeInstance } from 'omdash-gauge';
 
 @customElement('om-gauge')
 export class OmGauge extends LitElement {
