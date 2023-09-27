@@ -212,7 +212,7 @@ export class OmHost extends connect()(LitElement) {
     }
 
     this.addr = client.addr ?? '';
-    this.uptime = Math.round(client.uptime) ?? 0;
+    this.uptime = Math.round(client.uptime) || 0;
     this.platform = client.platform ?? '';
     this.release = client.release ?? '';
     this.cpus = client.cpus ?? [];
