@@ -1,7 +1,7 @@
 import os from 'node:os';
 import { ProcessDescriptor } from 'ps-list';
 
-const processNameFilters = ['ps', '0'];
+const processNameFilters = ['ps', '0', '1'];
 
 const psList = async function (...args: any[]) {
   const m = (await Function('return import("ps-list")')()) as Promise<
