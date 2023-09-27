@@ -18,6 +18,7 @@ export class OmMemory extends connect()(LitElement) {
 
       --dial-stroke-width: 0;
       --stroke-width: 2;
+      --text-transform: translateY(-1rem);
     }
 
     .memory-usage {
@@ -155,6 +156,7 @@ export class OmMemory extends connect()(LitElement) {
           ? html`<om-gauge
               class="swap"
               style="--color: var(--ctp-macchiato-yellow)"
+              label="Swap"
               percent=${Math.round(swapPercentage)}
             ></om-gauge>`
           : ''}

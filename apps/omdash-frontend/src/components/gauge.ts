@@ -38,6 +38,7 @@ export class OmGauge extends LitElement {
       fill: var(--color, var(--color));
       font-weight: bold;
       font-size: 0.6em;
+      transform: var(--text-transform);
     }
   `;
 
