@@ -195,158 +195,164 @@ export interface GaugeOptions {
   viewBox?: string;
 }
 
-export type GaugeInstance = ReturnType<typeof Gauge>;
-export const Gauge = (function() {
-  /**
-   * Creates a Gauge object. This should be called without the 'new' operator. Various options
-   * can be passed for the gauge:
-   * {
-   *    dialStartAngle: The angle to start the dial. MUST be greater than dialEndAngle. Default 135deg
-   *    dialEndAngle: The angle to end the dial. Default 45deg
-   *    dialRadius: The gauge's radius. Default 400
-   *    max: The maximum value of the gauge. Default 100
-   *    value: The starting value of the gauge. Default 0
-   *    label: The function on how to render the center label (Should return a value)
-   * }
-   * @param {Element} elem The DOM into which to render the gauge
-   * @param {Object} options The gauge options
-   * @return a Gauge object
-   */
-  return function Gauge(elem: HTMLElement | ShadowRoot, options: GaugeOptions) {
-    let opts = { ...defaultOptions, ...options };
-    let gaugeContainer = elem,
-      limit = opts.max,
-      min = opts.min,
-      value = clamp(opts.value ?? 0, min ?? 0, limit ?? 0),
-      radius = opts.dialRadius,
-      displayValue = opts.showValue,
-      startAngle = opts.dialStartAngle,
-      endAngle = opts.dialEndAngle,
-      valueDialClass = opts.valueDialClass,
-      valueTextClass = opts.valueClass,
-      dialClass = opts.dialClass,
-      gaugeClass = opts.gaugeClass,
-      gaugeColor = opts.gaugeColor,
-      gaugeValueElem: SVGElement | null = null,
-      gaugeValuePath: SVGElement | null = null,
-      label = opts.label,
-      viewBox = opts.viewBox,
-      instance: any;
+export class Gauge {
+  private gaugeContainer: HTMLElement | ShadowRoot;
+  private limit: number;
+  private min: number;
+  private value: number;
+  private radius: number;
+  private displayValue: boolean;
+  private startAngle: number;
+  private endAngle: number;
+  private valueDialClass: string;
+  private valueTextClass: string;
+  private dialClass: string;
+  private gaugeClass: string;
+  private gaugeColor: ((value: number) => string) | null;
+  private gaugeValueElem: SVGElement | null = null;
+  private gaugeValuePath: SVGElement | null = null;
+  private label: (value: number) => string | number;
+  private viewBox: string | undefined;
 
-    if (startAngle < endAngle) {
+  constructor(elem: HTMLElement | ShadowRoot, options: GaugeOptions) {
+    const opts = { ...defaultOptions, ...options };
+
+    this.gaugeContainer = elem;
+    this.limit = opts.max!;
+    this.min = opts.min!;
+    this.value =
+      opts.value != null ? clamp(opts.value, this.min, this.limit) : 0;
+    this.radius = opts.dialRadius!;
+    this.displayValue = opts.showValue!;
+    this.startAngle = opts.dialStartAngle!;
+    this.endAngle = opts.dialEndAngle!;
+    this.valueDialClass = opts.valueDialClass!;
+    this.valueTextClass = opts.valueClass!;
+    this.dialClass = opts.dialClass!;
+    this.gaugeClass = opts.gaugeClass!;
+    this.gaugeColor = opts.gaugeColor!;
+    this.label = opts.label!;
+    this.viewBox = opts.viewBox;
+
+    if (this.startAngle < this.endAngle) {
       console.log('WARN! startAngle < endAngle, Swapping');
-      const tmp = startAngle;
-      startAngle = endAngle;
-      endAngle = tmp;
+      const tmp = this.startAngle;
+      this.startAngle = this.endAngle;
+      this.endAngle = tmp;
     }
 
-    function initializeGauge(elem: HTMLElement | ShadowRoot) {
-      gaugeValueElem = svg('text', {
-        'x': 50,
-        'y': 50,
-        'fill': '#999',
-        'class': valueTextClass,
-        'font-size': '100%',
-        'font-family': 'sans-serif',
-        'font-weight': 'normal',
-        'text-anchor': 'middle',
-        'alignment-baseline': 'middle',
-        'dominant-baseline': 'central',
-      });
+    this.initializeGauge(this.gaugeContainer);
+    this.setValue(this.value);
+  }
 
-      gaugeValuePath = svg('path', {
-        'class': valueDialClass,
-        'fill': 'none',
-        'stroke': '#666',
-        'stroke-width': 2.5,
-        'd': pathString(radius, startAngle, startAngle, 1), // value of 0
-      });
+  private initializeGauge(elem: HTMLElement | ShadowRoot): void {
+    this.gaugeValueElem = svg('text', {
+      'x': 50,
+      'y': 50,
+      'fill': '#999',
+      'class': this.valueTextClass,
+      'font-size': '100%',
+      'font-family': 'sans-serif',
+      'font-weight': 'normal',
+      'text-anchor': 'middle',
+      'alignment-baseline': 'middle',
+      'dominant-baseline': 'central',
+    });
 
-      const angle = getAngle(100, 360 - Math.abs(startAngle - endAngle));
-      const flag = angle <= 180 ? 0 : 1;
-      const gaugeElement = svg(
-        'svg',
-        { viewBox: viewBox || '0 0 100 100', class: gaugeClass },
-        [
-          svg('path', {
-            'class': dialClass,
-            'fill': 'none',
-            'stroke': '#eee',
-            'stroke-width': 2,
-            'd': pathString(radius, startAngle, endAngle, flag),
-          }),
-          svg('g', { class: 'text-container' }, [gaugeValueElem]),
-          gaugeValuePath,
-        ],
-      );
-      elem.appendChild(gaugeElement);
+    this.gaugeValuePath = svg('path', {
+      'class': this.valueDialClass,
+      'fill': 'none',
+      'stroke': '#666',
+      'stroke-width': 2.5,
+      'd': pathString(this.radius, this.startAngle, this.startAngle, 1), // value of 0
+    });
+
+    const angle = getAngle(
+      100,
+      360 - Math.abs(this.startAngle - this.endAngle),
+    );
+    const flag = angle <= 180 ? 0 : 1;
+    const gaugeElement = svg(
+      'svg',
+      { viewBox: this.viewBox || '0 0 100 100', class: this.gaugeClass },
+      [
+        svg('path', {
+          'class': this.dialClass,
+          'fill': 'none',
+          'stroke': '#eee',
+          'stroke-width': 2,
+          'd': pathString(this.radius, this.startAngle, this.endAngle, flag),
+        }),
+        svg('g', { class: 'text-container' }, [this.gaugeValueElem]),
+        this.gaugeValuePath,
+      ],
+    );
+    elem.appendChild(gaugeElement);
+  }
+
+  private updateGauge(theValue: number): void {
+    const val = getValueInPercentage(theValue, this.min, this.limit);
+    const angle = getAngle(
+      val,
+      360 - Math.abs(this.startAngle - this.endAngle),
+    );
+    const flag = angle <= 180 ? 0 : 1;
+
+    if (this.displayValue) {
+      this.gaugeValueElem!.textContent = String(this.label(theValue));
+    }
+    this.gaugeValuePath!.setAttribute(
+      'd',
+      pathString(this.radius, this.startAngle, angle + this.startAngle, flag),
+    );
+  }
+
+  private setGaugeColor(value: number, duration: number): void {
+    const c = this.gaugeColor!(value);
+    const dur = duration * 1000;
+    const pathTransition = 'stroke ' + dur + 'ms ease';
+
+    this.gaugeValuePath!.style.stroke = c;
+    // @ts-ignore
+    this.gaugeValuePath!.style['-webkit-transition'] = pathTransition;
+    // @ts-ignore
+    this.gaugeValuePath!.style['-moz-transition'] = pathTransition;
+    this.gaugeValuePath!.style.transition = pathTransition;
+  }
+
+  setMaxValue(max: number): void {
+    this.limit = max;
+    this.updateGauge(this.value);
+  }
+
+  setValue(val: number): void {
+    this.value = clamp(val, this.min, this.limit);
+    if (this.gaugeColor != null) {
+      this.setGaugeColor(this.value, 0);
+    }
+    this.updateGauge(this.value);
+  }
+
+  setValueAnimated(val: number, duration: number): void {
+    const oldVal = this.value;
+    this.value = clamp(val, this.min, this.limit);
+    if (oldVal === this.value) {
+      return;
     }
 
-    function updateGauge(theValue: number) {
-      const val = getValueInPercentage(theValue, min, limit),
-        // angle = getAngle(val, 360 - Math.abs(endAngle - startAngle)),
-        angle = getAngle(val, 360 - Math.abs(startAngle - endAngle)),
-        // this is because we are using arc greater than 180deg
-        flag = angle <= 180 ? 0 : 1;
-      if (displayValue) {
-        gaugeValueElem!.textContent = String(label(theValue));
-      }
-      gaugeValuePath!.setAttribute(
-        'd',
-        pathString(radius, startAngle, angle + startAngle, flag),
-      );
+    if (this.gaugeColor != null) {
+      this.setGaugeColor(this.value, duration);
     }
 
-    function setGaugeColor(value: number, duration: number) {
-      // Current code guards against gaugeColor being null
-      const c = gaugeColor!(value),
-        dur = duration * 1000,
-        pathTransition = 'stroke ' + dur + 'ms ease';
+    Animation({
+      start: oldVal || 0,
+      end: this.value,
+      duration: duration || 1,
+      step: this.updateGauge.bind(this),
+    });
+  }
 
-      gaugeValuePath!.style.stroke = c;
-      // @ts-ignore
-      gaugeValuePath!.style['-webkit-transition'] = pathTransition;
-      // @ts-ignore
-      gaugeValuePath!.style['-moz-transition'] = pathTransition;
-      gaugeValuePath!.style.transition = pathTransition;
-    }
-
-    instance = {
-      setMaxValue(max: number) {
-        limit = max;
-        updateGauge(value);
-      },
-      setValue(val: number) {
-        value = clamp(val, min, limit);
-        if (gaugeColor) {
-          setGaugeColor(value, 0);
-        }
-        updateGauge(value);
-      },
-      setValueAnimated(val: number, duration: number) {
-        const oldVal = value;
-        value = clamp(val, min, limit);
-        if (oldVal === value) {
-          return;
-        }
-
-        if (gaugeColor) {
-          setGaugeColor(value, duration);
-        }
-        Animation({
-          start: oldVal || 0,
-          end: value,
-          duration: duration || 1,
-          step: updateGauge,
-        });
-      },
-      getValue() {
-        return value;
-      },
-    };
-
-    initializeGauge(gaugeContainer);
-    instance.setValue(value);
-    return instance;
-  };
-})();
+  getValue(): number {
+    return this.value;
+  }
+}

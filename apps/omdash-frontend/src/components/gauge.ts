@@ -1,6 +1,6 @@
 import { LitElement, PropertyValueMap, css, html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import { Gauge, GaugeInstance } from 'omdash-gauge';
+import { Gauge } from 'omdash-gauge';
 
 @customElement('om-gauge')
 export class OmGauge extends LitElement {
@@ -47,7 +47,7 @@ export class OmGauge extends LitElement {
   @property()
   label = '';
 
-  private gauge!: GaugeInstance;
+  private gauge!: Gauge;
 
   private renderLabel(value: number): string {
     return `${this.label} ${Math.round(value)}%`.trim();
@@ -56,7 +56,7 @@ export class OmGauge extends LitElement {
   protected firstUpdated(
     _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>,
   ): void {
-    this.gauge = Gauge(this.shadowRoot as unknown as Element, {
+    this.gauge = new Gauge(this.shadowRoot!, {
       max: 100,
       min: 0,
       dialStartAngle: 180,
