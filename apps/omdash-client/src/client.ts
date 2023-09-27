@@ -64,6 +64,12 @@ function connect(url: string) {
     );
 
     timers.push(
+      setIntervalImmediate(() => {
+        ws.send(encode(getUptime()));
+      }, 1000 * 60),
+    );
+
+    timers.push(
       setIntervalImmediate(async () => {
         ws.send(encode(await getProcesses()));
       }, PS_UPDATE_INTERVAL),
@@ -180,6 +186,15 @@ function getMetrics() {
         total: os.totalmem(),
         free: os.freemem(),
       },
+    },
+  };
+}
+
+function getUptime() {
+  return {
+    type: 'metric',
+    payload: {
+      uptime: os.uptime(),
     },
   };
 }
