@@ -108,6 +108,22 @@ export class OmProcessList extends connect()(LitElement) {
     return `${value.toFixed(1).padStart(4, '\u00A0')}%`;
   }
 
+  private renderCpuProcess(p: any) {
+    return html`<div class="process ${this.cpuHighUsageToClassName(p.cpu)}">
+      <span class="percent">${this.formatPercent(p.cpu)}</span>
+      <span>${p.name}</span>
+    </div>`;
+  }
+
+  private renderMemoryProcess(p: any) {
+    return html`<div
+      class="process ${this.memoryHighUsageToClassName(p.memory)}"
+    >
+      <span class="percent">${this.formatPercent(p.memory)}</span>
+      <span>${p.name}</span>
+    </div>`;
+  }
+
   render() {
     if (
       this.highestCPUProcesses.length === 0 &&
@@ -122,11 +138,7 @@ export class OmProcessList extends connect()(LitElement) {
         ${repeat(
           this.highestCPUProcesses,
           this.keyForProcess,
-          (p) =>
-            html`<div class="process ${this.cpuHighUsageToClassName(p.cpu)}">
-              <span class="percent">${this.formatPercent(p.cpu)}</span>
-              <span>${p.name}</span>
-            </div>`,
+          this.renderCpuProcess.bind(this),
         )}
       </div>
       <div class="process-list highest-memory">
@@ -134,13 +146,7 @@ export class OmProcessList extends connect()(LitElement) {
         ${repeat(
           this.highestMemoryProcesses,
           this.keyForProcess,
-          (p) =>
-            html`<div
-              class="process ${this.memoryHighUsageToClassName(p.memory)}"
-            >
-              <span class="percent">${this.formatPercent(p.memory)}</span>
-              <span>${p.name}</span>
-            </div>`,
+          this.renderMemoryProcess.bind(this),
         )}
       </div>
     `;
