@@ -11,6 +11,10 @@ export class OmMemory extends connect()(LitElement) {
     }
 
     .swap {
+      /* Assumption that a system will rarely if ever reduce swap back to 0%,
+       * we only care about fading in.
+       */
+      animation: fade-in 0.5s ease-in-out;
       width: 110px;
       position: absolute;
       bottom: 1px;
@@ -35,6 +39,15 @@ export class OmMemory extends connect()(LitElement) {
 
     .available-memory > span:last-child::before {
       content: '/';
+    }
+
+    @keyframes fade-in {
+      0% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
     }
 
     @keyframes pulse {
