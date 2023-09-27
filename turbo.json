@@ -2,14 +2,23 @@
   "$schema": "https://turbo.build/schema.json",
   "pipeline": {
     "build": {
-      "outputs": ["build/**"]
+      "outputs": [
+        "build/**"
+      ]
+    },
+    "omdash-frontend#build": {
+      "dependsOn": [
+        "omdash-gauge#build"
+      ]
     },
     "dev": {
       "cache": false,
       "persistent": true
     },
     "start": {
-      "dependsOn": ["build"]
+      "dependsOn": [
+        "build"
+      ]
     }
   }
 }
