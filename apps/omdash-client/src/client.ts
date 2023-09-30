@@ -64,6 +64,12 @@ function connect(url: string) {
     );
 
     timers.push(
+      setIntervalImmediate(async () => {
+        ws.send(encode(await getGPUs()));
+      }, UPDATE_INTERVAL),
+    );
+
+    timers.push(
       setIntervalImmediate(() => {
         ws.send(encode(getUptime()));
       }, 1000 * 60),
@@ -85,6 +91,12 @@ function connect(url: string) {
       setIntervalImmediate(async () => {
         ws.send(encode(await getSwap()));
       }, 10_000),
+    );
+
+    timers.push(
+      setIntervalImmediate(async () => {
+        ws.send(encode(await getDisks()));
+      }, 5_000),
     );
 
     // If the connection closes before the first battery update, this probably introduces
@@ -195,6 +207,24 @@ function getUptime() {
     type: 'metric',
     payload: {
       uptime: os.uptime(),
+    },
+  };
+}
+
+async function getGPUs() {
+  return {
+    type: 'metric',
+    payload: {
+      gpus: (await si.graphics()).controllers,
+    },
+  };
+}
+
+async function getDisks() {
+  return {
+    type: 'metric',
+    payload: {
+      fsSize: (await si.fsSize()).filter(({ fs }) => fs.startsWith('/dev/')),
     },
   };
 }
