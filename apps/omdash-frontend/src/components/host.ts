@@ -7,15 +7,10 @@ import { RootState } from '../store/index.js';
 import './ago.js';
 import { OmBox } from './box.js';
 import './gauge.js';
+import './cpu.js';
 import './memory.js';
 import './os-icon.js';
 import './process-list.js';
-
-interface CpuInfo {
-  model: string;
-  speed: number;
-  times: { user: number; nice: number; sys: number; idle: number; irq: number };
-}
 
 function formatTime(seconds: number) {
   if (seconds < 60) {
@@ -61,70 +56,6 @@ export class OmHost extends connect()(LitElement) {
         margin-left: auto;
       }
 
-      .load-average {
-        display: flex;
-        gap: 1ch;
-        width: max-content;
-        margin: 0 auto;
-      }
-
-      .load-average {
-        text-align: center;
-        font-size: 0.8rem;
-      }
-
-      .cpu-usage {
-        position: relative;
-        display: flex;
-        justify-content: center;
-      }
-
-      .cpu-speed {
-        position: absolute;
-        top: 2.75em;
-        font-size: 0.8rem;
-        color: var(--ctp-macchiato-red);
-      }
-
-      .cpu-temperature {
-        position: absolute;
-        left: 0;
-        font-size: 0.8rem;
-      }
-
-      om-gauge {
-        width: 134px;
-      }
-
-      @container host (min-width: 330px) {
-        om-gauge {
-          width: 160px;
-        }
-
-        .cpu-speed {
-          font-size: 1rem;
-        }
-
-        .cpu-temperature {
-          top: 0.5rem;
-        }
-
-        .load-average,
-        .available-memory {
-          font-size: 1rem;
-        }
-      }
-
-      @container host (min-width: 420px) {
-        om-gauge {
-          width: 220px;
-        }
-
-        .cpu-speed {
-          top: 4em;
-        }
-      }
-
       @keyframes pulse {
         0% {
           opacity: 1;
@@ -142,27 +73,6 @@ export class OmHost extends connect()(LitElement) {
       .critical {
         animation: pulse 1s infinite;
       }
-
-      .critical,
-      .very-high {
-        color: var(--ctp-macchiato-red);
-      }
-
-      .high {
-        color: var(--ctp-macchiato-maroon);
-      }
-
-      .medium {
-        color: var(--ctp-macchiato-peach);
-      }
-
-      .low {
-        color: var(--ctp-macchiato-yellow);
-      }
-
-      .very-low {
-        color: var(--ctp-macchiato-green);
-      }
     `,
   ];
 
@@ -175,25 +85,13 @@ export class OmHost extends connect()(LitElement) {
   uptime = 0;
 
   @state()
-  private cpuTemperature = 0;
-
-  @state()
   private platform = '';
 
   @state()
   private release = '';
 
   @state()
-  private cpus: readonly CpuInfo[] = [];
-
-  @state()
-  private pcpus: readonly CpuInfo[] = [];
-
-  @state()
   private lastUpdate = Date.now();
-
-  @state()
-  private loadAverage: [number, number, number] = [0, 0, 0];
 
   @state()
   private addr = '';
@@ -215,25 +113,11 @@ export class OmHost extends connect()(LitElement) {
     this.uptime = Math.round(client.uptime) || 0;
     this.platform = client.platform ?? '';
     this.release = client.release ?? '';
-    this.cpus = client.cpus ?? [];
-    this.pcpus = client.pcpus ?? [];
-    this.loadAverage = client.load ?? [0, 0, 0];
     this.lastUpdate = client.lastUpdate || this.lastUpdate;
     this.processCount = client.ps?.count ?? 0;
     this.battery = client.battery ?? null;
-    this.cpuTemperature = Math.round(client.temperature?.cpu?.max ?? 0);
 
     this.classList.toggle('offline', this.isOffline);
-  }
-
-  private averageCPUSpeed() {
-    if (this.cpus.length === 0) {
-      return 0;
-    }
-
-    return (
-      this.cpus.reduce((acc, cpu) => acc + cpu.speed, 0) / this.cpus.length
-    );
   }
 
   private get isOffline() {
@@ -268,122 +152,6 @@ export class OmHost extends connect()(LitElement) {
     return '';
   }
 
-  private renderLoadAverage() {
-    // On Windows, Node.js returns [0, 0, 0], so we do not render load at all.
-    if (this.loadAverage.reduce((a, b) => a + b, 0) === 0) {
-      return '';
-    }
-
-    return html`
-      <div class="load-average">
-        ${this.loadAverage.map(
-          (n) =>
-            html`<div class=${this.getLoadAverageClass(n)}>
-              ${n.toFixed(2)}
-            </div>`,
-        )}
-      </div>
-    `;
-  }
-
-  private getLoadAverageClass(value: number) {
-    const cpus = this.cpus.length;
-
-    if (value > cpus * 1.5) {
-      return 'critical';
-    }
-
-    if (value > cpus) {
-      return 'very-high';
-    }
-
-    if (value > cpus / 2) {
-      return 'high';
-    }
-
-    if (value > cpus / 4) {
-      return 'medium';
-    }
-
-    if (value > cpus / 8) {
-      return 'low';
-    }
-
-    if (value > cpus / 16) {
-      return 'very-low';
-    }
-
-    return 'normal';
-  }
-
-  private formatMegahertz(megahertz: number) {
-    const units = ['MHz', 'GHz'];
-
-    let unitIndex = 0;
-    while (megahertz > 1000) {
-      megahertz /= 1000;
-      unitIndex++;
-    }
-
-    return `${megahertz.toFixed(unitIndex === 0 ? 0 : 1)}${units[unitIndex]}`;
-  }
-
-  private renderCPUUsage() {
-    const averageCPUUsage = this.averageCPUUsage();
-
-    return html`
-      <div class="cpu-usage">
-        <div class="cpu-speed">
-          ${this.formatMegahertz(this.averageCPUSpeed())}
-        </div>
-        <om-gauge
-          style="--color: var(--ctp-macchiato-red)"
-          label="CPU"
-          percent=${Math.round(averageCPUUsage)}
-        >
-          ${this.cpuTemperature > 0
-            ? html`
-                <div class="cpu-temperature"> ${this.cpuTemperature}°C</div>
-              `
-            : ''}
-        </om-gauge>
-      </div>
-    `;
-  }
-
-  private getTotalCPUTimes(cpus: readonly CpuInfo[]) {
-    return cpus
-      .map((cpu) => cpu.times)
-      .reduce(
-        (acc, times) => {
-          acc.idle += times.idle;
-          acc.total +=
-            times.user + times.nice + times.sys + times.idle + times.irq;
-
-          return acc;
-        },
-        { idle: 0, total: 0 },
-      );
-  }
-
-  private averageCPUUsage() {
-    const cpuTimes = this.getTotalCPUTimes(this.cpus);
-    const prevCpuTimes = this.getTotalCPUTimes(this.pcpus);
-
-    if (prevCpuTimes.idle === 0) {
-      return 0;
-    }
-
-    const idleDifference = cpuTimes.idle - prevCpuTimes.idle;
-    const totalDifference = cpuTimes.total - prevCpuTimes.total;
-
-    if (totalDifference === 0) {
-      return 0;
-    }
-
-    return 100 - (100 * idleDifference) / totalDifference;
-  }
-
   private getBatteryLevelIcon(battery: {
     isCharging: boolean;
     percent: number;
@@ -403,7 +171,7 @@ export class OmHost extends connect()(LitElement) {
     }
 
     return html`
-      <div class="battery">
+      <div class="battery ${this.battery.percent < 10 ? 'critical' : ''}">
         ${this.getBatteryLevelIcon(this.battery)} ${this.battery.percent}%
       </div>
     `;
@@ -427,9 +195,10 @@ export class OmHost extends connect()(LitElement) {
         <small>${this.formatIp(this.addr)}</small>
       </div>
       <div style="display: flex">
-        <div style="flex: 1 1 0;margin-right: 0.5rem">
-          ${this.renderCPUUsage()} ${this.renderLoadAverage()}
-        </div>
+        <om-cpu
+          style="flex: 1 1 0;margin-right: 0.5rem"
+          hostname=${this.hostname}
+        ></om-cpu>
         <om-memory style="flex: 1 1 0" hostname=${this.hostname}></om-memory>
       </div>
       <div class="processes">Processes: ${this.processCount}</div>

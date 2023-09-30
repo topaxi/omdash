@@ -12,4 +12,6 @@ const remoteStore = wrap<Store<RootState>>(
   }),
 );
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 export const store = await remoteStoreWrapper(remoteStore);

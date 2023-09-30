@@ -23,7 +23,7 @@ const defaultOptions = {
   gaugeClass: 'gauge',
   showValue: true,
   gaugeColor: null,
-  label: function(val: number) {
+  label: function (val: number) {
     return Math.round(val);
   },
 };
