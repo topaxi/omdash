@@ -210,15 +210,19 @@ async function pingHosts() {
 
 async function broadcastPing(host: string) {
   for await (const payload of ping(host)) {
-    broadcastToDashboards(
-      encode({
-        type: 'ping',
-        payload: {
-          timestamp: Math.floor(Date.now() / 1000),
-          ...payload,
-        },
-      }),
-    );
+    try {
+      broadcastToDashboards(
+        encode({
+          type: 'ping',
+          payload: {
+            timestamp: Math.floor(Date.now() / 1000),
+            ...payload,
+          },
+        }),
+      );
+    } catch (error) {
+      console.error(error);
+    }
   }
 }
 
