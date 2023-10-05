@@ -47,6 +47,15 @@ export class OmHost extends connect()(LitElement) {
         filter: grayscale();
       }
 
+      .gauges {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .gauges > * {
+        flex: 1 1 0;
+      }
+
       .host-title {
         display: flex;
         gap: 1ch;
@@ -194,12 +203,9 @@ export class OmHost extends connect()(LitElement) {
         </div>
         <small>${this.formatIp(this.addr)}</small>
       </div>
-      <div style="display: flex">
-        <om-cpu
-          style="flex: 1 1 0;margin-right: 0.5rem"
-          hostname=${this.hostname}
-        ></om-cpu>
-        <om-memory style="flex: 1 1 0" hostname=${this.hostname}></om-memory>
+      <div class="gauges">
+        <om-cpu hostname=${this.hostname}></om-cpu>
+        <om-memory hostname=${this.hostname}></om-memory>
       </div>
       <div class="processes">Processes: ${this.processCount}</div>
       <om-process-list name=${this.hostname}></om-process-list>
