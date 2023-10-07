@@ -12,13 +12,13 @@ if (import.meta.env.VITE_SHARED_WORKER === 'true') {
     type: 'module',
   });
 
-  remoteStore = wrap<Store<RootState>>(worker.port);
+  remoteStore = wrap(worker.port);
 } else {
   const worker = new Worker(new URL('./worker', import.meta.url), {
     type: 'module',
   });
 
-  remoteStore = wrap<Store<RootState>>(worker);
+  remoteStore = wrap(worker);
 }
 
 export const store = await remoteStoreWrapper(remoteStore);
