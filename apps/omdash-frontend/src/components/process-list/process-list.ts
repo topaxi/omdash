@@ -1,8 +1,8 @@
 import { LitElement, css, html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
-import { connect } from '../store/connect.js';
-import { RootState } from '../store/index.js';
+import { connect } from '../../store/connect.js';
+import { RootState } from '../../store/index.js';
 
 @customElement('om-process-list')
 export class OmProcessList extends connect()(LitElement) {

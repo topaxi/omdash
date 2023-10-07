@@ -4,7 +4,7 @@ import { customElement, query } from 'lit/decorators.js';
 
 import { connect } from './store/connect.js';
 
-import './components/global.js';
+import './components/global/global.js';
 import './routes/hosts.js';
 import './routes/network.js';
 import './routes/settings.js';

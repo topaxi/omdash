@@ -2,9 +2,9 @@ import { LitElement, PropertyValueMap, css, html } from 'lit';
 import { customElement, query, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 
-import '../components/box.js';
-import '../components/line-graph.js';
-import { OmLineGraph } from '../components/line-graph.js';
+import '../components/box/box.js';
+import '../components/line-graph/line-graph.js';
+import { OmLineGraph } from '../components/line-graph/line-graph.js';
 import { connect } from '../store/connect.js';
 import { RootState } from '../store/index.js';
 

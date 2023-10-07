@@ -1,12 +1,12 @@
 import { type TypedArray } from 'd3';
 import { LitElement, css, html } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
-import { ClockController } from '../controllers/clock.js';
+import { ClockController } from '../../controllers/clock.js';
 
-import { OmBox } from './box.js';
-import './link.js';
-import { connect } from '../store/connect.js';
-import { RootState } from '../store/index.js';
+import { OmBox } from '../box/box.js';
+import '../link/link.js';
+import { connect } from '../../store/connect.js';
+import { RootState } from '../../store/index.js';
 
 @customElement('om-global-clock')
 export class OmGlobalClock extends LitElement {

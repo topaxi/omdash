@@ -1,7 +1,7 @@
 import { LitElement, css, html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { connect } from '../store/connect';
-import { RootState } from '../store';
+import { connect } from '../../store/connect';
+import { RootState } from '../../store';
 
 @customElement('om-memory')
 export class OmMemory extends connect()(LitElement) {

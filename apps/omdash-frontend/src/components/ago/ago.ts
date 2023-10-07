@@ -1,6 +1,6 @@
 import { LitElement } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
-import { ClockController } from '../controllers/clock';
+import { customElement, property } from 'lit/decorators.js';
+import { ClockController } from '../../controllers/clock.js';
 
 function timeDifference(
   previous: number,

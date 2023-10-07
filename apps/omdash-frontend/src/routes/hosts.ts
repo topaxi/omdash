@@ -4,7 +4,7 @@ import { repeat } from 'lit/directives/repeat.js';
 import { RootState } from '../store';
 import { connect } from '../store/connect';
 
-import '../components/host.js';
+import '../components/host/host.js';
 
 const identity = <T>(value: T) => value;
 

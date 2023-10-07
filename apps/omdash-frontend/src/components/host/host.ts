@@ -1,16 +1,16 @@
 import { LitElement, css, html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { ClockController } from '../controllers/clock.js';
-import { connect } from '../store/connect.js';
-import { RootState } from '../store/index.js';
+import { ClockController } from '../../controllers/clock.js';
+import { connect } from '../../store/connect.js';
+import { RootState } from '../../store/index.js';
 
-import './ago.js';
-import { OmBox } from './box.js';
-import './gauge.js';
-import './cpu.js';
-import './memory.js';
-import './os-icon.js';
-import './process-list.js';
+import '../ago/ago.js';
+import { OmBox } from '../box/box.js';
+import '../gauge/gauge.js';
+import '../cpu/cpu.js';
+import '../memory/memory.js';
+import '../os-icon/os-icon.js';
+import '../process-list/process-list.js';
 
 function formatTime(seconds: number) {
   if (seconds < 60) {

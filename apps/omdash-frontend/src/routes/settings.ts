@@ -1,7 +1,7 @@
 import { LitElement, css, html } from 'lit';
 import { customElement } from 'lit/decorators.js';
 
-import '../components/box.js';
+import '../components/box/box.js';
 
 @customElement('om-settings')
 export class OmSettings extends LitElement {
