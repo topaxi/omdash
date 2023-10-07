@@ -20,6 +20,18 @@ export class OmGlobalClock extends LitElement {
   }
 }
 
+@customElement('om-global-date')
+export class OmGlobalDate extends LitElement {
+  now = new ClockController(this, 60_000);
+
+  protected render(): unknown {
+    return new Date(this.now.value).toLocaleDateString('de-CH', {
+      day: '2-digit',
+      month: 'short',
+    }).slice(0, -1);
+  }
+}
+
 function quantile(arr: TypedArray, q: number) {
   const sorted = arr.sort();
 
@@ -95,6 +107,10 @@ export class OmGlobal extends LitElement {
         opacity: 0.4;
       }
 
+      om-global-date {
+        font-size: 0.71rem;
+      }
+
       om-link[aria-selected='true'] om-app-icon {
         opacity: 0.9;
       }
@@ -104,6 +120,7 @@ export class OmGlobal extends LitElement {
   protected override render(): unknown {
     return html`
       <om-global-clock></om-global-clock>
+      <om-global-date></om-global-date>
       <om-link to="/">
         <om-app-icon class="icon-button" name="host-dashboard">󰊚</om-app-icon>
       </om-link>
@@ -124,5 +141,6 @@ declare global {
   interface HTMLElementTagNameMap {
     'om-global': OmGlobal;
     'om-global-clock': OmGlobalClock;
+    'om-global-date': OmGlobalDate;
   }
 }
