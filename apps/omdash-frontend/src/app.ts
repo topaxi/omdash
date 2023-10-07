@@ -1,50 +1,18 @@
 import { Router } from '@vaadin/router';
-import { LitElement, css, html } from 'lit';
+import { LitElement, html } from 'lit';
 import { customElement, query } from 'lit/decorators.js';
 
 import { connect } from './store/connect.js';
 
 import './components/global/global.js';
-import './routes/hosts.js';
-import './routes/network.js';
-import './routes/settings.js';
+import './routes/hosts/hosts.js';
+import './routes/network/network.js';
+import './routes/settings/settings.js';
+import { appStyles } from './app.styles.js';
 
 @customElement('om-app')
 export class OmApp extends connect()(LitElement) {
-  static styles = css`
-    :host {
-      --tile-gap: 1rem;
-      display: flex;
-      gap: var(--tile-gap);
-      padding: var(--tile-gap);
-
-      position: relative;
-      isolation: isolate;
-      contain: strict;
-    }
-
-    :host::before {
-      content: '';
-      position: absolute;
-
-      width: calc(100% + 8px);
-      height: calc(100% + 8px);
-
-      left: -4px;
-      top: -4px;
-
-      background-image: url(https://source.unsplash.com/random/1280×400/?pcb);
-      background-size: cover;
-
-      filter: grayscale(0.5) brightness(0.25);
-
-      z-index: -1;
-    }
-
-    #outlet {
-      display: contents;
-    }
-  `;
+  static styles = appStyles;
 
   private ws: WebSocket | null = null;
 

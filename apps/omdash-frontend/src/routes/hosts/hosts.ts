@@ -1,22 +1,17 @@
-import { LitElement, css, html } from 'lit';
+import { LitElement, html } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
-import { RootState } from '../store';
-import { connect } from '../store/connect';
+import { RootState } from '../../store/index.js';
+import { connect } from '../../store/connect.js';
 
-import '../components/host/host.js';
+import '../../components/host/host.js';
+import { hostsStyles } from './hosts.styles.js';
 
 const identity = <T>(value: T) => value;
 
 @customElement('om-hosts')
 export class Hosts extends connect()(LitElement) {
-  static styles = css`
-    :host {
-      display: flex;
-      gap: var(--tile-gap);
-      flex-grow: 1;
-    }
-  `;
+  static styles = hostsStyles;
 
   @state()
   private hostnames: string[] = [];

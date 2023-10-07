@@ -2,32 +2,16 @@ import { LitElement, PropertyValueMap, css, html } from 'lit';
 import { customElement, query, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 
-import '../components/box/box.js';
-import '../components/line-graph/line-graph.js';
-import { OmLineGraph } from '../components/line-graph/line-graph.js';
-import { connect } from '../store/connect.js';
-import { RootState } from '../store/index.js';
+import '../../components/box/box.js';
+import '../../components/line-graph/line-graph.js';
+import { OmLineGraph } from '../../components/line-graph/line-graph.js';
+import { connect } from '../../store/connect.js';
+import { RootState } from '../../store/index.js';
+import { networkStyles } from './network.styles.js';
 
 @customElement('om-network')
 export class OmNetwork extends connect()(LitElement) {
-  static styles = css`
-    :host {
-      display: flex;
-      width: 100%;
-      height: 100%;
-    }
-
-    .content {
-      position: relative;
-      flex-grow: 1;
-    }
-
-    .legend {
-      position: absolute;
-      left: 36px;
-      font-size: 0.9rem;
-    }
-  `;
+  static styles = networkStyles;
 
   @query('.content')
   content!: HTMLDivElement;
