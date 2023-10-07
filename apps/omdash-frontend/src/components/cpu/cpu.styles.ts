@@ -33,7 +33,7 @@ export const cpuStyles = css`
     width: 134px;
   }
 
-  @container host (min-width: 330px) {
+  @container host (min-width: 330px) and (min-height: 180px) {
     om-gauge {
       width: 160px;
     }
