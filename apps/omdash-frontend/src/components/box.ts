@@ -20,3 +20,9 @@ export class OmBox extends LitElement {
     return html`<slot></slot>`;
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'om-box': OmBox;
+  }
+}

@@ -81,3 +81,9 @@ export class OmGauge extends LitElement {
     return html`<slot></slot>`;
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'om-gauge': OmGauge;
+  }
+}

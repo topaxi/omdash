@@ -152,3 +152,9 @@ export class OmProcessList extends connect()(LitElement) {
     `;
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'om-process-list': OmProcessList;
+  }
+}

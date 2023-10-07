@@ -174,3 +174,9 @@ export class OmLineGraph extends LitElement {
     return html`<svg width=${this.width} height=${this.height}></svg>`;
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'om-line-graph': OmLineGraph;
+  }
+}

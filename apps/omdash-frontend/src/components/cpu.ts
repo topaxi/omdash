@@ -270,3 +270,9 @@ export class OmCpu extends connect()(LitElement) {
     return html` ${this.renderCPUUsage()} ${this.renderLoadAverage()} `;
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'om-cpu': OmCpu;
+  }
+}

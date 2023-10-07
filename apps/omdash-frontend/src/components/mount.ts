@@ -30,3 +30,9 @@ export class OmMount extends LitElement {
     `;
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'om-mount': OmMount;
+  }
+}

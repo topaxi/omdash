@@ -56,3 +56,9 @@ export class OmLink extends LitElement {
     return html`<slot></slot>`;
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'om-link': OmLink;
+  }
+}

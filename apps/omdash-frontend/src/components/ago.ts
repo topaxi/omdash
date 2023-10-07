@@ -44,3 +44,9 @@ export class OmAgo extends LitElement {
     return timeDifference(this.date, this.now.value);
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'om-ago': OmAgo;
+  }
+}
