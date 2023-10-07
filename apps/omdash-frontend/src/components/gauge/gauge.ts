@@ -7,7 +7,7 @@ import { gaugeStyles } from './gauge.styles.js';
 export class OmGauge extends LitElement {
   static styles = gaugeStyles;
 
-  @property()
+  @property({ type: Number })
   percent = 0;
 
   @property()

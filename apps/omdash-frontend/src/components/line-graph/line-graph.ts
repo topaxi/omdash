@@ -30,10 +30,10 @@ export class OmLineGraph extends LitElement {
   @property({ type: Array })
   data: Array<{ color: string; values: { x: number; y: number }[] }> = [];
 
-  @property()
+  @property({ type: Number })
   width = 100;
 
-  @property()
+  @property({ type: Number })
   height = 100;
 
   @query('svg')
