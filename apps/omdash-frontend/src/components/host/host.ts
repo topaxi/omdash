@@ -5,12 +5,13 @@ import { connect } from '../../store/connect.js';
 import { RootState } from '../../store/index.js';
 
 import '../ago/ago.js';
-import { OmBox } from '../box/box.js';
+import { boxStyles } from '../box/box.styles.js';
 import '../gauge/gauge.js';
 import '../cpu/cpu.js';
 import '../memory/memory.js';
 import '../os-icon/os-icon.js';
 import '../process-list/process-list.js';
+import { hostStyles } from './host.styles.js';
 
 function formatTime(seconds: number) {
   if (seconds < 60) {
@@ -38,58 +39,7 @@ function formatTime(seconds: number) {
 
 @customElement('om-host')
 export class OmHost extends connect()(LitElement) {
-  static styles = [
-    OmBox.styles,
-    css`
-      :host {
-        flex: 1 1 0;
-        max-width: calc(50% - 0.5rem);
-        overflow: hidden;
-        container: host / inline-size;
-      }
-
-      :host(.offline) {
-        opacity: 0.8;
-        filter: grayscale();
-      }
-
-      .gauges {
-        display: flex;
-        gap: 0.5rem;
-      }
-
-      .gauges > * {
-        flex: 1 1 0;
-      }
-
-      .host-title {
-        display: flex;
-        gap: 1ch;
-      }
-
-      .battery {
-        margin-left: auto;
-      }
-
-      @keyframes pulse {
-        0% {
-          opacity: 1;
-        }
-
-        50% {
-          opacity: 0.2;
-        }
-
-        100% {
-          opacity: 1;
-        }
-      }
-
-      .critical {
-        animation: pulse 1s infinite;
-      }
-    `,
-  ];
+  static styles = [boxStyles, hostStyles];
 
   private now = new ClockController(this, 5000);
 

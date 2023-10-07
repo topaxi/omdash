@@ -1,18 +1,10 @@
-import { LitElement, css, html } from 'lit';
+import { LitElement, html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
+import { mountStyles } from './mount.styles.js';
 
 @customElement('om-mount')
 export class OmMount extends LitElement {
-  static styles = css`
-    :host {
-      font-size: 0.8rem;
-    }
-
-    progress {
-      display: block;
-      height: 0.5rem;
-    }
-  `;
+  static styles = mountStyles;
 
   @property({ attribute: 'mount' })
   mountPath = '';

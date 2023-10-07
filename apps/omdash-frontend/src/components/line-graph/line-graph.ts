@@ -1,6 +1,7 @@
 import * as d3 from 'd3';
-import { LitElement, PropertyValueMap, css, html } from 'lit';
+import { LitElement, PropertyValueMap, html } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
+import { lineGraphStyles } from './line-graph.styles.js';
 
 const MARGIN_LEFT = 24;
 
@@ -9,23 +10,7 @@ const gety = <T>(d: { y: T }) => d.y;
 
 @customElement('om-line-graph')
 export class OmLineGraph extends LitElement {
-  static styles = css`
-    :host {
-      display: block;
-    }
-
-    .axis path,
-    .axis line {
-      fill: none;
-      stroke: #dddddd;
-      shape-rendering: crispEdges;
-    }
-
-    .axis text {
-      font: 10px sans-serif;
-      fill: #dddddd;
-    }
-  `;
+  static styles = lineGraphStyles;
 
   @property({ type: Array })
   data: Array<{ color: string; values: { x: number; y: number }[] }> = [];
