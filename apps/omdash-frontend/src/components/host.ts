@@ -21,12 +21,18 @@ function formatTime(seconds: number) {
     const minuteText = minutes + 'm';
     const secondText = remainderSeconds + 's';
     return `${minuteText}${secondText}`;
-  } else {
+  } else if (seconds < 86400) {
     const hours = Math.floor(seconds / 3600);
     const remainderMinutes = Math.floor((seconds % 3600) / 60);
     const hourText = hours + 'h';
     const minuteText = remainderMinutes + 'm';
     return `${hourText}${minuteText}`;
+  } else {
+    const days = Math.floor(seconds / 86400);
+    const remainderHours = Math.floor((seconds % 86400) / 3600);
+    const dayText = days + 'd';
+    const hourText = remainderHours + 'h';
+    return `${dayText}${hourText}`;
   }
 }
 
