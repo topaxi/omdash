@@ -29,7 +29,15 @@ export type AppDispatch = typeof store.dispatch;
 
 store.dispatch(initStoreFromIndexedDB());
 
-expose(store);
+if (import.meta.env.VITE_SHARED_WORKER === 'true') {
+  self.addEventListener('connect', (event: any) => {
+    const [port] = event.ports;
+
+    expose(store, port);
+  });
+} else {
+  expose(store);
+}
 
 function onWebSocketMessage(event: MessageEvent<any>) {
   const action = JSON.parse(event.data);

@@ -1,16 +1,25 @@
 import type { Store } from '@reduxjs/toolkit';
-import { wrap } from 'comlink';
-import { remoteStoreWrapper } from './remote-store';
-import type { RootState } from './worker';
-import workerUrl from './worker.js?worker&url';
+import { Remote, wrap } from 'comlink';
+import { remoteStoreWrapper } from './remote-store.js';
+import type { RootState } from './worker.js';
 
 export type { RootState };
 
-const remoteStore = wrap<Store<RootState>>(
-  new Worker(workerUrl, {
+let remoteStore: Remote<Store<RootState>>;
+
+if (import.meta.env.VITE_SHARED_WORKER === 'true') {
+  const worker = new SharedWorker(new URL('./worker', import.meta.url), {
     type: 'module',
-  }),
-);
+  });
+
+  remoteStore = wrap<Store<RootState>>(worker.port);
+} else {
+  const worker = new Worker(new URL('./worker', import.meta.url), {
+    type: 'module',
+  });
+
+  remoteStore = wrap<Store<RootState>>(worker);
+}
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
