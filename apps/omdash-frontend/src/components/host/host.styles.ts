@@ -4,7 +4,7 @@ export const hostStyles = css`
   :host {
     overflow: hidden;
     container: host / size;
-    contain: layout paint;
+    contain: strict;
     max-width: 460px;
     box-sizing: border-box;
   }
