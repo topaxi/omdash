@@ -21,6 +21,4 @@ if (import.meta.env.VITE_SHARED_WORKER === 'true') {
   remoteStore = wrap<Store<RootState>>(worker);
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 export const store = await remoteStoreWrapper(remoteStore);
