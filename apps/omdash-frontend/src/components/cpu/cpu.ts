@@ -42,27 +42,7 @@ export class OmCpu extends connect()(LitElement) {
     this.cpuTemperature = Math.round(client.temperature?.cpu?.max);
   }
 
-  private renderCPUUsage() {
-    const averageCPUUsage = this.averageCPUUsage();
-
-    return html`
-      <om-gauge
-        class="cpu-usage"
-        style="--color: var(--ctp-macchiato-red)"
-        label="CPU"
-        percent=${Math.round(averageCPUUsage)}
-      >
-        <div class="cpu-speed">
-          ${this.formatMegahertz(this.averageCPUSpeed())}
-        </div>
-        ${this.cpuTemperature > 0
-          ? html`<div class="cpu-temperature"> ${this.cpuTemperature}°C</div>`
-          : ''}
-      </om-gauge>
-    `;
-  }
-
-  private averageCPUUsage() {
+  private get averageCPUUsage() {
     const cpuTimes = this.getTotalCPUTimes(this.cpus);
     const prevCpuTimes = this.getTotalCPUTimes(this.pcpus);
 
@@ -155,7 +135,7 @@ export class OmCpu extends connect()(LitElement) {
     return 'normal';
   }
 
-  private averageCPUSpeed() {
+  private get averageCPUSpeed() {
     if (this.cpus.length === 0) {
       return 0;
     }
@@ -166,7 +146,22 @@ export class OmCpu extends connect()(LitElement) {
   }
 
   protected render(): unknown {
-    return html`${this.renderCPUUsage()} ${this.renderLoadAverage()}`;
+    return html`
+      <om-gauge
+        class="cpu-usage"
+        style="--color: var(--ctp-macchiato-red)"
+        label="CPU"
+        percent=${Math.round(this.averageCPUUsage)}
+      >
+        <div class="cpu-speed">
+          ${this.formatMegahertz(this.averageCPUSpeed)}
+        </div>
+        ${this.cpuTemperature > 0
+          ? html`<div class="cpu-temperature"> ${this.cpuTemperature}°C</div>`
+          : ''}
+      </om-gauge>
+      ${this.renderLoadAverage()}
+    `;
   }
 }
 
