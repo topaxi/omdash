@@ -3,6 +3,7 @@ import { customElement, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { RootState } from '../../store/index.js';
 import { connect } from '../../store/connect.js';
+import { mapEntries } from '../../utils/object/mapEntries.js';
 
 import '../../components/host/host.js';
 import { hostsStyles } from './hosts.styles.js';
@@ -22,12 +23,10 @@ export class Hosts extends connect()(LitElement) {
   override stateChanged(state: RootState) {
     this.hostnames = Object.keys(state.clients);
 
-    this.lastUpdatedHosts = Object.fromEntries(
-      Object.entries(state.clients).map(([client, { lastUpdate }]) => [
-        client,
-        lastUpdate,
-      ]),
-    );
+    this.lastUpdatedHosts = mapEntries(state.clients, ([hostname, { lastUpdate }]) => [
+      hostname,
+      lastUpdate,
+    ]);
   }
 
   private get activeHosts() {

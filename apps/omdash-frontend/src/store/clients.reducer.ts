@@ -34,8 +34,49 @@ export type TemperatureAction = OmClientAction<
   }
 >;
 
+export interface ClientState {
+  addr: string;
+  hostname: string;
+  platform: string;
+  release: string;
+  uptime: number;
+  lastUpdate: number;
+  load: [number, number, number];
+  cpus: any[];
+  pcpus: any[];
+  memory: {
+    total: number;
+    free: number;
+    used: number;
+    active: number;
+    available: number;
+    buffcache: number;
+    swaptotal: number;
+    swapused: number;
+    swapfree: number;
+  };
+  ps: {
+    count: number;
+    highestCpu: any[];
+    highestMemory: any[];
+  };
+  battery: {
+    isCharging: boolean;
+    percent: number;
+  };
+  temperature: {
+    cpu: {
+      main: number;
+      cores: number[];
+      max: number;
+      socket: number[];
+      chipset: number;
+    };
+  };
+}
+
 export interface ClientsState {
-  [key: string]: any;
+  [key: string]: ClientState;
 }
 
 export const initialClientsState: ClientsState = {};
