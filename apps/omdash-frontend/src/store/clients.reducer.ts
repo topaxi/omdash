@@ -73,6 +73,27 @@ export interface ClientState {
       chipset: number;
     };
   };
+  gpus: Array<{
+    bus?: string;
+    model?: string;
+    vendor?: string;
+    vram?: number;
+    vramDynamic?: boolean;
+    clockCore?: number;
+    clockMemory?: number;
+    driverVersion?: string;
+    memoryFree?: number;
+    memoryTotal?: number;
+    memoryUsed?: number;
+    name?: string;
+    pciBus?: string;
+    powerDraw?: number;
+    powerLimit?: number;
+    subDeviceId?: string;
+    temperatureGpu?: number;
+    utilizationGpu?: number;
+    utilizationMemory?: number;
+  }>;
 }
 
 export interface ClientsState {

@@ -25,10 +25,12 @@ export class OmGlobalDate extends LitElement {
   now = new ClockController(this, 60_000);
 
   protected render(): unknown {
-    return new Date(this.now.value).toLocaleDateString('de-CH', {
-      day: '2-digit',
-      month: 'short',
-    }).slice(0, -1);
+    return new Date(this.now.value)
+      .toLocaleDateString('de-CH', {
+        day: '2-digit',
+        month: 'short',
+      })
+      .slice(0, -1);
   }
 }
 

@@ -1,5 +1,6 @@
-import { LitElement, css, html } from 'lit';
+import { LitElement, html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
+import { repeat } from 'lit/directives/repeat.js';
 import { ClockController } from '../../controllers/clock.js';
 import { connect } from '../../store/connect.js';
 import { RootState } from '../../store/index.js';
@@ -8,6 +9,7 @@ import '../ago/ago.js';
 import { boxStyles } from '../box/box.styles.js';
 import '../gauge/gauge.js';
 import '../cpu/cpu.js';
+import '../gpu/gpu.js';
 import '../memory/memory.js';
 import '../os-icon/os-icon.js';
 import '../process-list/process-list.js';
@@ -67,6 +69,15 @@ export class OmHost extends connect()(LitElement) {
   @state()
   private battery: { isCharging: boolean; percent: number } | null = null;
 
+  @state()
+  private gpuIndices: number[] = [];
+
+  private gpuProvidesMetrics(
+    gpu: RootState['clients'][string]['gpus'][number],
+  ) {
+    return Boolean(gpu.utilizationGpu || (gpu.memoryUsed && gpu.memoryTotal));
+  }
+
   override stateChanged(state: RootState): void {
     const client = state.clients[this.hostname];
 
@@ -81,6 +92,11 @@ export class OmHost extends connect()(LitElement) {
     this.lastUpdate = client.lastUpdate || this.lastUpdate;
     this.processCount = client.ps?.count ?? 0;
     this.battery = client.battery ?? null;
+    this.gpuIndices =
+      client.gpus
+        ?.map((_, i) => i)
+        .filter((gpuIndex) => this.gpuProvidesMetrics(client.gpus[gpuIndex])) ??
+      [];
 
     this.classList.toggle('offline', this.isOffline);
   }
@@ -162,6 +178,12 @@ export class OmHost extends connect()(LitElement) {
       <div class="gauges">
         <om-cpu hostname=${this.hostname}></om-cpu>
         <om-memory hostname=${this.hostname}></om-memory>
+        ${repeat(
+          this.gpuIndices,
+          (i) => i,
+          (i) =>
+            html`<om-gpu hostname=${this.hostname} gpuIndex=${i}></om-gpu>`,
+        )}
       </div>
       <div class="processes">Processes: ${this.processCount}</div>
       <om-process-list name=${this.hostname}></om-process-list>

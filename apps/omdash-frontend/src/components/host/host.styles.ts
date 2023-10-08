@@ -3,7 +3,6 @@ import { css } from 'lit';
 export const hostStyles = css`
   :host {
     flex: 1 1 0;
-    max-width: calc(50% - 0.5rem);
     overflow: hidden;
     container: host / inline-size;
   }

@@ -4,6 +4,8 @@ export const gaugeStyles = css`
   :host {
     display: block;
     position: relative;
+    width: 100%;
+    container: gauge / inline-size;
   }
 
   text {

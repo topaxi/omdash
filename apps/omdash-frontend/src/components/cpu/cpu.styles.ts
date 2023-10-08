@@ -1,6 +1,10 @@
 import { css } from 'lit';
 
 export const cpuStyles = css`
+  :host {
+    position: relative;
+  }
+
   .load-average {
     display: flex;
     gap: 1ch;
@@ -8,12 +12,6 @@ export const cpuStyles = css`
     margin: 0 auto;
     text-align: center;
     font-size: 0.8rem;
-  }
-
-  .cpu-usage {
-    position: relative;
-    display: flex;
-    justify-content: center;
   }
 
   .cpu-speed {
@@ -31,6 +29,9 @@ export const cpuStyles = css`
 
   om-gauge {
     width: 134px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
   }
 
   @container host (min-width: 330px) {

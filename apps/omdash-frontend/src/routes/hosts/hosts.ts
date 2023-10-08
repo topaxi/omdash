@@ -23,10 +23,10 @@ export class Hosts extends connect()(LitElement) {
   override stateChanged(state: RootState) {
     this.hostnames = Object.keys(state.clients);
 
-    this.lastUpdatedHosts = mapEntries(state.clients, ([hostname, { lastUpdate }]) => [
-      hostname,
-      lastUpdate,
-    ]);
+    this.lastUpdatedHosts = mapEntries(
+      state.clients,
+      ([hostname, { lastUpdate }]) => [hostname, lastUpdate],
+    );
   }
 
   private get activeHosts() {
