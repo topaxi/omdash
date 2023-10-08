@@ -156,7 +156,7 @@ export class OmCpu extends connect()(LitElement) {
         <div class="cpu-speed">
           ${this.formatMegahertz(this.averageCPUSpeed)}
         </div>
-        ${this.cpuTemperature > 0
+        ${this.cpuTemperature > 0 && this.cpuTemperature < 128
           ? html`<div class="cpu-temperature"> ${this.cpuTemperature}°C</div>`
           : ''}
       </om-gauge>
