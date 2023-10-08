@@ -78,9 +78,9 @@ export class OmMemory extends connect()(LitElement) {
           percent=${Math.round(utilization)}
         >
           ${this.gpuTemperature > 0
-            ? html`
-                <div class="gpu-temperature"> ${this.gpuTemperature}°C</div>
-              `
+            ? html`<div class="gpu-temperature">
+                 ${this.gpuTemperature}°C
+              </div>`
             : ''}
         </om-gauge>
         <om-gauge
