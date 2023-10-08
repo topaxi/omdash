@@ -1,6 +1,9 @@
 import { css } from 'lit';
+import { keyframes } from '../../styles/keyframes';
 
 export const memoryStyles = css`
+  ${keyframes}
+
   om-gauge {
     width: 134px;
   }
@@ -34,29 +37,6 @@ export const memoryStyles = css`
 
   .available-memory > span:last-child::before {
     content: '/';
-  }
-
-  @keyframes fade-in {
-    0% {
-      opacity: 0;
-    }
-    100% {
-      opacity: 1;
-    }
-  }
-
-  @keyframes pulse {
-    0% {
-      opacity: 1;
-    }
-
-    50% {
-      opacity: 0.2;
-    }
-
-    100% {
-      opacity: 1;
-    }
   }
 
   .critical {

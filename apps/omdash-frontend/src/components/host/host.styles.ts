@@ -1,6 +1,9 @@
 import { css } from 'lit';
+import { keyframes } from '../../styles/keyframes';
 
 export const hostStyles = css`
+  ${keyframes}
+
   :host {
     flex: 1 1 0;
     overflow: hidden;
@@ -28,20 +31,6 @@ export const hostStyles = css`
 
   .battery {
     margin-left: auto;
-  }
-
-  @keyframes pulse {
-    0% {
-      opacity: 1;
-    }
-
-    50% {
-      opacity: 0.2;
-    }
-
-    100% {
-      opacity: 1;
-    }
   }
 
   .critical {

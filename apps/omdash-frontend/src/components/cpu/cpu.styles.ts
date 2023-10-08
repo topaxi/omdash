@@ -1,6 +1,9 @@
 import { css } from 'lit';
+import { keyframes } from '../../styles/keyframes';
 
 export const cpuStyles = css`
+  ${keyframes}
+
   :host {
     position: relative;
   }
@@ -59,20 +62,6 @@ export const cpuStyles = css`
 
     .cpu-speed {
       top: 4em;
-    }
-  }
-
-  @keyframes pulse {
-    0% {
-      opacity: 1;
-    }
-
-    50% {
-      opacity: 0.2;
-    }
-
-    100% {
-      opacity: 1;
     }
   }
 

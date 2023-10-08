@@ -1,6 +1,9 @@
 import { css } from 'lit';
+import { keyframes } from '../../styles/keyframes';
 
 export const gpuStyles = css`
+  ${keyframes}
+
   om-gauge {
     width: 134px;
   }
@@ -42,30 +45,7 @@ export const gpuStyles = css`
     content: '/';
   }
 
-  @keyframes fade-in {
-    0% {
-      opacity: 0;
-    }
-    100% {
-      opacity: 1;
-    }
-  }
-
-  @keyframes pulse {
-    0% {
-      opacity: 1;
-    }
-
-    50% {
-      opacity: 0.2;
-    }
-
-    100% {
-      opacity: 1;
-    }
-  }
-
-  .critical {
+  .memory.critical {
     animation: pulse 0.5s infinite ease-in-out;
   }
 
