@@ -38,7 +38,7 @@ export class OmCpu extends connect()(LitElement) {
 
     this.cpus = client.cpus ?? [];
     this.pcpus = client.pcpus ?? [];
-    this.loadAverage = client.load ?? [1, 1, 1];
+    this.loadAverage = client.load ?? [0, 0, 0];
     this.cpuTemperature = Math.round(client.temperature?.cpu?.max);
   }
 
@@ -159,8 +159,8 @@ export class OmCpu extends connect()(LitElement) {
         ${this.cpuTemperature > 0 && this.cpuTemperature < 128
           ? html`<div class="cpu-temperature"> ${this.cpuTemperature}°C</div>`
           : ''}
+        ${this.renderLoadAverage()}
       </om-gauge>
-      ${this.renderLoadAverage()}
     `;
   }
 }

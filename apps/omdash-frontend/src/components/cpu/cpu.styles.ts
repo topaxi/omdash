@@ -6,6 +6,10 @@ export const cpuStyles = css`
 
   :host {
     position: relative;
+    width: 134px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
   }
 
   .load-average {
@@ -30,15 +34,8 @@ export const cpuStyles = css`
     font-size: 0.8rem;
   }
 
-  om-gauge {
-    width: 134px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: center;
-  }
-
   @container host (min-width: 330px) {
-    om-gauge {
+    :host {
       width: 160px;
     }
 
@@ -56,7 +53,7 @@ export const cpuStyles = css`
   }
 
   @container host (min-width: 420px) {
-    om-gauge {
+    :host {
       width: 220px;
     }
 

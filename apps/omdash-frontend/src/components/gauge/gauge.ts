@@ -1,5 +1,5 @@
 import { LitElement, PropertyValueMap, html } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { customElement, property, query } from 'lit/decorators.js';
 import { Gauge } from 'omdash-gauge';
 import { gaugeStyles } from './gauge.styles.js';
 
@@ -13,6 +13,9 @@ export class OmGauge extends LitElement {
   @property()
   label = '';
 
+  @query('.gauge-container')
+  gaugeElement!: HTMLDivElement;
+
   private gauge!: Gauge;
 
   private renderLabel(value: number): string {
@@ -22,7 +25,7 @@ export class OmGauge extends LitElement {
   protected firstUpdated(
     _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>,
   ): void {
-    this.gauge = new Gauge(this.shadowRoot!, {
+    this.gauge = new Gauge(this.gaugeElement, {
       max: 100,
       min: 0,
       dialStartAngle: 180,
@@ -43,7 +46,7 @@ export class OmGauge extends LitElement {
   }
 
   protected render(): unknown {
-    return html`<slot></slot>`;
+    return html`<slot name="before"></slot><div part="gauge-container" class="gauge-container"></div><slot></slot>`;
   }
 }
 
