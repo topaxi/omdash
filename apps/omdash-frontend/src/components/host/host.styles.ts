@@ -26,11 +26,18 @@ export const hostStyles = css`
 
   .host-title {
     display: flex;
+    flex-wrap: wrap;
     gap: 1ch;
+    white-space: nowrap;
+    padding-right: 56px;
+    line-height: 0.75;
+    padding-top: 4px;
   }
 
   .battery {
-    margin-left: auto;
+    position: absolute;
+    top: 8px;
+    right: 1ch;
   }
 
   .critical {

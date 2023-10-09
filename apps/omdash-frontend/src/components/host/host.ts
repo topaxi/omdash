@@ -171,9 +171,9 @@ export class OmHost extends connect()(LitElement) {
             ${this.hostname.split('.')[0]} ${this.renderUptime()}
             ${this.renderLastUpdate()}
           </div>
+          <small class="host-addr">${this.formatIp(this.addr)}</small>
           ${this.renderBattery()}
         </div>
-        <small>${this.formatIp(this.addr)}</small>
       </div>
       <div class="gauges">
         <om-cpu hostname=${this.hostname}></om-cpu>
