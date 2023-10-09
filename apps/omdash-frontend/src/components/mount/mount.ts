@@ -28,6 +28,8 @@ export class OmMount extends LitElement {
   }
 
   protected render() {
+    const usedRatio = this.used / this.size;
+
     return html`
       <div class="label">
         <div class="mount-path">${this.mountPath}</div>
@@ -36,10 +38,11 @@ export class OmMount extends LitElement {
         </div>
       </div>
       <meter
+        class="${usedRatio > 0.9 ? 'very-high' : usedRatio > 0.75  ? 'high' : 'normal'}"
         min="0"
         max=${this.size}
         value=${this.used}
-        low=${this.size * 0.2}
+        optimum=${this.size * 0.5}
         high=${this.size * 0.8}
       ></meter>
     `;
