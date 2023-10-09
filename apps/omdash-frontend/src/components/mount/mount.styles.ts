@@ -5,7 +5,7 @@ export const mountStyles = css`
     font-size: 0.8rem;
   }
 
-  progress {
+  meter {
     display: block;
     height: 0.5rem;
   }

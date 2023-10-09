@@ -94,6 +94,11 @@ export interface ClientState {
     utilizationGpu?: number;
     utilizationMemory?: number;
   }>;
+  fsSize: Array<{
+    size: number;
+    used: number;
+    mount: string;
+  }>;
 }
 
 export interface ClientsState {

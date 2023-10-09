@@ -224,7 +224,9 @@ async function getDisks() {
   return {
     type: 'metric',
     payload: {
-      fsSize: (await si.fsSize()).filter(({ fs }) => fs.startsWith('/dev/')),
+      fsSize: (await si.fsSize()).filter(
+        ({ fs }) => fs.startsWith('/dev/') || /^[A-Z]:/.test(fs),
+      ),
     },
   };
 }

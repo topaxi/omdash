@@ -18,7 +18,7 @@ export class OmMount extends LitElement {
   protected render() {
     return html`
       <div class="mount-path">${this.mountPath}</div>
-      <progress min="0" max=${this.size} value=${this.used}></progress>
+      <meter min="0" max=${this.size} value=${this.used}></meter>
     `;
   }
 }

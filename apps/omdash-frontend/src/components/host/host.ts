@@ -11,6 +11,7 @@ import '../gauge/gauge.js';
 import '../cpu/cpu.js';
 import '../gpu/gpu.js';
 import '../memory/memory.js';
+import '../mount/mount.js';
 import '../os-icon/os-icon.js';
 import '../process-list/process-list.js';
 import { hostStyles } from './host.styles.js';
@@ -72,6 +73,9 @@ export class OmHost extends connect()(LitElement) {
   @state()
   private gpuIndices: number[] = [];
 
+  @state()
+  private fsSize: { size: number; used: number; mount: string }[] = [];
+
   private gpuProvidesMetrics(
     gpu: RootState['clients'][string]['gpus'][number],
   ) {
@@ -97,6 +101,7 @@ export class OmHost extends connect()(LitElement) {
         ?.map((_, i) => i)
         .filter((gpuIndex) => this.gpuProvidesMetrics(client.gpus[gpuIndex])) ??
       [];
+    this.fsSize = client.fsSize ?? [];
 
     this.classList.toggle('offline', this.isOffline);
   }
@@ -185,8 +190,26 @@ export class OmHost extends connect()(LitElement) {
             html`<om-gpu hostname=${this.hostname} gpuIndex=${i}></om-gpu>`,
         )}
       </div>
-      <div class="processes">Processes: ${this.processCount}</div>
-      <om-process-list name=${this.hostname}></om-process-list>
+      <div style="display: flex; gap: 1rem">
+        <div class="process-list">
+          <div class="processes">Processes: ${this.processCount}</div>
+          <om-process-list name=${this.hostname}></om-process-list>
+        </div>
+        <div class="mount-list">
+          <div class="mounts">Drives</div>
+          ${repeat(
+            this.fsSize,
+            (fs) => fs.mount,
+            (fs) => html`
+              <om-mount
+                mount=${fs.mount}
+                size=${fs.size}
+                used=${fs.used}
+              ></om-mount>
+            `,
+          )}
+        </div>
+      </div>
     `;
   }
 }

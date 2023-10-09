@@ -44,4 +44,14 @@ export const hostStyles = css`
   .critical {
     animation: pulse 1s infinite;
   }
+
+  .mount-list {
+    display: none;
+  }
+
+  @container host (min-width: 320px) {
+    .mount-list {
+      display: block;
+    }
+  }
 `;
