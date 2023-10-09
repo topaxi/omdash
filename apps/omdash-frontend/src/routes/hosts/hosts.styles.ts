@@ -7,7 +7,7 @@ export const hostsStyles = css`
     flex-grow: 1;
   }
 
-  om-host[name="ompi"] {
+  om-host[hostname="ompi"] {
     max-width: 400px;
   }
 `;
