@@ -6,4 +6,8 @@ export const hostsStyles = css`
     gap: var(--tile-gap);
     flex-grow: 1;
   }
+
+  om-host[name="ompi"] {
+    max-width: 400px;
+  }
 `;

@@ -5,6 +5,7 @@ export const processListStyles = css`
     display: flex;
     gap: 1rem;
     white-space: nowrap;
+    max-width: 400px;
 
     -webkit-mask-image: linear-gradient(
       rgba(0, 0, 0, 1) 0 50%,
