@@ -50,6 +50,10 @@ export const hostStyles = css`
   }
 
   @container host (min-width: 320px) {
+    .process-list, .mount-list {
+      flex: 1 1 0;
+    }
+
     .mount-list {
       display: block;
     }
