@@ -5,7 +5,7 @@ export const memoryStyles = css`
   ${keyframes}
 
   :host {
-    min-width: 200px; /* Aligned with cpu styles */
+    min-width: 180px; /* Aligned with cpu styles */
   }
 
   .swap {

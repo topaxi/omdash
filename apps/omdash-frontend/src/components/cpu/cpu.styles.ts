@@ -9,7 +9,7 @@ export const cpuStyles = css`
     margin: 0 auto;
     display: flex;
     justify-content: center;
-    min-width: 200px; /* To be defined, smaller makes temperature text barely readable, could be fixed with container query */
+    min-width: 180px; /* To be defined, smaller makes temperature text barely readable, could be fixed with container query */
   }
 
   .load-average {
@@ -32,8 +32,14 @@ export const cpuStyles = css`
   }
 
   .cpu-temperature {
-    font-size: 0.3em;
+    font-size: 0.35em;
     fill: currentColor;
+  }
+
+  @container gauge (min-width: 200px) {
+    .cpu-temperature {
+      font-size: 0.3em;
+    }
   }
 
   @container host (min-width: 330px) {

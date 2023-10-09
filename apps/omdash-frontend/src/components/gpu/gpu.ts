@@ -1,4 +1,4 @@
-import { LitElement, css, html } from 'lit';
+import { LitElement, css, html, svg } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { connect } from '../../store/connect.js';
 import { RootState } from '../../store/index.js';
@@ -77,11 +77,22 @@ export class OmMemory extends connect()(LitElement) {
           label="GPU"
           percent=${Math.round(utilization)}
         >
-          ${this.gpuTemperature > 0
-            ? html`<div class="gpu-temperature">
-                 ${this.gpuTemperature}°C
-              </div>`
-            : ''}
+          <svg viewBox="0 0 100 55" class="gpu-text-overlay">
+            ${this.gpuTemperature > 0
+              ? svg`
+                  <text
+                    class="gpu-temperature"
+                    x="5"
+                    y="7"
+                    text-anchor="left"
+                    alignment-baseline="middle"
+                    dominant-baseline="central"
+                  >
+                     ${this.gpuTemperature}°C
+                  </text>
+                `
+              : ''}
+          </svg>
         </om-gauge>
         <om-gauge
           class="memory ${memoryPercentage > 90 ? 'critical' : ''}"
