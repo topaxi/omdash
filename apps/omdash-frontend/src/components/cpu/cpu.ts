@@ -1,4 +1,4 @@
-import { LitElement, html } from 'lit';
+import { LitElement, html, svg } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { connect } from '../../store/connect.js';
 import { RootState } from '../../store';
@@ -153,12 +153,32 @@ export class OmCpu extends connect()(LitElement) {
         label="CPU"
         percent=${Math.round(this.averageCPUUsage)}
       >
-        <div class="cpu-speed">
-          ${this.formatMegahertz(this.averageCPUSpeed)}
-        </div>
-        ${this.cpuTemperature > 0 && this.cpuTemperature < 128
-          ? html`<div class="cpu-temperature"> ${this.cpuTemperature}°C</div>`
-          : ''}
+        <svg viewBox="0 0 100 55" class="cpu-text-overlay">
+          <text
+            class="cpu-speed"
+            x="50"
+            y="37"
+            text-anchor="middle"
+            alignment-baseline="middle"
+            dominant-baseline="central"
+          >
+            ${this.formatMegahertz(this.averageCPUSpeed)}
+          </text>
+          ${this.cpuTemperature > 0 && this.cpuTemperature < 128
+            ? svg`
+                <text
+                  class="cpu-temperature"
+                  x="5"
+                  y="7"
+                  text-anchor="left"
+                  alignment-baseline="middle"
+                  dominant-baseline="central"
+                >
+                   ${this.cpuTemperature}°C
+                </text>
+              `
+            : ''}
+        </svg>
         ${this.renderLoadAverage()}
       </om-gauge>
     `;

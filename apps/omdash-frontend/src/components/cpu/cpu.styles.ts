@@ -6,7 +6,6 @@ export const cpuStyles = css`
 
   :host {
     position: relative;
-    width: 134px;
     margin: 0 auto;
     display: flex;
     justify-content: center;
@@ -21,44 +20,24 @@ export const cpuStyles = css`
     font-size: 0.8rem;
   }
 
-  .cpu-speed {
+  .cpu-text-overlay {
     position: absolute;
-    top: 2.75em;
-    font-size: 0.8rem;
-    color: var(--ctp-macchiato-red);
+    top: 0;
+  }
+
+  .cpu-speed {
+    font-size: 0.4em;
+    fill: var(--ctp-macchiato-red);
   }
 
   .cpu-temperature {
-    position: absolute;
-    left: 0;
-    font-size: 0.8rem;
+    font-size: 0.3em;
+    fill: currentColor;
   }
 
   @container host (min-width: 330px) {
-    :host {
-      width: 160px;
-    }
-
-    .cpu-speed {
-      font-size: 1rem;
-    }
-
-    .cpu-temperature {
-      top: 0.5rem;
-    }
-
     .load-average {
       font-size: 1rem;
-    }
-  }
-
-  @container host (min-width: 420px) {
-    :host {
-      width: 220px;
-    }
-
-    .cpu-speed {
-      top: 4em;
     }
   }
 
