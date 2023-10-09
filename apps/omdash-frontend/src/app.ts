@@ -14,8 +14,6 @@ import { appStyles } from './app.styles.js';
 export class OmApp extends connect()(LitElement) {
   static styles = appStyles;
 
-  private ws: WebSocket | null = null;
-
   @query('#outlet')
   // @ts-ignore
   private outlet: HTMLDivElement;
