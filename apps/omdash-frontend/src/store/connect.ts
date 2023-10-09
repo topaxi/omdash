@@ -2,6 +2,7 @@ import { Action, Store, Unsubscribe } from '@reduxjs/toolkit';
 import { debounce } from 'lodash-es';
 import { store as defaultStore } from './index.js';
 import { LitElement, ReactiveController, ReactiveControllerHost } from 'lit';
+import { bind } from '../decorators/bind.js';
 
 type Constructor<T> = new (...args: any[]) => T;
 
@@ -24,13 +25,14 @@ class StoreController implements ReactiveController {
     this.store = store;
   }
 
+  @bind()
   private _triggerStateChanged() {
     this.host.stateChanged(this.store.getState());
   }
 
   hostConnected() {
     this._storeUnsubscribe = this.store.subscribe(
-      debounce(this._triggerStateChanged.bind(this), 250, {
+      debounce(this._triggerStateChanged, 250, {
         maxWait: 1000,
       }),
     );

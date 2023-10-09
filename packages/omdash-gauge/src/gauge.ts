@@ -194,6 +194,8 @@ export class Gauge {
 
     this.initializeGauge(this.gaugeContainer);
     this.setValue(this.value);
+
+    this.updateGauge = this.updateGauge.bind(this);
   }
 
   private initializeGauge(elem: HTMLElement | ShadowRoot): void {
@@ -299,7 +301,7 @@ export class Gauge {
       start: oldVal || 0,
       end: this.value,
       duration: duration || 1,
-      step: this.updateGauge.bind(this),
+      step: this.updateGauge,
     });
   }
 
