@@ -32,7 +32,7 @@ export const cpuStyles = css`
   }
 
   .cpu-temperature {
-    font-size: 0.35em;
+    font-size: 0.4em;
     fill: currentColor;
   }
 
