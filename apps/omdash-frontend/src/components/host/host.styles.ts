@@ -32,6 +32,7 @@ export const hostStyles = css`
     padding-right: 56px;
     line-height: 0.75;
     padding-top: 4px;
+    margin-bottom: 0.5rem;
   }
 
   .battery {
