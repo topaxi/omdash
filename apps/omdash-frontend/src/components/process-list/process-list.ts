@@ -91,7 +91,7 @@ export class OmProcessList extends connect()(LitElement) {
 
     return html`
       <div class="process-list highest-cpu">
-        <strong>CPU</strong>
+        <strong> CPU</strong>
         ${repeat(
           this.highestCPUProcesses,
           this.keyForProcess,
@@ -99,7 +99,7 @@ export class OmProcessList extends connect()(LitElement) {
         )}
       </div>
       <div class="process-list highest-memory">
-        <strong>Memory</strong>
+        <strong> Memory</strong>
         ${repeat(
           this.highestMemoryProcesses,
           this.keyForProcess,
