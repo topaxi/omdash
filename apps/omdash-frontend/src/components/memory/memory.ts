@@ -55,10 +55,12 @@ export class OmMemory extends connect()(LitElement) {
       return '';
     }
 
-    return html`<div class="available-memory">
-      <span>${this.formatBytes(total - free)}</span>
-      <span>${this.formatBytes(total)}</span>
-    </div>`;
+    return html`
+      <div class="available-memory">
+        <span>${this.formatBytes(total - free)}</span>
+        <span>${this.formatBytes(total)}</span>
+      </div>
+    `;
   }
 
   render() {
