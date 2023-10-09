@@ -4,8 +4,8 @@ import { keyframes } from '../../styles/keyframes';
 export const memoryStyles = css`
   ${keyframes}
 
-  om-gauge {
-    width: 134px;
+  :host {
+    min-width: 200px; /* Aligned with cpu styles */
   }
 
   .swap {
@@ -13,9 +13,9 @@ export const memoryStyles = css`
       * we only care about fading in.
       */
     animation: fade-in 0.5s ease-in-out;
-    width: 110px;
+    width: 81.916575%;
     position: absolute;
-    bottom: 1px;
+    bottom: 1.5%;
     z-index: -1;
 
     --dial-stroke-width: 0;
@@ -44,30 +44,8 @@ export const memoryStyles = css`
   }
 
   @container host (min-width: 330px) {
-    om-gauge {
-      width: 160px;
-    }
-
-    .swap {
-      width: 132px;
-      bottom: 2px;
-      --stroke-width: 2;
-    }
-
     .available-memory {
       font-size: 1rem;
-    }
-  }
-
-  @container host (min-width: 420px) {
-    om-gauge {
-      width: 220px;
-    }
-
-    .swap {
-      width: 180px;
-      bottom: 2px;
-      --stroke-width: 3;
     }
   }
 `;

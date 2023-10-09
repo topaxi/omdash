@@ -9,6 +9,7 @@ export const cpuStyles = css`
     margin: 0 auto;
     display: flex;
     justify-content: center;
+    min-width: 200px; /* To be defined, smaller makes temperature text barely readable, could be fixed with container query */
   }
 
   .load-average {
