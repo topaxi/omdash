@@ -31,14 +31,18 @@ export const mountStyles = css`
   }
 
   meter::-webkit-meter-bar {
+    background: none;
+  }
+
+  meter::-webkit-meter-optimum-value {
     background: var(--ctp-macchiato-green);
   }
 
-  meter.very-high::-webkit-meter-bar {
+  meter.very-high::-webkit-meter-optimum-value {
     background: var(--ctp-macchiato-red);
   }
 
-  meter.high::-webkit-meter-bar {
+  meter.high::-webkit-meter-suboptimum-value {
     background: var(--ctp-macchiato-yellow);
   }
 `;
