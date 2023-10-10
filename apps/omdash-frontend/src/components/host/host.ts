@@ -101,7 +101,9 @@ export class OmHost extends connect()(LitElement) {
         ?.map((_, i) => i)
         .filter((gpuIndex) => this.gpuProvidesMetrics(client.gpus[gpuIndex])) ??
       [];
-    this.fsSize = client.fsSize ?? [];
+    this.fsSize = (client.fsSize ?? []).sort((a, b) =>
+      a.mount.localeCompare(b.mount),
+    );
 
     this.classList.toggle('offline', this.isOffline);
   }
