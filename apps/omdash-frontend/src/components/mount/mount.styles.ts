@@ -14,7 +14,7 @@ export const mountStyles = css`
 
   meter {
     display: block;
-    height: 0.75rem;
+    height: 0.5rem;
     width: 100%;
     background: none;
     border: 0;
