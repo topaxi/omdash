@@ -181,8 +181,8 @@ export class OmHost extends connect()(LitElement) {
         </div>
       </div>
       <div class="gauges">
-        <om-cpu hostname=${this.hostname}></om-cpu>
-        <om-memory hostname=${this.hostname}></om-memory>
+        <om-cpu part="cpu" hostname=${this.hostname}></om-cpu>
+        <om-memory part="memory" hostname=${this.hostname}></om-memory>
         ${repeat(
           this.gpuIndices,
           (i) => i,

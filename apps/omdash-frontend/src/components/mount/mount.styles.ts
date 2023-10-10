@@ -14,6 +14,8 @@ export const mountStyles = css`
     display: block;
     height: 0.75rem;
     width: 100%;
+    background: none;
+    border-bottom: 1px solid var(--ctp-macchiato-overlay1);
   }
 
   meter::-moz-meter-bar {

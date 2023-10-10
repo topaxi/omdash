@@ -6,7 +6,6 @@ export const cpuStyles = css`
 
   :host {
     position: relative;
-    margin: 0 auto;
     display: flex;
     justify-content: center;
     min-width: 180px; /* To be defined, smaller makes temperature text barely readable, could be fixed with container query */
