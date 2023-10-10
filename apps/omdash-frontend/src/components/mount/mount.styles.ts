@@ -2,7 +2,9 @@ import { css } from 'lit';
 
 export const mountStyles = css`
   :host {
+    display: block;
     font-size: 0.8rem;
+    border-bottom: 1px solid var(--ctp-macchiato-overlay1);
   }
 
   .label {
@@ -15,7 +17,7 @@ export const mountStyles = css`
     height: 0.75rem;
     width: 100%;
     background: none;
-    border-bottom: 1px solid var(--ctp-macchiato-overlay1);
+    border: 0;
   }
 
   meter::-moz-meter-bar {
