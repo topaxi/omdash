@@ -49,7 +49,7 @@ export const hostStyles = css`
     display: none;
   }
 
-  @container host (min-width: 320px) {
+  @container host (min-width: 560px) {
     .process-list,
     .mount-list {
       flex: 1 1 0;
