@@ -10,13 +10,13 @@ export class OmProcessList extends connect()(LitElement) {
   static styles = processListStyles;
 
   @property()
-  name = '';
+  accessor name = '';
 
   @state()
-  private highestCPUProcesses: any[] = [];
+  private accessor highestCPUProcesses: any[] = [];
 
   @state()
-  private highestMemoryProcesses: any[] = [];
+  private accessor highestMemoryProcesses: any[] = [];
 
   override stateChanged(state: RootState): void {
     const ps = state.clients[this.name]?.ps;

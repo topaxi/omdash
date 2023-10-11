@@ -9,22 +9,22 @@ export class OmMemory extends connect()(LitElement) {
   static styles = gpuStyles;
 
   @property()
-  hostname = '';
+  accessor hostname = '';
 
   @property({ type: Number })
-  gpuIndex = 0;
+  accessor gpuIndex = 0;
 
   @state()
-  private gpuTemperature = 0;
+  private accessor gpuTemperature = 0;
 
   @state()
-  private utilization = 0;
+  private accessor utilization = 0;
 
   @state()
-  private memoryUsed = 0;
+  private accessor memoryUsed = 0;
 
   @state()
-  private memoryTotal = 0;
+  private accessor memoryTotal = 0;
 
   override stateChanged(state: RootState) {
     const gpu = state.clients[this.hostname]?.gpus?.[this.gpuIndex];

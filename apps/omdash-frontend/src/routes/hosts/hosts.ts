@@ -15,10 +15,10 @@ export class Hosts extends connect()(LitElement) {
   static styles = hostsStyles;
 
   @state()
-  private hostnames: string[] = [];
+  private accessor hostnames: string[] = [];
 
   @state()
-  private lastUpdatedHosts: Record<string, number> = {};
+  private accessor lastUpdatedHosts: Record<string, number> = {};
 
   override stateChanged(state: RootState) {
     this.hostnames = Object.keys(state.clients);

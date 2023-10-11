@@ -4,13 +4,13 @@ import { customElement, property } from 'lit/decorators.js';
 @customElement('om-os-icon')
 export class OmOsIcon extends LitElement {
   @property()
-  hostname = '';
+  accessor hostname = '';
 
   @property()
-  platform = '';
+  accessor platform = '';
 
   @property()
-  release = '';
+  accessor release = '';
 
   protected override render(): unknown {
     // aarch64 arch linux for raspberry pi does not include "rpi" in the release

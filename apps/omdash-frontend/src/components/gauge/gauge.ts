@@ -9,13 +9,13 @@ export class OmGauge extends LitElement {
   static styles = gaugeStyles;
 
   @property({ type: Number })
-  percent = 0;
+  accessor percent = 0;
 
   @property()
-  label = '';
+  accessor label = '';
 
   @query('.gauge-container')
-  gaugeElement!: HTMLDivElement;
+  accessor gaugeElement!: HTMLDivElement;
 
   private viewBox = '0 0 100 55';
 

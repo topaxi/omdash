@@ -36,7 +36,7 @@ function timeDifference(
 @customElement('om-ago')
 export class OmAgo extends LitElement {
   @property({ type: Number })
-  date = 0;
+  accessor date = 0;
 
   now = new ClockController(this, 1000);
 

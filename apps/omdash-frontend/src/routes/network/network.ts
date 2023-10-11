@@ -14,10 +14,10 @@ export class OmNetwork extends connect()(LitElement) {
   static styles = networkStyles;
 
   @query('.content')
-  content!: HTMLDivElement;
+  private accessor content!: HTMLDivElement;
 
   @query('om-line-graph')
-  lineGraph!: OmLineGraph;
+  private accessor lineGraph!: OmLineGraph;
 
   private resizeObserver = new ResizeObserver(() => this.resizeGraph());
 

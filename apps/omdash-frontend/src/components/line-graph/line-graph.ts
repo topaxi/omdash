@@ -13,16 +13,17 @@ export class OmLineGraph extends LitElement {
   static styles = lineGraphStyles;
 
   @property({ type: Array })
-  data: Array<{ color: string; values: { x: number; y: number }[] }> = [];
+  accessor data: Array<{ color: string; values: { x: number; y: number }[] }> =
+    [];
 
   @property({ type: Number })
-  width = 100;
+  accessor width = 100;
 
   @property({ type: Number })
-  height = 100;
+  accessor height = 100;
 
   @query('svg')
-  svg!: SVGSVGElement;
+  private accessor svg!: SVGSVGElement;
 
   private d3svg!: d3.Selection<SVGSVGElement, unknown, null, undefined>;
   private g!: d3.Selection<SVGGElement, unknown, null, undefined>;

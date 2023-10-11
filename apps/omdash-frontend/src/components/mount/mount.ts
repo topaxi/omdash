@@ -7,13 +7,13 @@ export class OmMount extends LitElement {
   static styles = mountStyles;
 
   @property({ attribute: 'mount' })
-  mountPath = '';
+  accessor mountPath = '';
 
   @property({ type: Number })
-  size = 0;
+  accessor size = 0;
 
   @property({ type: Number })
-  used = 0;
+  accessor used = 0;
 
   private formatBytes(bytes: number) {
     const units = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB'];
@@ -38,7 +38,11 @@ export class OmMount extends LitElement {
         </div>
       </div>
       <meter
-        class="${usedRatio > 0.9 ? 'very-high' : usedRatio > 0.75  ? 'high' : 'normal'}"
+        class="${usedRatio > 0.9
+          ? 'very-high'
+          : usedRatio > 0.75
+          ? 'high'
+          : 'normal'}"
         min="0"
         max=${this.size}
         value=${this.used}

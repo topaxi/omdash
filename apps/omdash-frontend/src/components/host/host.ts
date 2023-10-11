@@ -47,34 +47,35 @@ export class OmHost extends connect()(LitElement) {
   private now = new ClockController(this, 5000);
 
   @property()
-  hostname = '';
+  accessor hostname = '';
 
   @state()
-  uptime = 0;
+  accessor uptime = 0;
 
   @state()
-  private platform = '';
+  private accessor platform = '';
 
   @state()
-  private release = '';
+  private accessor release = '';
 
   @state()
-  private lastUpdate = Date.now();
+  private accessor lastUpdate = Date.now();
 
   @state()
-  private addr = '';
+  private accessor addr = '';
 
   @state()
-  private processCount = 0;
+  private accessor processCount = 0;
 
   @state()
-  private battery: { isCharging: boolean; percent: number } | null = null;
+  private accessor battery: { isCharging: boolean; percent: number } | null =
+    null;
 
   @state()
-  private gpuIndices: number[] = [];
+  private accessor gpuIndices: number[] = [];
 
   @state()
-  private fsSize: { size: number; used: number; mount: string }[] = [];
+  private accessor fsSize: { size: number; used: number; mount: string }[] = [];
 
   private gpuProvidesMetrics(
     gpu: RootState['clients'][string]['gpus'][number],

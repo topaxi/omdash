@@ -15,19 +15,19 @@ export class OmCpu extends connect()(LitElement) {
   static styles = cpuStyles;
 
   @property()
-  hostname = '';
+  accessor hostname = '';
 
   @state()
-  private cpuTemperature = 0;
+  private accessor cpuTemperature = 0;
 
   @state()
-  private cpus: readonly CpuInfo[] = [];
+  private accessor cpus: readonly CpuInfo[] = [];
 
   @state()
-  private pcpus: readonly CpuInfo[] = [];
+  private accessor pcpus: readonly CpuInfo[] = [];
 
   @state()
-  private loadAverage: [number, number, number] = [0, 0, 0];
+  private accessor loadAverage: [number, number, number] = [0, 0, 0];
 
   override stateChanged(state: RootState): void {
     const client = state.clients[this.hostname];

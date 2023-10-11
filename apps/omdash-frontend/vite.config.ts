@@ -6,9 +6,12 @@ export default defineConfig({
   worker: {
     format: 'es',
   },
+  esbuild: {
+    target: ['firefox118', 'safari17'],
+  },
   build: {
     outDir: 'build',
-    target: 'esnext',
+    target: ['firefox118', 'safari17'],
     manifest: true,
     sourcemap: true,
     rollupOptions: {

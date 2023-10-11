@@ -65,7 +65,8 @@ export class OmGlobalNetworkIcon extends connect()(LitElement) {
   `;
 
   @state()
-  private networkQuality: 'high' | 'medium' | 'low' | 'verylow' = 'verylow';
+  private accessor networkQuality: 'high' | 'medium' | 'low' | 'verylow' =
+    'verylow';
 
   stateChanged(state: RootState): void {
     const pingTimings = Uint16Array.from(

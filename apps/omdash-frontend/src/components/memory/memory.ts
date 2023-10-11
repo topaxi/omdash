@@ -9,19 +9,19 @@ export class OmMemory extends connect()(LitElement) {
   static styles = memoryStyles;
 
   @property()
-  hostname = '';
+  accessor hostname = '';
 
   @state()
-  private total = 1;
+  private accessor total = 1;
 
   @state()
-  private free = 1;
+  private accessor free = 1;
 
   @state()
-  private swaptotal = 0;
+  private accessor swaptotal = 0;
 
   @state()
-  private swapfree = 0;
+  private accessor swapfree = 0;
 
   override stateChanged(state: RootState) {
     const memory = state.clients[this.hostname]?.memory;

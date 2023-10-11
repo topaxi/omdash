@@ -8,7 +8,7 @@ export class OmLink extends LitElement {
   static styles = linkStyles;
 
   @property()
-  to = '';
+  accessor to = '';
 
   constructor() {
     super();
