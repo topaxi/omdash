@@ -1,4 +1,4 @@
-import { LitElement, PropertyValueMap, css, html } from 'lit';
+import { LitElement, PropertyValueMap, html } from 'lit';
 import { customElement, query, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 

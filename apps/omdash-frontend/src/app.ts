@@ -5,9 +5,6 @@ import { customElement, query } from 'lit/decorators.js';
 import { connect } from './store/connect.js';
 
 import './components/global/global.js';
-import './routes/hosts/hosts.js';
-import './routes/network/network.js';
-import './routes/settings/settings.js';
 import { appStyles } from './app.styles.js';
 
 @customElement('om-app')
@@ -48,10 +45,34 @@ export class OmApp extends connect()(LitElement) {
 
   private setupRoutes(router: Router) {
     router.setRoutes([
-      { path: '/', component: 'om-hosts' },
-      { path: '/network', component: 'om-network' },
-      { path: '/spotify', component: 'om-spotify' },
-      { path: '/settings', component: 'om-settings' },
+      {
+        path: '/',
+        component: 'om-hosts',
+        action: () =>
+          import('./routes/hosts/hosts').then(
+            (m) => m.Hosts as unknown as HTMLElement,
+          ),
+      },
+      {
+        path: '/network',
+        component: 'om-network',
+        action: () =>
+          import('./routes/network/network').then(
+            (m) => m.OmNetwork as unknown as HTMLElement,
+          ),
+      },
+      {
+        path: '/spotify',
+        component: 'om-spotify',
+      },
+      {
+        path: '/settings',
+        component: 'om-settings',
+        action: () =>
+          import('./routes/settings/settings').then(
+            (m) => m.OmSettings as unknown as HTMLElement,
+          ),
+      },
     ]);
   }
 
