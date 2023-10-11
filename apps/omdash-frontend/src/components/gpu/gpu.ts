@@ -1,8 +1,9 @@
-import { LitElement, css, html, svg } from 'lit';
+import { LitElement, html, svg } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { connect } from '../../store/connect.js';
 import { RootState } from '../../store/index.js';
 import { gpuStyles } from './gpu.styles.js';
+import { formatBytes } from '../../utils/format/formatBytes.js';
 
 @customElement('om-gpu')
 export class OmMemory extends connect()(LitElement) {
@@ -39,18 +40,6 @@ export class OmMemory extends connect()(LitElement) {
     this.memoryTotal = (gpu.memoryTotal ?? 0) * 1024 * 1024;
   }
 
-  private formatBytes(bytes: number) {
-    const units = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB'];
-
-    let unitIndex = 0;
-    while (bytes > 1024) {
-      bytes /= 1024;
-      unitIndex++;
-    }
-
-    return `${bytes.toFixed(1)}${units[unitIndex]}`;
-  }
-
   private renderAvailableMemory() {
     const { memoryTotal, memoryUsed } = this;
 
@@ -58,10 +47,12 @@ export class OmMemory extends connect()(LitElement) {
       return '';
     }
 
-    return html`<div class="available-memory">
-      <span>${this.formatBytes(memoryUsed)}</span>
-      <span>${this.formatBytes(memoryTotal)}</span>
-    </div>`;
+    return html`
+      <div class="available-memory">
+        <span>${formatBytes(memoryUsed)}</span>
+        <span>${formatBytes(memoryTotal)}</span>
+      </div>
+    `;
   }
 
   render() {

@@ -1,6 +1,7 @@
 import { LitElement, html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { mountStyles } from './mount.styles.js';
+import { formatBytes } from '../../utils/format/formatBytes.js';
 
 @customElement('om-mount')
 export class OmMount extends LitElement {
@@ -15,18 +16,6 @@ export class OmMount extends LitElement {
   @property({ type: Number })
   accessor used = 0;
 
-  private formatBytes(bytes: number) {
-    const units = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB'];
-
-    let unitIndex = 0;
-    while (bytes > 1024) {
-      bytes /= 1024;
-      unitIndex++;
-    }
-
-    return `${bytes.toFixed(1)}${units[unitIndex]}`;
-  }
-
   protected render() {
     const usedRatio = this.used / this.size;
 
@@ -34,7 +23,7 @@ export class OmMount extends LitElement {
       <div class="label">
         <div class="mount-path">${this.mountPath}</div>
         <div class="text">
-          ${this.formatBytes(this.used)} / ${this.formatBytes(this.size)}
+          ${formatBytes(this.used)} / ${formatBytes(this.size)}
         </div>
       </div>
       <meter

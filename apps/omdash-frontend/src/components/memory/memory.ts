@@ -1,8 +1,9 @@
-import { LitElement, css, html } from 'lit';
+import { LitElement, html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { connect } from '../../store/connect.js';
 import { RootState } from '../../store';
 import { memoryStyles } from './memory.styles.js';
+import { formatBytes } from '../../utils/format/formatBytes.js';
 
 @customElement('om-memory')
 export class OmMemory extends connect()(LitElement) {
@@ -36,18 +37,6 @@ export class OmMemory extends connect()(LitElement) {
     this.swapfree = memory.swapfree ?? 0;
   }
 
-  private formatBytes(bytes: number) {
-    const units = ['B', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB'];
-
-    let unitIndex = 0;
-    while (bytes > 1024) {
-      bytes /= 1024;
-      unitIndex++;
-    }
-
-    return `${bytes.toFixed(1)}${units[unitIndex]}`;
-  }
-
   private renderAvailableMemory() {
     const { total, free } = this;
 
@@ -57,8 +46,8 @@ export class OmMemory extends connect()(LitElement) {
 
     return html`
       <div class="available-memory">
-        <span>${this.formatBytes(total - free)}</span>
-        <span>${this.formatBytes(total)}</span>
+        <span>${formatBytes(total - free)}</span>
+        <span>${formatBytes(total)}</span>
       </div>
     `;
   }
