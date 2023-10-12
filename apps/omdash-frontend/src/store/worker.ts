@@ -1,12 +1,7 @@
 /// <reference lib="webworker" />
-import {
-  applyMiddleware,
-  combineReducers,
-  legacy_createStore,
-} from '@reduxjs/toolkit';
+import { Reducer, applyMiddleware, legacy_createStore } from '@reduxjs/toolkit';
 import { expose } from 'comlink';
-import { clientsReducer } from './clients.reducer';
-import { pingReducer } from './ping.reducer';
+import { reducer } from './reducers/index.js';
 import {
   createRootReducerWithReplace,
   initStoreFromIndexedDB,
@@ -14,15 +9,12 @@ import {
 } from './middlewares/indexedDBMiddleware';
 import { composeWithDevToolsDevelopmentOnly } from '@redux-devtools/extension';
 
-const reducer = combineReducers({
-  clients: clientsReducer,
-  pings: pingReducer,
-});
-
-const rootReducer = createRootReducerWithReplace(reducer);
+function createRootReducer<T extends Reducer>(reducer: T) {
+  return createRootReducerWithReplace(reducer);
+}
 
 export const store = legacy_createStore(
-  rootReducer,
+  createRootReducer(reducer),
   composeWithDevToolsDevelopmentOnly(applyMiddleware(reduxIndexedDBMiddleware)),
 );
 
@@ -40,6 +32,13 @@ if (import.meta.env.VITE_REDUX_WORKER !== 'false') {
     });
   } else {
     expose(store);
+  }
+} else {
+  // We are not in a worker, we can support hmr.
+  if (import.meta.hot) {
+    import.meta.hot.accept('./reducers/index', ({ reducer }: any) => {
+      store.replaceReducer(createRootReducer(reducer));
+    });
   }
 }
 
