@@ -11,6 +11,7 @@ import {
   initStoreFromIndexedDB,
   reduxIndexedDBMiddleware,
 } from './middlewares/indexedDBMiddleware';
+import { composeWithDevToolsDevelopmentOnly } from '@redux-devtools/extension';
 
 const reducer = combineReducers({
   clients: clientsReducer,
@@ -21,7 +22,7 @@ const rootReducer = createRootReducerWithReplace(reducer);
 
 export const store = legacy_createStore(
   rootReducer,
-  applyMiddleware(reduxIndexedDBMiddleware),
+  composeWithDevToolsDevelopmentOnly(applyMiddleware(reduxIndexedDBMiddleware)),
 );
 
 export type RootState = ReturnType<typeof store.getState>;
@@ -29,14 +30,16 @@ export type AppDispatch = typeof store.dispatch;
 
 store.dispatch(initStoreFromIndexedDB());
 
-if (import.meta.env.VITE_SHARED_WORKER === 'true') {
-  self.addEventListener('connect', (event: any) => {
-    const [port] = event.ports;
+if (import.meta.env.VITE_REDUX_WORKER !== 'false') {
+  if (import.meta.env.VITE_SHARED_WORKER === 'true') {
+    self.addEventListener('connect', (event: any) => {
+      const [port] = event.ports;
 
-    expose(store, port);
-  });
-} else {
-  expose(store);
+      expose(store, port);
+    });
+  } else {
+    expose(store);
+  }
 }
 
 function onWebSocketMessage(event: MessageEvent<any>) {

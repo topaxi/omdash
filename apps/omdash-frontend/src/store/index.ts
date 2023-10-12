@@ -5,20 +5,30 @@ import type { RootState } from './worker.js';
 
 export type { RootState };
 
-let remoteStore: Remote<Store<RootState>>;
+let store = {} as Remote<Store<RootState>>;
 
-if (import.meta.env.VITE_SHARED_WORKER === 'true') {
-  const worker = new SharedWorker(new URL('./worker', import.meta.url), {
-    type: 'module',
-  });
+if (import.meta.env.VITE_REDUX_WORKER !== 'false') {
+  let remoteStore: Remote<Store<RootState>>;
 
-  remoteStore = wrap(worker.port);
+  if (import.meta.env.VITE_SHARED_WORKER === 'true') {
+    const worker = new SharedWorker(new URL('./worker', import.meta.url), {
+      type: 'module',
+    });
+
+    remoteStore = wrap(worker.port);
+  } else {
+    const worker = new Worker(new URL('./worker', import.meta.url), {
+      type: 'module',
+    });
+
+    remoteStore = wrap(worker);
+  }
+
+  store = (await remoteStoreWrapper(remoteStore)) as any;
 } else {
-  const worker = new Worker(new URL('./worker', import.meta.url), {
-    type: 'module',
-  });
+  const workerModule = await import('./worker.js');
 
-  remoteStore = wrap(worker);
+  store = workerModule.store as any;
 }
 
-export const store = await remoteStoreWrapper(remoteStore);
+export { store };
