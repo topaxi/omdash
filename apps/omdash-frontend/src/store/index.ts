@@ -8,18 +8,16 @@ export type { RootState };
 let store = {} as Remote<Store<RootState>>;
 
 if (import.meta.env.VITE_REDUX_WORKER !== 'false') {
+  const workerUrl = new URL('./worker', import.meta.url);
+  const workerOptions: WorkerOptions = { type: 'module' };
   let remoteStore: Remote<Store<RootState>>;
 
   if (import.meta.env.VITE_SHARED_WORKER === 'true') {
-    const worker = new SharedWorker(new URL('./worker', import.meta.url), {
-      type: 'module',
-    });
+    const worker = new SharedWorker(workerUrl, workerOptions);
 
     remoteStore = wrap(worker.port);
   } else {
-    const worker = new Worker(new URL('./worker', import.meta.url), {
-      type: 'module',
-    });
+    const worker = new Worker(workerUrl, workerOptions);
 
     remoteStore = wrap(worker);
   }
