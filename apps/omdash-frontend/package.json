@@ -24,7 +24,7 @@
     "serve": "^14.2.1"
   },
   "devDependencies": {
-    "@types/d3": "^7.4.0",
+    "@types/d3": "^7.4.1",
     "ts-lit-plugin": "^1.2.1",
     "vite": "^4.4.11"
   }
