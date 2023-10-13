@@ -190,7 +190,7 @@ export class OmHost extends connect()(LitElement) {
           this.gpuIndices,
           (i) => i,
           (i) =>
-            html`<om-gpu hostname=${this.hostname} gpuIndex=${i}></om-gpu>`,
+            html`<om-gpu part="gpu" hostname=${this.hostname} gpuIndex=${i}></om-gpu>`,
         )}
       </div>
       <div style="display: flex; gap: 1rem">

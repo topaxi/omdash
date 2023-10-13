@@ -6,7 +6,7 @@ import { gpuStyles } from './gpu.styles.js';
 import { formatBytes } from '../../utils/format/formatBytes.js';
 
 @customElement('om-gpu')
-export class OmMemory extends connect()(LitElement) {
+export class OmGpu extends connect()(LitElement) {
   static styles = gpuStyles;
 
   @property()
@@ -99,6 +99,6 @@ export class OmMemory extends connect()(LitElement) {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'om-memory': OmMemory;
+    'om-gpu': OmGpu;
   }
 }

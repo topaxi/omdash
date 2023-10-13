@@ -8,7 +8,8 @@ export const hostsStyles = css`
   }
 
   om-host::part(cpu),
-  om-host::part(memory) {
+  om-host::part(memory),
+  om-host::part(gpu) {
     max-width: 250px;
   }
 
