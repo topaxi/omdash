@@ -12,7 +12,7 @@ export interface PingAction {
 }
 
 export interface PingState {
-  [key: string]: Array<{
+  [targetHostname: string]: Array<{
     timestamp: number;
     ip: string;
     time: number;

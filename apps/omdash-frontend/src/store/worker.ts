@@ -1,5 +1,5 @@
 /// <reference lib="webworker" />
-import { Reducer, applyMiddleware, legacy_createStore } from '@reduxjs/toolkit';
+import { AnyAction, Reducer, applyMiddleware, legacy_createStore } from '@reduxjs/toolkit';
 import { expose } from 'comlink';
 import { reducer } from './reducers/index.js';
 import {
@@ -9,7 +9,7 @@ import {
 } from './middlewares/indexedDBMiddleware';
 import { composeWithDevToolsDevelopmentOnly } from '@redux-devtools/extension';
 
-function createRootReducer<T extends Reducer>(reducer: T) {
+function createRootReducer<S, A extends AnyAction>(reducer: Reducer<S, A>) {
   return createRootReducerWithReplace(reducer);
 }
 
