@@ -1,18 +1,11 @@
 import { css } from 'lit';
-import { keyframes } from '../../styles/keyframes';
 
 export const gpuStyles = css`
-  ${keyframes}
-
   :host {
     min-width: 180px; /* Aligned with cpu styles */
   }
 
   .memory {
-    /* Assumption that a system will rarely if ever reduce swap back to 0%,
-      * we only care about fading in.
-      */
-    animation: fade-in 0.5s ease-in-out;
     width: 81.916575%;
     position: absolute;
     bottom: 1.5%;
@@ -53,10 +46,6 @@ export const gpuStyles = css`
 
   .available-memory > span:last-child::before {
     content: '/';
-  }
-
-  .memory.critical {
-    animation: pulse 0.5s infinite ease-in-out;
   }
 
   @container host (min-width: 330px) {
