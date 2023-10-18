@@ -60,7 +60,7 @@ export class Hosts extends connect()(LitElement) {
       this.sortedHosts,
       identity,
       (hostname) =>
-        html`<om-box><om-host hostname=${hostname}></om-host></om-box>`,
+        html`<om-box data-hostname=${hostname}><om-host hostname=${hostname}></om-host></om-box>`,
     );
   }
 }

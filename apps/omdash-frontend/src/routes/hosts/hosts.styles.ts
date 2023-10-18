@@ -17,7 +17,7 @@ export const hostsStyles = css`
     max-width: 250px;
   }
 
-  om-host[hostname='ompi'] {
+  om-box[data-hostname='ompi'] {
     max-width: 400px;
   }
 `;
