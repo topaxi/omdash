@@ -5,7 +5,7 @@ export const hostStyles = css`
   ${keyframes}
 
   :host {
-    flex: 1 1 0;
+    display: block;
     overflow: hidden;
     container: host / inline-size;
   }
