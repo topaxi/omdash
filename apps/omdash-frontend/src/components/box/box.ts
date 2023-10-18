@@ -1,13 +1,17 @@
 import { LitElement, html } from 'lit';
-import { customElement } from 'lit/decorators.js';
+import { customElement, property } from 'lit/decorators.js';
 import { boxStyles } from './box.styles.js';
 
 @customElement('om-box')
 export class OmBox extends LitElement {
   static styles = boxStyles;
 
+  @property({ type: Boolean })
+  animated = false;
+
   protected render(): unknown {
-    return html`<div part="border"><slot></slot></div>`;
+    // prettier-ignore
+    return html`<div part="border" class=${this.animated ? 'animated' : ''}><slot></slot></div>`;
   }
 }
 

@@ -3,7 +3,7 @@ import { css } from 'lit';
 export const boxStyles = css`
   @property --rotate {
     syntax: '<angle>';
-    initial-value: 132deg;
+    initial-value: 90deg;
     inherits: false;
   }
 
@@ -23,12 +23,15 @@ export const boxStyles = css`
     padding: 0.2rem 0.33rem;
     border: var(--box-border-radius) solid transparent;
     border-image: linear-gradient(
-        var(--rotate, 132deg),
+        var(--rotate, 90deg),
         #7dc4e4,
         #c6a0f6 43%,
         #ed8796
       )
       1;
+  }
+
+  .animated {
     animation: spin 3.1415s linear infinite;
   }
 
