@@ -79,19 +79,21 @@ export class OmNetwork extends connect()(LitElement) {
 
   protected render(): unknown {
     return html`
-      <om-box class="content">
-        <div class="legend">
-          ${repeat(
-            Array.from(this.data).sort((a, b) => b.average - a.average),
-            (d) => d.host,
-            (d) =>
-              html`<div style="color: ${d.color}">
-                ${String(d.average).padStart(3, '\u00A0')}ms ${d.host}
-                (${d.addr})
-              </div>`,
-          )}
+      <om-box>
+        <div class="content">
+          <div class="legend">
+            ${repeat(
+              Array.from(this.data).sort((a, b) => b.average - a.average),
+              (d) => d.host,
+              (d) =>
+                html`<div style="color: ${d.color}">
+                  ${String(d.average).padStart(3, '\u00A0')}ms ${d.host}
+                  (${d.addr})
+                </div>`,
+            )}
+          </div>
+          <om-line-graph .data=${this.data}></om-line-graph>
         </div>
-        <om-line-graph .data=${this.data}></om-line-graph>
       </om-box>
     `;
   }

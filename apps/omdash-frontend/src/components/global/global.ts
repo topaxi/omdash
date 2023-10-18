@@ -91,34 +91,31 @@ export class OmGlobalNetworkIcon extends connect()(LitElement) {
 
 @customElement('om-global')
 export class OmGlobal extends LitElement {
-  static styles = [
-    boxStyles,
-    css`
-      :host {
-        display: flex;
-        flex-direction: column;
-        flex: 0 0 5ch;
-      }
+  static styles = css`
+    :host {
+      display: flex;
+      flex-direction: column;
+      flex: 0 0 5ch;
+    }
 
-      .icon-button {
-        display: block;
+    .icon-button {
+      display: block;
 
-        padding-left: 0.5rem;
+      padding-left: 0.5rem;
 
-        font-size: 4ch;
+      font-size: 4ch;
 
-        opacity: 0.4;
-      }
+      opacity: 0.4;
+    }
 
-      om-global-date {
-        font-size: 0.71rem;
-      }
+    om-global-date {
+      font-size: 0.71rem;
+    }
 
-      om-link[aria-selected='true'] om-app-icon {
-        opacity: 0.9;
-      }
-    `,
-  ];
+    om-link[aria-selected='true'] om-app-icon {
+      opacity: 0.9;
+    }
+  `;
 
   protected override render(): unknown {
     return html`

@@ -7,7 +7,7 @@ export class OmBox extends LitElement {
   static styles = boxStyles;
 
   protected render(): unknown {
-    return html`<slot></slot>`;
+    return html`<div part="border"><slot></slot></div>`;
   }
 }
 

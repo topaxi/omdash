@@ -6,7 +6,6 @@ import { connect } from '../../store/connect.js';
 import { RootState } from '../../store/index.js';
 
 import '../ago/ago.js';
-import { boxStyles } from '../box/box.styles.js';
 import '../gauge/gauge.js';
 import '../cpu/cpu.js';
 import '../gpu/gpu.js';
@@ -42,7 +41,7 @@ function formatTime(seconds: number) {
 
 @customElement('om-host')
 export class OmHost extends connect()(LitElement) {
-  static styles = [boxStyles, hostStyles];
+  static styles = hostStyles;
 
   private now = new ClockController(this, 5000);
 
@@ -190,7 +189,11 @@ export class OmHost extends connect()(LitElement) {
           this.gpuIndices,
           (i) => i,
           (i) =>
-            html`<om-gpu part="gpu" hostname=${this.hostname} gpuIndex=${i}></om-gpu>`,
+            html`<om-gpu
+              part="gpu"
+              hostname=${this.hostname}
+              gpuIndex=${i}
+            ></om-gpu>`,
         )}
       </div>
       <div style="display: flex; gap: 1rem">

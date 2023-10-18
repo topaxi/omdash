@@ -7,6 +7,10 @@ export const hostsStyles = css`
     flex-grow: 1;
   }
 
+  :host > * {
+    flex: 1 1 0px;
+  }
+
   om-host::part(cpu),
   om-host::part(memory),
   om-host::part(gpu) {

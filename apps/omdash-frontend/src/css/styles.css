@@ -69,3 +69,9 @@ om-fake-screen {
 
   border: 1px solid var(--ctp-macchiato-crust);
 }
+
+@property --rotate {
+  syntax: '<angle>';
+  initial-value: 132deg;
+  inherits: false;
+}

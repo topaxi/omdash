@@ -5,6 +5,7 @@ import { RootState } from '../../store/index.js';
 import { connect } from '../../store/connect.js';
 import { mapEntries } from '../../utils/object/mapEntries.js';
 
+import '../../components/box/box.js';
 import '../../components/host/host.js';
 import { hostsStyles } from './hosts.styles.js';
 
@@ -58,7 +59,8 @@ export class Hosts extends connect()(LitElement) {
     return repeat(
       this.sortedHosts,
       identity,
-      (hostname) => html`<om-host hostname=${hostname}></om-host>`,
+      (hostname) =>
+        html`<om-box><om-host hostname=${hostname}></om-host></om-box>`,
     );
   }
 }

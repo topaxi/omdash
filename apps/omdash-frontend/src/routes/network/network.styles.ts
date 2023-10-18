@@ -7,6 +7,14 @@ export const networkStyles = css`
     height: 100%;
   }
 
+  om-box {
+    flex-grow: 1;
+  }
+
+  om-box::part(border) {
+    display: flex;
+  }
+
   .content {
     position: relative;
     flex-grow: 1;
