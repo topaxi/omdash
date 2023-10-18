@@ -8,6 +8,7 @@ export const boxStyles = css`
   }
 
   :host {
+    position: relative;
     display: flex;
     --box-border-radius: 1px;
     border-radius: var(--box-border-radius);
