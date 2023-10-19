@@ -40,7 +40,7 @@ export const mountStyles = css`
     background: var(--ctp-macchiato-green);
   }
 
-  meter.very-high::-webkit-meter-optimum-value {
+  meter.very-high::-webkit-meter-suboptimum-value {
     background: var(--ctp-macchiato-red);
   }
 

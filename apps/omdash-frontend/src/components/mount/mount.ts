@@ -35,8 +35,8 @@ export class OmMount extends LitElement {
         min="0"
         max=${this.size}
         value=${this.used}
-        optimum=${this.size * 0.5}
-        high=${this.size * 0.8}
+        optimum=${Math.floor(this.size * 0.5)}
+        high=${Math.floor(this.size * 0.8)}
       ></meter>
     `;
   }
