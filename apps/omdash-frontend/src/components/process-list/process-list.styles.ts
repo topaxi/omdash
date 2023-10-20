@@ -19,11 +19,16 @@ export const processListStyles = css`
     max-width: 50%;
   }
 
+  .process-list__title {
+    font-size: 0.8rem;
+  }
+
   .process {
     display: flex;
     gap: 1ch;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-size: 0.9rem;
   }
 
   .very-high {
