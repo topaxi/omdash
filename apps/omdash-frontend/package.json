@@ -14,7 +14,7 @@
   "dependencies": {
     "@redux-devtools/extension": "^3.2.5",
     "@reduxjs/toolkit": "^1.9.7",
-    "@types/lodash-es": "^4.17.9",
+    "@types/lodash-es": "^4.17.10",
     "@vaadin/router": "^1.7.5",
     "comlink": "^4.4.1",
     "d3": "^7.8.5",
@@ -24,8 +24,8 @@
     "serve": "^14.2.1"
   },
   "devDependencies": {
-    "@types/d3": "^7.4.1",
+    "@types/d3": "^7.4.2",
     "ts-lit-plugin": "^1.2.1",
-    "vite": "^4.4.11"
+    "vite": "^4.5.0"
   }
 }
