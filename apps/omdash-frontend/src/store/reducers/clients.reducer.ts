@@ -1,4 +1,4 @@
-import { OmClientAction } from './action';
+import type { OmClientAction } from '../action.js';
 
 export type RegisterAction = OmClientAction<
   'register',
