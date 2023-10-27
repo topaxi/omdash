@@ -28,7 +28,7 @@ export const gpuStyles = css`
   }
 
   .gpu-temperature {
-    font-size: 0.4em;
+    font-size: 0.5em;
     fill: currentColor;
   }
 
