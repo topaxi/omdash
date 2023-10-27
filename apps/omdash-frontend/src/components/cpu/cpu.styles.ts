@@ -11,6 +11,18 @@ export const cpuStyles = css`
     min-width: 180px; /* To be defined, smaller makes temperature text barely readable, could be fixed with container query */
   }
 
+  .cpu-speed-gauge {
+    width: 81.916575%;
+    position: absolute;
+    top: 13.5%;
+    /*bottom: 1.5%;*/
+    z-index: -1;
+
+    --dial-stroke-width: 0;
+    --stroke-width: 2;
+    --text-transform: translateY(-1rem);
+  }
+
   .load-average {
     display: flex;
     gap: 1ch;
@@ -27,7 +39,7 @@ export const cpuStyles = css`
 
   .cpu-speed {
     font-size: 0.4em;
-    fill: var(--ctp-macchiato-red);
+    fill: var(--ctp-macchiato-peach);
   }
 
   .cpu-temperature {

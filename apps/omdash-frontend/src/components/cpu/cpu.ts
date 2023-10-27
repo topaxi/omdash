@@ -7,6 +7,8 @@ import { cpuStyles } from './cpu.styles.js';
 interface CpuInfo {
   model: string;
   speed: number;
+  speedMin: number;
+  speedMax: number;
   times: { user: number; nice: number; sys: number; idle: number; irq: number };
 }
 
@@ -29,6 +31,12 @@ export class OmCpu extends connect()(LitElement) {
   @state()
   private accessor loadAverage: [number, number, number] = [0, 0, 0];
 
+  @state()
+  private accessor cpuMinSpeed = Number.MAX_SAFE_INTEGER;
+
+  @state()
+  private accessor cpuMaxSpeed = Number.MIN_SAFE_INTEGER;
+
   override stateChanged(state: RootState): void {
     const client = state.clients[this.hostname];
 
@@ -40,6 +48,17 @@ export class OmCpu extends connect()(LitElement) {
     this.pcpus = client.pcpus ?? [];
     this.loadAverage = client.load ?? [0, 0, 0];
     this.cpuTemperature = Math.round(client.temperature?.cpu?.max);
+
+    this.cpuMinSpeed = Math.min(
+      this.cpuMinSpeed,
+      this.averageCPUSpeed,
+      ...client.cpus.map((cpu) => cpu.speed),
+    );
+    this.cpuMaxSpeed = Math.max(
+      this.cpuMaxSpeed,
+      this.averageCPUSpeed,
+      ...client.cpus.map((cpu) => cpu.speed),
+    );
   }
 
   private get averageCPUUsage() {
@@ -145,6 +164,18 @@ export class OmCpu extends connect()(LitElement) {
     );
   }
 
+  private get shouldRenderCPUSpeed() {
+    return this.cpuMinSpeed !== this.cpuMaxSpeed;
+  }
+
+  private get cpuSpeedPercent() {
+    return (
+      ((this.averageCPUSpeed - this.cpuMinSpeed) /
+        (this.cpuMaxSpeed - this.cpuMinSpeed)) *
+      100
+    );
+  }
+
   protected render(): unknown {
     return html`
       <om-gauge
@@ -181,6 +212,15 @@ export class OmCpu extends connect()(LitElement) {
         </svg>
         ${this.renderLoadAverage()}
       </om-gauge>
+      ${this.shouldRenderCPUSpeed
+        ? html`
+            <om-gauge
+              class="cpu-speed-gauge"
+              style="--color: var(--ctp-macchiato-peach)"
+              percent=${this.cpuSpeedPercent}
+            ></om-gauge>
+          `
+        : ''}
     `;
   }
 }
