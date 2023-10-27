@@ -112,7 +112,7 @@ export class OmGlobal extends LitElement {
       font-size: 0.71rem;
     }
 
-    om-link[aria-selected='true'] om-app-icon {
+    om-link[aria-selected='true'] > .icon-button {
       opacity: 0.9;
     }
   `;

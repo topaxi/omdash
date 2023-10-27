@@ -15,10 +15,9 @@ export class OmLink extends LitElement {
 
     this.addEventListener('click', this);
     this.addEventListener('touchstart', this);
+    window.addEventListener('vaadin-router-go', this);
 
     this.onLocationChange();
-
-    window.addEventListener('vaadin-router-go', this);
   }
 
   override disconnectedCallback() {
@@ -28,14 +27,16 @@ export class OmLink extends LitElement {
   }
 
   handleEvent(event: Event) {
-    if (event.type === 'click' || event.type === 'touchstart') {
-      Router.go(this.to);
+    switch (event.type) {
+      case 'click':
+      case 'touchstart':
+        Router.go(this.to);
 
-      event.preventDefault();
-    }
-
-    if (event.type === 'vaadin-router-go') {
-      this.onLocationChange();
+        event.preventDefault();
+        break;
+      case 'vaadin-router-go':
+        this.onLocationChange();
+        break;
     }
   }
 
