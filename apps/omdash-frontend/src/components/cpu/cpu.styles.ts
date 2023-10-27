@@ -14,7 +14,7 @@ export const cpuStyles = css`
   .cpu-speed-gauge {
     width: 81.916575%;
     position: absolute;
-    top: 13.5%;
+    top: 13.7%;
     /*bottom: 1.5%;*/
     z-index: -1;
 
