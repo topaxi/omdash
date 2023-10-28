@@ -34,7 +34,7 @@ export const gpuStyles = css`
 
   @container gauge (min-width: 200px) {
     .gpu-temperature {
-      font-size: 0.3em;
+      font-size: 0.4em;
     }
   }
 
