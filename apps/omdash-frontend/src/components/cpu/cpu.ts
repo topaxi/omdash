@@ -37,6 +37,10 @@ export class OmCpu extends connect()(LitElement) {
   @state()
   private accessor cpuMaxSpeed = Number.MIN_SAFE_INTEGER;
 
+  private getCPUSpeed(cpu: readonly CpuInfo): number {
+    return cpu.speed;
+  }
+
   override stateChanged(state: RootState): void {
     const client = state.clients[this.hostname];
 
@@ -49,15 +53,17 @@ export class OmCpu extends connect()(LitElement) {
     this.loadAverage = client.load ?? [0, 0, 0];
     this.cpuTemperature = Math.round(client.temperature?.cpu?.max);
 
+    const cpuSpeeds = client.cpus.map(this.getCPUSpeed, this);
+
     this.cpuMinSpeed = Math.min(
       this.cpuMinSpeed,
       this.averageCPUSpeed,
-      ...client.cpus.map((cpu) => cpu.speed),
+      ...cpuSpeeds,
     );
     this.cpuMaxSpeed = Math.max(
       this.cpuMaxSpeed,
       this.averageCPUSpeed,
-      ...client.cpus.map((cpu) => cpu.speed),
+      ...cpuSpeeds,
     );
   }
 
