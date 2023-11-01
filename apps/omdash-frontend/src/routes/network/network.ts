@@ -14,10 +14,10 @@ export class OmNetwork extends connect()(LitElement) {
   static styles = networkStyles;
 
   @query('.content')
-  private accessor content!: HTMLDivElement;
+  private accessor content!: HTMLDivElement | null;
 
   @query('om-line-graph')
-  private accessor lineGraph!: OmLineGraph;
+  private accessor lineGraph!: OmLineGraph | null;
 
   private resizeObserver = new ResizeObserver(() => this.resizeGraph());
 
@@ -31,18 +31,18 @@ export class OmNetwork extends connect()(LitElement) {
     _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>,
   ): void {
     this.resizeGraph();
-    this.resizeObserver.observe(this.content);
+    this.resizeObserver.observe(this.content!);
   }
 
   private resizeGraph() {
-    const computedStyle = getComputedStyle(this.content);
+    const computedStyle = getComputedStyle(this.content!);
 
-    this.lineGraph.width =
-      this.content.clientWidth -
+    this.lineGraph!.width =
+      this.content!.clientWidth -
       parseFloat(computedStyle.paddingLeft) -
       parseFloat(computedStyle.paddingRight);
-    this.lineGraph.height =
-      this.content.clientHeight -
+    this.lineGraph!.height =
+      this.content!.clientHeight -
       parseFloat(computedStyle.paddingTop) -
       parseFloat(computedStyle.paddingBottom);
   }

@@ -15,7 +15,7 @@ export class OmGauge extends LitElement {
   accessor label = '';
 
   @query('.gauge-container')
-  accessor gaugeElement!: HTMLDivElement;
+  accessor gaugeElement!: HTMLDivElement | null;
 
   private viewBox = '0 0 100 55';
 
@@ -29,7 +29,7 @@ export class OmGauge extends LitElement {
   protected firstUpdated(
     _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>,
   ): void {
-    this.gauge = new Gauge(this.gaugeElement, {
+    this.gauge = new Gauge(this.gaugeElement!, {
       max: 100,
       min: 0,
       dialStartAngle: 180,

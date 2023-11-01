@@ -23,7 +23,7 @@ export class OmLineGraph extends LitElement {
   accessor height = 100;
 
   @query('svg')
-  private accessor svg!: SVGSVGElement;
+  private accessor svg!: SVGSVGElement | null;
 
   private d3svg!: d3.Selection<SVGSVGElement, unknown, null, undefined>;
   private g!: d3.Selection<SVGGElement, unknown, null, undefined>;
@@ -32,7 +32,7 @@ export class OmLineGraph extends LitElement {
   protected firstUpdated(
     _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>,
   ): void {
-    this.d3svg = d3.select(this.svg);
+    this.d3svg = d3.select(this.svg!);
 
     // X axis removed for now, will reconsider later
     // const xScale = this.createXScale();

@@ -12,7 +12,7 @@ export class OmApp extends connect()(LitElement) {
   static styles = appStyles;
 
   @query('#outlet')
-  private outlet!: HTMLDivElement;
+  private outlet!: HTMLDivElement | null;
 
   private router: Router | null = null;
   private manifest: string | undefined;
