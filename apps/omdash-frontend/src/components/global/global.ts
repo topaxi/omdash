@@ -3,7 +3,6 @@ import { LitElement, css, html } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { ClockController } from '../../controllers/clock.js';
 
-import { boxStyles } from '../box/box.styles.js';
 import '../link/link.js';
 import { connect } from '../../store/connect.js';
 import { RootState } from '../../store/index.js';

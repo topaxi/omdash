@@ -1,5 +1,10 @@
 /// <reference lib="webworker" />
-import { AnyAction, Reducer, applyMiddleware, legacy_createStore } from '@reduxjs/toolkit';
+import {
+  AnyAction,
+  Reducer,
+  applyMiddleware,
+  legacy_createStore,
+} from '@reduxjs/toolkit';
 import { expose } from 'comlink';
 import { reducer } from './reducers/index.js';
 import {
