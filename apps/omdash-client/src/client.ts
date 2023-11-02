@@ -7,6 +7,19 @@ import { getProcesses } from './processes';
 
 process.title = 'omdash-client';
 
+const WINDOWS = os.platform() === 'win32';
+
+if (WINDOWS) {
+  si.powerShellStart();
+
+  const stop = () => si.powerShellRelease();
+
+  process.on('beforeExit', stop);
+  process.on('SIGINT', stop);
+  process.on('SIGTERM', stop);
+  process.on('SIGQUIT', stop);
+}
+
 const UPDATE_INTERVAL = 2000;
 const PS_UPDATE_INTERVAL = 4000;
 
