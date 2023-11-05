@@ -112,7 +112,13 @@ export class Bspark extends LitElement {
   }
 
   private renderLine(line: string) {
-    return html`<div>${line.split('').map(this.renderCharacter, this)}</div>`;
+    const l = line.trimEnd();
+
+    if (l === '') {
+      return '';
+    }
+
+    return html`<div>${l.split('').map(this.renderCharacter, this)}</div>`;
   }
 
   render() {
