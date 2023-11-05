@@ -28,8 +28,8 @@ export class OmMemory extends connect()(LitElement) {
     return this.latestMemoryInfo?.total ?? 1;
   }
 
-  get free(): number {
-    return this.latestMemoryInfo?.free ?? 1;
+  get available(): number {
+    return this.latestMemoryInfo?.available ?? 1;
   }
 
   get swaptotal(): number {
@@ -52,29 +52,29 @@ export class OmMemory extends connect()(LitElement) {
 
   get memoryHistory() {
     return this.memory.history.map(
-      (memory) => ((memory.total - memory.free) / this.total) * 100,
+      (memory) => ((memory.total - memory.available) / this.total) * 100,
     );
   }
 
   private renderAvailableMemory() {
-    const { total, free } = this;
+    const { total, available } = this;
 
-    if (total === 1 && free === 1) {
+    if (total === 1 && available === 1) {
       return '';
     }
 
     return html`
       <div class="available-memory">
-        <span>${formatBytes(total - free)}</span>
+        <span>${formatBytes(total - available)}</span>
         <span>${formatBytes(total)}</span>
       </div>
     `;
   }
 
   render() {
-    const { total, free, swaptotal, swapfree } = this;
+    const { total, available, swaptotal, swapfree } = this;
 
-    const memoryPercentage = ((total - free) / total) * 100;
+    const memoryPercentage = ((total - available) / total) * 100;
     const swapPercentage =
       swaptotal === 0 ? 0 : ((swaptotal - swapfree) / swaptotal) * 100;
 
