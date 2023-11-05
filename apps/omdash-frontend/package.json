@@ -12,20 +12,20 @@
   "author": "Damian Senn <damian.senn@topaxi.codes>",
   "license": "ISC",
   "dependencies": {
-    "@redux-devtools/extension": "^3.2.5",
+    "@redux-devtools/extension": "^3.2.6",
     "@reduxjs/toolkit": "^1.9.7",
     "@types/lodash-es": "^4.17.10",
     "@vaadin/router": "^1.7.5",
     "comlink": "^4.4.1",
     "d3": "^7.8.5",
-    "lit": "^3.0.1",
+    "lit": "^3.0.2",
     "lodash-es": "^4.17.21",
     "omdash-gauge": "*",
     "serve": "^14.2.1"
   },
   "devDependencies": {
     "@types/d3": "^7.4.2",
-    "ts-lit-plugin": "^2.0.0",
+    "ts-lit-plugin": "^2.0.1",
     "vite": "^4.5.0"
   }
 }
