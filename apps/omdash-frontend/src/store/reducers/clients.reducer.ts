@@ -151,6 +151,12 @@ function clientReducer(
         ...state,
         ...action.payload,
         cpus: clientCPUsHistoryReducer(state.cpus, action),
+        // Merge memory metrics as they are emitted from two separate sources
+        // One containing memory only, and the other also containing swap.
+        memory: {
+          ...state.memory,
+          ...action.payload.memory,
+        },
       };
     }
 
