@@ -16,10 +16,10 @@ export class OmCpu extends connect()(LitElement) {
   private accessor cpuTemperature = 0;
 
   @state()
-  private accessor cpus: readonly CpuInfo[] = [];
-
-  @state()
-  private accessor pcpus: readonly CpuInfo[] = [];
+  private accessor cpus: RootState['clients'][string]['cpus'] = {
+    limit: 0,
+    history: [],
+  };
 
   @state()
   private accessor loadAverage: [number, number, number] = [0, 0, 0];
@@ -41,12 +41,11 @@ export class OmCpu extends connect()(LitElement) {
       return;
     }
 
-    this.cpus = client.cpus.history.at(-1) ?? [];
-    this.pcpus = client.cpus.history.at(-2) ?? [];
+    this.cpus = client.cpus ?? { limit: 0, history: [] };
     this.loadAverage = client.load ?? [0, 0, 0];
     this.cpuTemperature = Math.round(client.temperature?.cpu?.max);
 
-    const cpuSpeeds = this.cpus.map(this.getCPUSpeed, this);
+    const cpuSpeeds = this.currentCPUInfo.map(this.getCPUSpeed, this);
 
     this.cpuMinSpeed = Math.min(
       this.cpuMinSpeed,
@@ -60,9 +59,17 @@ export class OmCpu extends connect()(LitElement) {
     );
   }
 
+  private get currentCPUInfo() {
+    return this.cpus.history.at(-1) ?? [];
+  }
+
+  private get previousCPUInfo() {
+    return this.cpus.history.at(-2) ?? [];
+  }
+
   private get averageCPUUsage() {
-    const cpuTimes = this.getTotalCPUTimes(this.cpus);
-    const prevCpuTimes = this.getTotalCPUTimes(this.pcpus);
+    const cpuTimes = this.getTotalCPUTimes(this.currentCPUInfo);
+    const prevCpuTimes = this.getTotalCPUTimes(this.previousCPUInfo);
 
     if (prevCpuTimes.idle === 0) {
       return 0;
@@ -123,8 +130,12 @@ export class OmCpu extends connect()(LitElement) {
     `;
   }
 
+  private get cpuCount() {
+    return this.currentCPUInfo.length;
+  }
+
   private getLoadAverageClass(value: number) {
-    const cpus = this.cpus.length;
+    const cpus = this.cpuCount;
 
     if (value > cpus * 1.5) {
       return 'critical';
@@ -154,12 +165,14 @@ export class OmCpu extends connect()(LitElement) {
   }
 
   private get averageCPUSpeed() {
-    if (this.cpus.length === 0) {
+    const cpuCount = this.cpuCount;
+
+    if (this.cpuCount === 0) {
       return 0;
     }
 
     return (
-      this.cpus.reduce((acc, cpu) => acc + cpu.speed, 0) / this.cpus.length
+      this.currentCPUInfo.reduce((acc, cpu) => acc + cpu.speed, 0) / cpuCount
     );
   }
 
