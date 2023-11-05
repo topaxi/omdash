@@ -1,4 +1,4 @@
-import { html, LitElement } from 'lit';
+import { css, html, LitElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 
 const GRAPH_SYMBOLS_UP = [
@@ -70,10 +70,12 @@ function renderSparkline(
 
 function renderSparklines(
   values: Iterable<number>,
+  min: number,
+  max: number,
   rows: number,
   direction: 'up' | 'down' = 'up',
 ): string[] {
-  const normalizedData = normalizeData(values);
+  const normalizedData = normalizeData(values, min, max);
   const scaledData = scaleData(normalizedData, 0, SCALE * rows);
 
   const lines: string[] = [];
@@ -87,11 +89,28 @@ function renderSparklines(
 
 @customElement('om-bspark')
 export class Bspark extends LitElement {
+  static styles = css`
+    :host {
+      line-height: 1;
+      letter-spacing: -2px;
+    }
+
+    div {
+      min-height: 1em;
+    }
+  `;
+
   @property({ type: Array })
   values: number[] = [];
 
   @property({ type: Number })
   rows = 1;
+
+  @property({ type: Number })
+  min = 0;
+
+  @property({ type: Number })
+  max = 100;
 
   @property()
   direction: 'up' | 'down' = 'up';
@@ -101,10 +120,13 @@ export class Bspark extends LitElement {
   }
 
   render() {
-    return renderSparklines(this.values, this.rows, this.direction).map(
-      this.renderLine,
-      this,
-    );
+    return renderSparklines(
+      this.values,
+      this.min,
+      this.max,
+      this.rows,
+      this.direction,
+    ).map(this.renderLine, this);
   }
 }
 

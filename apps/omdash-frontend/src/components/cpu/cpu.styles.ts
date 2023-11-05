@@ -9,6 +9,14 @@ export const cpuStyles = css`
     display: flex;
     justify-content: center;
     min-width: 180px; /* To be defined, smaller makes temperature text barely readable, could be fixed with container query */
+    overflow: hidden;
+  }
+
+  om-bspark {
+    position: absolute;
+    bottom: 1.5em;
+    right: 0;
+    opacity: 0.5;
   }
 
   .cpu-speed-gauge {

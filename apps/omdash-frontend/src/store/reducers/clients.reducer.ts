@@ -126,7 +126,6 @@ const clientCPUsHistoryReducer = createHistoryReducer(
 
     return action.payload.cpus;
   },
-  { limit: 2 },
 );
 
 function clientReducer(
