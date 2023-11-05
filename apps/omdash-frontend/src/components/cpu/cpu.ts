@@ -3,6 +3,7 @@ import { customElement, property, state } from 'lit/decorators.js';
 import { connect } from '../../store/connect.js';
 import { type RootState } from '../../store';
 import { type CpuInfo } from '../../store/reducers/clients.reducer.js';
+import { formatMegahertz } from '../../utils/format/formatMegahertz.js';
 import { cpuStyles } from './cpu.styles.js';
 
 @customElement('om-cpu')
@@ -100,18 +101,6 @@ export class OmCpu extends connect()(LitElement) {
       );
   }
 
-  private formatMegahertz(megahertz: number) {
-    const units = ['MHz', 'GHz'];
-
-    let unitIndex = 0;
-    while (megahertz > 1000) {
-      megahertz /= 1000;
-      unitIndex++;
-    }
-
-    return `${megahertz.toFixed(unitIndex === 0 ? 0 : 1)}${units[unitIndex]}`;
-  }
-
   private renderLoadAverage() {
     // On Windows, Node.js returns [0, 0, 0], so we do not render load at all.
     if (this.loadAverage.reduce((a, b) => a + b, 0) === 0) {
@@ -207,7 +196,7 @@ export class OmCpu extends connect()(LitElement) {
                   alignment-baseline="middle"
                   dominant-baseline="central"
                 >
-                  ${this.formatMegahertz(this.averageCPUSpeed)}
+                  ${formatMegahertz(this.averageCPUSpeed)}
                 </text>
               `
             : ''}
