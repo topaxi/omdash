@@ -107,6 +107,61 @@ export interface ClientsState {
 
 export const initialClientsState: ClientsState = {};
 
+function clientReducer(
+  state: ClientState,
+  action:
+    | RegisterAction
+    | UnregisterAction
+    | MetricAction
+    | PsAction
+    | BatteryAction
+    | TemperatureAction,
+): ClientState {
+  switch (action.type) {
+    case 'register':
+      return {
+        ...state,
+        ...action.payload,
+      };
+
+    case 'metric': {
+      return {
+        ...state,
+        ...action.payload,
+        pcpus: action.payload.cpus ? state.cpus ?? state.pcpus : state.pcpus,
+        memory: {
+          ...state.memory,
+          ...action.payload.memory,
+        },
+      };
+    }
+
+    case 'ps': {
+      return {
+        ...state,
+        ps: action.payload,
+      };
+    }
+
+    case 'battery': {
+      return {
+        ...state,
+        battery: action.payload,
+      };
+    }
+
+    case 'temperature': {
+      return {
+        ...state,
+        temperature: action.payload,
+      };
+    }
+
+    default:
+      return state;
+  }
+}
+
 export function clientsReducer(
   state: ClientsState = initialClientsState,
   action:
@@ -117,13 +172,19 @@ export function clientsReducer(
     | BatteryAction
     | TemperatureAction,
 ): ClientsState {
+  if (action.client == null) {
+    return state;
+  }
+
   switch (action.type) {
+    default:
     case 'register':
       return {
         ...state,
-        [action.payload.hostname]: {
-          ...state[action.payload.hostname],
-          ...action.payload,
+        [action.client]: {
+          ...clientReducer(state[action.client] ?? {}, action),
+          // TODO: Side effect in reducers should be avoided.
+          //       Use an rtk listener instead.
           lastUpdate: Date.now(),
         },
       };
@@ -133,57 +194,5 @@ export function clientsReducer(
 
       return clients;
     }
-
-    case 'metric': {
-      return {
-        ...state,
-        [action.client]: {
-          ...state[action.client],
-          ...action.payload,
-          pcpus: action.payload.cpus
-            ? state[action.client]?.cpus ?? state[action.client]?.pcpus
-            : state[action.client]?.pcpus,
-          memory: {
-            ...state[action.client]?.memory,
-            ...action.payload.memory,
-          },
-          lastUpdate: Date.now(),
-        },
-      };
-    }
-
-    case 'ps': {
-      return {
-        ...state,
-        [action.client]: {
-          ...state[action.client],
-          ps: action.payload,
-          lastUpdate: Date.now(),
-        },
-      };
-    }
-
-    case 'battery': {
-      return {
-        ...state,
-        [action.client]: {
-          ...state[action.client],
-          battery: action.payload,
-        },
-      };
-    }
-
-    case 'temperature': {
-      return {
-        ...state,
-        [action.client]: {
-          ...state[action.client],
-          temperature: action.payload,
-        },
-      };
-    }
-
-    default:
-      return state;
   }
 }
