@@ -195,7 +195,7 @@ export class OmCpu extends connect()(LitElement) {
 
   protected render(): unknown {
     return html`
-      <om-bspark .values=${this.sparkValues} rows="2"></om-bspark>
+      <om-bspark .values=${this.sparkValues} rows="4"></om-bspark>
       <om-gauge
         class="cpu-usage"
         style="--color: var(--ctp-macchiato-red)"
