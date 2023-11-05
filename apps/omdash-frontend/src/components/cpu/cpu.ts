@@ -1,16 +1,9 @@
 import { LitElement, html, svg } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { connect } from '../../store/connect.js';
-import { RootState } from '../../store';
+import { type RootState } from '../../store';
+import { type CpuInfo } from '../../store/reducers/clients.reducer.js';
 import { cpuStyles } from './cpu.styles.js';
-
-interface CpuInfo {
-  model: string;
-  speed: number;
-  speedMin: number;
-  speedMax: number;
-  times: { user: number; nice: number; sys: number; idle: number; irq: number };
-}
 
 @customElement('om-cpu')
 export class OmCpu extends connect()(LitElement) {
@@ -37,7 +30,7 @@ export class OmCpu extends connect()(LitElement) {
   @state()
   private accessor cpuMaxSpeed = Number.MIN_SAFE_INTEGER;
 
-  private getCPUSpeed(cpu: readonly CpuInfo): number {
+  private getCPUSpeed(cpu: Readonly<CpuInfo>): number {
     return cpu.speed;
   }
 
@@ -48,12 +41,12 @@ export class OmCpu extends connect()(LitElement) {
       return;
     }
 
-    this.cpus = client.cpus ?? [];
-    this.pcpus = client.pcpus ?? [];
+    this.cpus = client.cpus.history.at(-1) ?? [];
+    this.pcpus = client.cpus.history.at(-2) ?? [];
     this.loadAverage = client.load ?? [0, 0, 0];
     this.cpuTemperature = Math.round(client.temperature?.cpu?.max);
 
-    const cpuSpeeds = client.cpus.map(this.getCPUSpeed, this);
+    const cpuSpeeds = this.cpus.map(this.getCPUSpeed, this);
 
     this.cpuMinSpeed = Math.min(
       this.cpuMinSpeed,

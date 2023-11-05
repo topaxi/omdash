@@ -1,4 +1,13 @@
 import type { OmClientAction } from '../action.js';
+import { HistoryState, createHistoryReducer } from './history.reducer.js';
+
+export interface CpuInfo {
+  model: string;
+  speed: number;
+  speedMin: number;
+  speedMax: number;
+  times: { user: number; nice: number; sys: number; idle: number; irq: number };
+}
 
 export type RegisterAction = OmClientAction<
   'register',
@@ -42,8 +51,7 @@ export interface ClientState {
   uptime: number;
   lastUpdate: number;
   load: [number, number, number];
-  cpus: any[];
-  pcpus: any[];
+  cpus: HistoryState<CpuInfo[]>;
   memory: {
     total: number;
     free: number;
@@ -107,6 +115,20 @@ export interface ClientsState {
 
 export const initialClientsState: ClientsState = {};
 
+const clientCPUsHistoryReducer = createHistoryReducer(
+  function clientCPUsReducer(
+    state: CpuInfo[] = [],
+    action: MetricAction,
+  ): CpuInfo[] {
+    if (action.type !== 'metric' || !action.payload.cpus) {
+      return state;
+    }
+
+    return action.payload.cpus;
+  },
+  { limit: 2 },
+);
+
 function clientReducer(
   state: ClientState,
   action:
@@ -128,11 +150,7 @@ function clientReducer(
       return {
         ...state,
         ...action.payload,
-        pcpus: action.payload.cpus ? state.cpus ?? state.pcpus : state.pcpus,
-        memory: {
-          ...state.memory,
-          ...action.payload.memory,
-        },
+        cpus: clientCPUsHistoryReducer(state.cpus, action),
       };
     }
 

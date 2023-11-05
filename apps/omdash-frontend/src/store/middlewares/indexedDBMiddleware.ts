@@ -78,7 +78,7 @@ export function createRootReducerWithReplace<S, A extends AnyAction>(
   return (state: S | undefined, action: any) => {
     if (action.type === 'REPLACE_STATE') {
       // Replace the state with the payload
-      return action.payload;
+      return rootReducer(action.payload, action);
     }
 
     // Delegate to the original rootReducer for other actions
