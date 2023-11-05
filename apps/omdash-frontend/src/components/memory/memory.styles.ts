@@ -5,7 +5,16 @@ export const memoryStyles = css`
   ${keyframes}
 
   :host {
+    position: relative;
     min-width: 180px; /* Aligned with cpu styles */
+    overflow: hidden;
+  }
+
+  om-bspark {
+    position: absolute;
+    bottom: 1.5em;
+    right: 0;
+    opacity: 0.5;
   }
 
   .swap {

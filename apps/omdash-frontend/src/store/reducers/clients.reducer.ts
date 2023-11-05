@@ -43,6 +43,18 @@ export type TemperatureAction = OmClientAction<
   }
 >;
 
+export interface MemoryInfo {
+  total: number;
+  free: number;
+  used: number;
+  active: number;
+  available: number;
+  buffcache: number;
+  swaptotal: number;
+  swapused: number;
+  swapfree: number;
+}
+
 export interface ClientState {
   addr: string;
   hostname: string;
@@ -52,17 +64,7 @@ export interface ClientState {
   lastUpdate: number;
   load: [number, number, number];
   cpus: HistoryState<CpuInfo[]>;
-  memory: {
-    total: number;
-    free: number;
-    used: number;
-    active: number;
-    available: number;
-    buffcache: number;
-    swaptotal: number;
-    swapused: number;
-    swapfree: number;
-  };
+  memory: HistoryState<MemoryInfo>;
   ps: {
     count: number;
     highestCpu: any[];
@@ -128,6 +130,29 @@ const clientCPUsHistoryReducer = createHistoryReducer(
   },
 );
 
+const clientMemoryHistoryReducer = createHistoryReducer(
+  function clientMemoryReducer(
+    state: MemoryInfo = {
+      total: 0,
+      free: 0,
+      used: 0,
+      active: 0,
+      available: 0,
+      buffcache: 0,
+      swaptotal: 0,
+      swapused: 0,
+      swapfree: 0,
+    },
+    action: MetricAction,
+  ): MemoryInfo {
+    if (action.type !== 'metric' || !action.payload.memory) {
+      return state;
+    }
+
+    return action.payload.memory;
+  },
+);
+
 function clientReducer(
   state: ClientState,
   action:
@@ -150,12 +175,7 @@ function clientReducer(
         ...state,
         ...action.payload,
         cpus: clientCPUsHistoryReducer(state.cpus, action),
-        // Merge memory metrics as they are emitted from two separate sources
-        // One containing memory only, and the other also containing swap.
-        memory: {
-          ...state.memory,
-          ...action.payload.memory,
-        },
+        memory: clientMemoryHistoryReducer(state.memory, action),
       };
     }
 
