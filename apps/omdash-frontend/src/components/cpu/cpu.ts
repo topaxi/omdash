@@ -184,13 +184,16 @@ export class OmCpu extends connect()(LitElement) {
   }
 
   private get sparkValues() {
-    return this.cpus.history.map((cpus, i, history) => {
-      if (i === 0) {
-        return 0;
-      }
+    return this.cpus.history
+      .slice(-60)
+      .map((cpus, i, history) => {
+        if (i === 0) {
+          return 0;
+        }
 
-      return Math.round(this.getAverageCPUUsage(history[i - 1], cpus));
-    });
+        return Math.round(this.getAverageCPUUsage(history[i - 1], cpus));
+      })
+      .slice(1);
   }
 
   protected render(): unknown {

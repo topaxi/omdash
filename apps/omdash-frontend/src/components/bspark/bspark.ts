@@ -1,5 +1,6 @@
 import { css, html, LitElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
+import { bsparkStyles } from './bspark.styles';
 
 const GRAPH_SYMBOLS_UP = [
   [' ', '⢀', '⢠', '⢰', '⢸'],
@@ -89,16 +90,7 @@ function renderSparklines(
 
 @customElement('om-bspark')
 export class Bspark extends LitElement {
-  static styles = css`
-    :host {
-      line-height: 1;
-      letter-spacing: -2px;
-    }
-
-    div {
-      min-height: 1em;
-    }
-  `;
+  static styles = bsparkStyles;
 
   @property({ type: Array })
   values: number[] = [];
@@ -115,8 +107,12 @@ export class Bspark extends LitElement {
   @property()
   direction: 'up' | 'down' = 'up';
 
+  private renderCharacter(char: string) {
+    return html`<span>${char}</span>`;
+  }
+
   private renderLine(line: string) {
-    return html`<div>${line}</div>`;
+    return html`<div>${line.split('').map(this.renderCharacter, this)}</div>`;
   }
 
   render() {
