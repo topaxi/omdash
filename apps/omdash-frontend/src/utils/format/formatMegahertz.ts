@@ -2,7 +2,7 @@ export function formatMegahertz(megahertz: number): string {
   const units = ['MHz', 'GHz'];
 
   let unitIndex = 0;
-  while (megahertz > 1000) {
+  while (megahertz > 1000 && unitIndex < units.length - 1) {
     megahertz /= 1000;
     unitIndex++;
   }
