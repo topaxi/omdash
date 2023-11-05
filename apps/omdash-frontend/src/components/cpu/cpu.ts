@@ -184,16 +184,20 @@ export class OmCpu extends connect()(LitElement) {
         percent=${Math.round(this.averageCPUUsage)}
       >
         <svg viewBox="0 0 100 55" class="cpu-text-overlay">
-          <text
-            class="cpu-speed"
-            x="50"
-            y="37"
-            text-anchor="middle"
-            alignment-baseline="middle"
-            dominant-baseline="central"
-          >
-            ${this.formatMegahertz(this.averageCPUSpeed)}
-          </text>
+          ${this.averageCPUSpeed
+            ? svg`
+                <text
+                  class="cpu-speed"
+                  x="50"
+                  y="37"
+                  text-anchor="middle"
+                  alignment-baseline="middle"
+                  dominant-baseline="central"
+                >
+                  ${this.formatMegahertz(this.averageCPUSpeed)}
+                </text>
+              `
+            : ''}
           ${this.cpuTemperature > 0 && this.cpuTemperature < 128
             ? svg`
                 <text
