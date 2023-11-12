@@ -4,6 +4,7 @@ import si from 'systeminformation';
 import { pick } from './utils/pick';
 import { setIntervalImmediate } from './utils/timers';
 import { getProcesses } from './processes';
+import { getAMDGPUInfo } from './rocm';
 
 process.title = 'omdash-client';
 
@@ -215,11 +216,35 @@ function getUptime() {
   };
 }
 
+function hasAMDGPU(controllers: si.Systeminformation.GraphicsControllerData[]) {
+  return controllers.some((controller) => controller.vendor.includes('AMD'));
+}
+
 async function getGPUs() {
+  const graphics = await si.graphics();
+
+  if (hasAMDGPU(graphics.controllers)) {
+    const amdGPUInfo = await getAMDGPUInfo();
+
+    for (const controller of graphics.controllers) {
+      const amdGPU = amdGPUInfo.find(
+        (amdgpu) => amdgpu['PCI Bus'].slice(5) === controller.busAddress,
+      );
+
+      if (amdGPU != null) {
+        controller.utilizationGpu = Number(amdGPU['GPU use (%)']);
+        controller.memoryTotal =
+          Number(amdGPU['VRAM Total Memory (B)']) / 1024 / 1024;
+        controller.memoryUsed =
+          Number(amdGPU['VRAM Total Used Memory (B)']) / 1024 / 1024;
+      }
+    }
+  }
+
   return {
     type: 'metric',
     payload: {
-      gpus: (await si.graphics()).controllers,
+      gpus: graphics.controllers,
     },
   };
 }
