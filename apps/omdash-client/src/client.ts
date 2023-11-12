@@ -237,6 +237,9 @@ async function getGPUs() {
           Number(amdGPU['VRAM Total Memory (B)']) / 1024 / 1024;
         controller.memoryUsed =
           Number(amdGPU['VRAM Total Used Memory (B)']) / 1024 / 1024;
+        controller.temperatureGpu = Number(
+          amdGPU['Temperature (Sensor edge) (C)'],
+        );
       }
     }
   }

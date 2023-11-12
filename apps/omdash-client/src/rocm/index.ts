@@ -6,6 +6,9 @@ export interface AMDGPUInfo {
   'PCI Bus': string;
   'VRAM Total Memory (B)': string;
   'VRAM Total Used Memory (B)': string;
+  'Temperature (Sensor edge) (C)'?: string;
+  'Temperature (Sensor junction) (C)'?: string;
+  'Temperature (Sensor memory) (C)'?: string;
 }
 
 let rocsmiExists: boolean | undefined;
