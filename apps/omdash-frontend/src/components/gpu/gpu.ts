@@ -41,9 +41,9 @@ export class OmGpu extends connect()(LitElement) {
 
   override stateChanged(state: RootState) {
     const history =
-      state.clients[this.hostname]?.gpus?.history.map(
-        (gpus) => gpus[this.gpuIndex],
-      ) ?? [];
+      state.clients[this.hostname]?.gpus?.history
+        .map((gpus) => gpus[this.gpuIndex])
+        .filter((gpu) => gpu != null) ?? [];
     const gpu = history.at(-1);
 
     if (!gpu) {
