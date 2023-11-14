@@ -33,14 +33,16 @@ function normalizeData(
   return Array.from(values, (value) => normalize(value, min!, max!));
 }
 
+function scale(value: number, min: number, max: number): number {
+  return value * (max - min) + min;
+}
+
 function scaleData(
   values: Iterable<number>,
   min: number = 0,
   max: number = 1,
 ): Uint8Array {
-  return Uint8Array.from(values, (value) =>
-    Math.round(value * (max - min) + min),
-  );
+  return Uint8Array.from(values, (value) => Math.round(scale(value, min, max)));
 }
 
 function chunk<
