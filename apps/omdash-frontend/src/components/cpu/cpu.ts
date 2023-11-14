@@ -225,7 +225,7 @@ export class OmCpu extends connect()(LitElement) {
                 <text
                   class="cpu-temperature"
                   x="5"
-                  y="7"
+                  y="10"
                   text-anchor="left"
                   alignment-baseline="middle"
                   dominant-baseline="central"

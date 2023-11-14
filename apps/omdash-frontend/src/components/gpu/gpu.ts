@@ -16,6 +16,12 @@ export class OmGpu extends connect()(LitElement) {
   accessor gpuIndex = 0;
 
   @state()
+  private accessor gpuVendor = '';
+
+  @state()
+  private accessor gpuModel = '';
+
+  @state()
   private accessor gpuTemperature = 0;
 
   @state()
@@ -34,10 +40,55 @@ export class OmGpu extends connect()(LitElement) {
       return;
     }
 
+    this.gpuVendor = gpu.vendor ?? '';
+    this.gpuModel = gpu.model ?? '';
     this.gpuTemperature = gpu.temperatureGpu ?? 0;
     this.utilization = gpu.utilizationGpu ?? 0;
     this.memoryUsed = (gpu.memoryUsed ?? 0) * 1024 * 1024;
     this.memoryTotal = (gpu.memoryTotal ?? 0) * 1024 * 1024;
+  }
+
+  private get normalizedVendorName(): string {
+    const vendorLower = this.gpuVendor.toLowerCase();
+
+    if (vendorLower.includes('amd')) {
+      return 'AMD';
+    }
+
+    if (vendorLower.includes('nvidia')) {
+      return 'Nvidia';
+    }
+
+    return '';
+  }
+
+  private get normalizedModelName(): string {
+    const modelLower = this.gpuModel.toLowerCase();
+
+    if (modelLower === 'raphael') {
+      return 'iGPU Raphael';
+    }
+
+    if (modelLower.includes('radeon')) {
+      const productName = /\[(.*)\]/.exec(this.gpuModel)?.[1] ?? '';
+
+      // Statically move to RX 7800 XT for now
+      if (productName.includes('7800 XT')) {
+        return 'Radeon RX 7800 XT';
+      }
+
+      return productName || modelLower;
+    }
+
+    if (modelLower.includes('geforce')) {
+      return 'GeForce';
+    }
+
+    return this.gpuModel;
+  }
+
+  private get gpuName(): string {
+    return `${this.normalizedVendorName} ${this.normalizedModelName}`.trim();
   }
 
   private renderAvailableMemory() {
@@ -74,7 +125,7 @@ export class OmGpu extends connect()(LitElement) {
                   <text
                     class="gpu-temperature"
                     x="5"
-                    y="7"
+                    y="10"
                     text-anchor="left"
                     alignment-baseline="middle"
                     dominant-baseline="central"
@@ -82,6 +133,19 @@ export class OmGpu extends connect()(LitElement) {
                      ${this.gpuTemperature}°C
                   </text>
                 `
+              : ''}
+            ${this.gpuName !== ''
+              ? svg`
+                    <text
+                      class="gpu-name"
+                      x="50%"
+                      y="0"
+                      text-anchor="middle"
+                      dominant-baseline="hanging"
+                    >
+                      ${this.gpuName}
+                    </text>
+                  `
               : ''}
           </svg>
         </om-gauge>

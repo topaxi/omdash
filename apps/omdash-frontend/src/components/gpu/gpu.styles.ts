@@ -19,6 +19,7 @@ export const gpuStyles = css`
   .gpu-text-overlay {
     position: absolute;
     top: 0;
+    fill: currentColor;
   }
 
   .gpu-usage {
@@ -27,9 +28,12 @@ export const gpuStyles = css`
     justify-content: center;
   }
 
+  .gpu-name {
+    font-size: 0.3em;
+  }
+
   .gpu-temperature {
     font-size: 0.5em;
-    fill: currentColor;
   }
 
   @container gauge (min-width: 200px) {
