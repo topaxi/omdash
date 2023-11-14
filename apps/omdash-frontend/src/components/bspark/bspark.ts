@@ -37,8 +37,10 @@ function scaleData(
   values: Iterable<number>,
   min: number = 0,
   max: number = 1,
-): number[] {
-  return Array.from(values, (value) => Math.round(value * (max - min) + min));
+): Uint8Array {
+  return Uint8Array.from(values, (value) =>
+    Math.round(value * (max - min) + min),
+  );
 }
 
 function chunk<
@@ -56,17 +58,17 @@ function clamp(value: number, min: number, max: number): number {
 const SCALE = 4;
 
 function renderSparkline(
-  values: number[],
+  values: Iterable<number>,
   row: number,
-  direction: 'up' | 'down' = 'up',
+  symbols = GRAPH_SYMBOLS_UP,
 ): string {
   const rowData = Uint8Array.from(values, (v) =>
     clamp(v - SCALE * row, 0, SCALE),
   );
-  const chunkedData = chunk(rowData, 2);
-  const symbols = direction === 'up' ? GRAPH_SYMBOLS_UP : GRAPH_SYMBOLS_DOWN;
 
-  return chunkedData.map(([a, b]) => symbols[a][b]).join('');
+  return chunk(rowData, 2)
+    .map(([a, b]) => symbols[a][b])
+    .join('');
 }
 
 function renderSparklines(
@@ -76,13 +78,14 @@ function renderSparklines(
   rows: number,
   direction: 'up' | 'down' = 'up',
 ): string[] {
+  const symbols = direction === 'up' ? GRAPH_SYMBOLS_UP : GRAPH_SYMBOLS_DOWN;
   const normalizedData = normalizeData(values, min, max);
   const scaledData = scaleData(normalizedData, 0, SCALE * rows);
 
   const lines: string[] = [];
 
   for (let i = rows - 1; i >= 0; i--) {
-    lines.push(renderSparkline(scaledData, i, direction));
+    lines.push(renderSparkline(scaledData, i, symbols));
   }
 
   return lines;
