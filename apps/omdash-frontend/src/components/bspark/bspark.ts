@@ -1,4 +1,4 @@
-import { css, html, LitElement } from 'lit';
+import { html, LitElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { bsparkStyles } from './bspark.styles';
 
@@ -112,7 +112,7 @@ export class Bspark extends LitElement {
   }
 
   private renderLine(line: string) {
-    const l = line.trimEnd();
+    const l = line;
 
     if (l === '') {
       return '';

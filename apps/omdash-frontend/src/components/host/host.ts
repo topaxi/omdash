@@ -14,6 +14,7 @@ import '../mount/mount.js';
 import '../os-icon/os-icon.js';
 import '../process-list/process-list.js';
 import { hostStyles } from './host.styles.js';
+import { GpuInfo } from '../../store/reducers/clients.reducer.js';
 
 function formatTime(seconds: number) {
   if (seconds < 60) {
@@ -76,9 +77,7 @@ export class OmHost extends connect()(LitElement) {
   @state()
   private accessor fsSize: { size: number; used: number; mount: string }[] = [];
 
-  private gpuProvidesMetrics(
-    gpu: RootState['clients'][string]['gpus'][number],
-  ) {
+  private gpuProvidesMetrics(gpu: GpuInfo) {
     return Boolean(gpu.utilizationGpu || (gpu.memoryUsed && gpu.memoryTotal));
   }
 
@@ -97,10 +96,12 @@ export class OmHost extends connect()(LitElement) {
     this.processCount = client.ps?.count ?? 0;
     this.battery = client.battery ?? null;
     this.gpuIndices =
-      client.gpus
+      client.gpus.history
+        .at(-1)
         ?.map((_, i) => i)
-        .filter((gpuIndex) => this.gpuProvidesMetrics(client.gpus[gpuIndex])) ??
-      [];
+        .filter((gpuIndex) =>
+          this.gpuProvidesMetrics(client.gpus.history.at(-1)![gpuIndex]!),
+        ) ?? [];
     this.fsSize = (client.fsSize ?? []).sort((a, b) =>
       a.mount.localeCompare(b.mount),
     );

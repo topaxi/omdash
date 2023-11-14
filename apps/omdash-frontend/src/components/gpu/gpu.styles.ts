@@ -2,7 +2,16 @@ import { css } from 'lit';
 
 export const gpuStyles = css`
   :host {
+    position: relative;
     min-width: 180px; /* Aligned with cpu styles */
+    overflow: hidden;
+  }
+
+  om-bspark {
+    position: absolute;
+    bottom: 1.5em;
+    right: 0;
+    opacity: 0.5;
   }
 
   .memory {

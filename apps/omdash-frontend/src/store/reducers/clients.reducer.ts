@@ -55,6 +55,28 @@ export interface MemoryInfo {
   swapfree: number;
 }
 
+export interface GpuInfo {
+  bus?: string;
+  model?: string;
+  vendor?: string;
+  vram?: number;
+  vramDynamic?: boolean;
+  clockCore?: number;
+  clockMemory?: number;
+  driverVersion?: string;
+  memoryFree?: number;
+  memoryTotal?: number;
+  memoryUsed?: number;
+  name?: string;
+  pciBus?: string;
+  powerDraw?: number;
+  powerLimit?: number;
+  subDeviceId?: string;
+  temperatureGpu?: number;
+  utilizationGpu?: number;
+  utilizationMemory?: number;
+}
+
 export interface ClientState {
   addr: string;
   hostname: string;
@@ -83,27 +105,7 @@ export interface ClientState {
       chipset: number;
     };
   };
-  gpus: Array<{
-    bus?: string;
-    model?: string;
-    vendor?: string;
-    vram?: number;
-    vramDynamic?: boolean;
-    clockCore?: number;
-    clockMemory?: number;
-    driverVersion?: string;
-    memoryFree?: number;
-    memoryTotal?: number;
-    memoryUsed?: number;
-    name?: string;
-    pciBus?: string;
-    powerDraw?: number;
-    powerLimit?: number;
-    subDeviceId?: string;
-    temperatureGpu?: number;
-    utilizationGpu?: number;
-    utilizationMemory?: number;
-  }>;
+  gpus: HistoryState<GpuInfo[]>;
   fsSize: Array<{
     size: number;
     used: number;
@@ -127,6 +129,19 @@ const clientCPUsHistoryReducer = createHistoryReducer(
     }
 
     return action.payload.cpus;
+  },
+);
+
+const clientGPUsHistoryReducer = createHistoryReducer(
+  function clientGPUsReducer(
+    state: GpuInfo[] = [],
+    action: MetricAction,
+  ): GpuInfo[] {
+    if (action.type !== 'metric' || !action.payload.gpus) {
+      return state;
+    }
+
+    return action.payload.gpus;
   },
 );
 
@@ -176,6 +191,7 @@ function clientReducer(
         ...action.payload,
         cpus: clientCPUsHistoryReducer(state.cpus, action),
         memory: clientMemoryHistoryReducer(state.memory, action),
+        gpus: clientGPUsHistoryReducer(state.gpus, action),
       };
     }
 
