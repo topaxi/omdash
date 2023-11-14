@@ -119,7 +119,7 @@ export class Bspark extends LitElement {
   private renderLine(line: string) {
     const l = line;
 
-    if (l === '') {
+    if (l.trim() === '') {
       return '';
     }
 
