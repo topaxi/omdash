@@ -40,7 +40,7 @@ export const reduxIndexedDBMiddleware: Middleware = ({
   const saveStateToIndexedDB = () => {
     const state = getState();
 
-    indexedDBStorage.saveStateToIndexedDB(state);
+    return indexedDBStorage.saveStateToIndexedDB(state);
   };
 
   const saveDebounced = debounce(saveStateToIndexedDB, SAVE_INTERVAL, {
@@ -59,8 +59,12 @@ export const reduxIndexedDBMiddleware: Middleware = ({
       // Continue with the next middleware or reducer
       const result = next(action);
 
-      // Save the state to IndexedDB after every action
-      saveDebounced();
+      if (action.type === 'REPLACE_STATE') {
+        await saveStateToIndexedDB();
+      } else {
+        // Save the state to IndexedDB after every action
+        saveDebounced();
+      }
 
       return result;
     }
