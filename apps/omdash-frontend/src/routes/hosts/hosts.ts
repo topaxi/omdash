@@ -1,6 +1,7 @@
 import { LitElement, html } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
+import { ClockController } from '../../controllers/clock.js';
 import { RootState } from '../../store/index.js';
 import { connect } from '../../store/connect.js';
 import { mapEntries } from '../../utils/object/mapEntries.js';
@@ -14,6 +15,8 @@ const identity = <T>(value: T) => value;
 @customElement('om-hosts')
 export class Hosts extends connect()(LitElement) {
   static styles = hostsStyles;
+
+  private now = new ClockController(this, 5000);
 
   @state()
   private accessor hostnames: string[] = [];
@@ -31,7 +34,7 @@ export class Hosts extends connect()(LitElement) {
   }
 
   private get activeHosts() {
-    const now = Date.now();
+    const now = this.now.value;
 
     return this.hostnames.filter(
       (hostname) => now - (this.lastUpdatedHosts[hostname] || 0) < 300_000,
@@ -55,14 +58,15 @@ export class Hosts extends connect()(LitElement) {
     });
   }
 
+  private renderHost(hostname: string) {
+    return html`
+      <om-box data-hostname=${hostname}>
+        <om-host hostname=${hostname}></om-host>
+      </om-box>
+    `;
+  }
+
   protected render(): unknown {
-    return repeat(
-      this.sortedHosts,
-      identity,
-      (hostname) =>
-        html`<om-box data-hostname=${hostname}
-          ><om-host hostname=${hostname}></om-host
-        ></om-box>`,
-    );
+    return repeat(this.sortedHosts, identity, this.renderHost);
   }
 }
