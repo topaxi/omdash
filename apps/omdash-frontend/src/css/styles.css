@@ -1,7 +1,7 @@
 @import './catppuccin.css';
 
 :root {
-  font-family: 'VictorMono Nerd Font', monospace;
+  font-family: 'VictorMono NFP', 'VictorMono Nerd Font', monospace;
   color: var(--ctp-macchiato-text);
   background-color: #000;
 }
