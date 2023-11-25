@@ -6,6 +6,8 @@ import { type CpuInfo } from '../../store/reducers/clients.reducer.js';
 import { formatMegahertz } from '../../utils/format/formatMegahertz.js';
 import { cpuStyles } from './cpu.styles.js';
 
+import '../bspark/bspark.js';
+
 @customElement('om-cpu')
 export class OmCpu extends connect()(LitElement) {
   static styles = cpuStyles;
@@ -68,9 +70,9 @@ export class OmCpu extends connect()(LitElement) {
     return this.cpus.history.at(-2) ?? [];
   }
 
-  private get averageCPUUsage() {
-    const cpuTimes = this.getTotalCPUTimes(this.currentCPUInfo);
-    const prevCpuTimes = this.getTotalCPUTimes(this.previousCPUInfo);
+  private getAverageCPUUsage(prev: CpuInfo[], current: CpuInfo[]) {
+    const prevCpuTimes = this.getTotalCPUTimes(prev);
+    const cpuTimes = this.getTotalCPUTimes(current);
 
     if (prevCpuTimes.idle === 0) {
       return 0;
@@ -84,6 +86,10 @@ export class OmCpu extends connect()(LitElement) {
     }
 
     return 100 - (100 * idleDifference) / totalDifference;
+  }
+
+  private get averageCPUUsage() {
+    return this.getAverageCPUUsage(this.previousCPUInfo, this.currentCPUInfo);
   }
 
   private getTotalCPUTimes(cpus: readonly CpuInfo[]) {
@@ -177,8 +183,22 @@ export class OmCpu extends connect()(LitElement) {
     );
   }
 
+  private get sparkValues() {
+    return this.cpus.history
+      .slice(-60)
+      .map((cpus, i, history) => {
+        if (i === 0) {
+          return 0;
+        }
+
+        return Math.round(this.getAverageCPUUsage(history[i - 1], cpus));
+      })
+      .slice(1);
+  }
+
   protected render(): unknown {
     return html`
+      <om-bspark .values=${this.sparkValues} rows="4"></om-bspark>
       <om-gauge
         class="cpu-usage"
         style="--color: var(--ctp-macchiato-red)"
@@ -205,7 +225,7 @@ export class OmCpu extends connect()(LitElement) {
                 <text
                   class="cpu-temperature"
                   x="5"
-                  y="7"
+                  y="10"
                   text-anchor="left"
                   alignment-baseline="middle"
                   dominant-baseline="central"

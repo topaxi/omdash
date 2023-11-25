@@ -5,6 +5,8 @@ import { RootState } from '../../store';
 import { memoryStyles } from './memory.styles.js';
 import { formatBytes } from '../../utils/format/formatBytes.js';
 
+import '../bspark/bspark.js';
+
 @customElement('om-memory')
 export class OmMemory extends connect()(LitElement) {
   static styles = memoryStyles;
@@ -13,16 +15,30 @@ export class OmMemory extends connect()(LitElement) {
   accessor hostname = '';
 
   @state()
-  private accessor total = 1;
+  memory: RootState['clients'][string]['memory'] = {
+    limit: 100,
+    history: [],
+  };
 
-  @state()
-  private accessor free = 1;
+  get latestMemoryInfo() {
+    return this.memory.history.at(-1);
+  }
 
-  @state()
-  private accessor swaptotal = 0;
+  get total(): number {
+    return this.latestMemoryInfo?.total ?? 1;
+  }
 
-  @state()
-  private accessor swapfree = 0;
+  get available(): number {
+    return this.latestMemoryInfo?.available ?? 1;
+  }
+
+  get swaptotal(): number {
+    return this.latestMemoryInfo?.swaptotal ?? 0;
+  }
+
+  get swapfree(): number {
+    return this.latestMemoryInfo?.swapfree ?? 0;
+  }
 
   override stateChanged(state: RootState) {
     const memory = state.clients[this.hostname]?.memory;
@@ -31,35 +47,39 @@ export class OmMemory extends connect()(LitElement) {
       return;
     }
 
-    this.total = memory.total ?? 1;
-    this.free = memory.free ?? 1;
-    this.swaptotal = memory.swaptotal ?? 0;
-    this.swapfree = memory.swapfree ?? 0;
+    this.memory = memory;
+  }
+
+  get memoryHistory() {
+    return this.memory.history.map(
+      (memory) => ((memory.total - memory.available) / this.total) * 100,
+    );
   }
 
   private renderAvailableMemory() {
-    const { total, free } = this;
+    const { total, available } = this;
 
-    if (total === 1 && free === 1) {
+    if (total === 1 && available === 1) {
       return '';
     }
 
     return html`
       <div class="available-memory">
-        <span>${formatBytes(total - free)}</span>
+        <span>${formatBytes(total - available)}</span>
         <span>${formatBytes(total)}</span>
       </div>
     `;
   }
 
   render() {
-    const { total, free, swaptotal, swapfree } = this;
+    const { total, available, swaptotal, swapfree } = this;
 
-    const memoryPercentage = ((total - free) / total) * 100;
+    const memoryPercentage = ((total - available) / total) * 100;
     const swapPercentage =
       swaptotal === 0 ? 0 : ((swaptotal - swapfree) / swaptotal) * 100;
 
     return html`
+      <om-bspark .values=${this.memoryHistory} rows="4"></om-bspark>
       <div class="memory-usage">
         <om-gauge
           class="memory ${memoryPercentage > 90 ? 'critical' : ''}"

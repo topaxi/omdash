@@ -4,6 +4,7 @@ import si from 'systeminformation';
 import { pick } from './utils/pick';
 import { setIntervalImmediate } from './utils/timers';
 import { getProcesses } from './processes';
+import { getAMDGPUInfo } from './rocm';
 
 process.title = 'omdash-client';
 
@@ -102,8 +103,8 @@ function connect(url: string) {
 
     timers.push(
       setIntervalImmediate(async () => {
-        ws.send(encode(await getSwap()));
-      }, 10_000),
+        ws.send(encode(await getMemory()));
+      }, UPDATE_INTERVAL),
     );
 
     timers.push(
@@ -187,17 +188,12 @@ async function getTemperatures() {
   };
 }
 
-async function getSwap() {
+async function getMemory() {
   const memory = await si.mem();
 
   return {
     type: 'metric',
-    payload: {
-      memory: {
-        swaptotal: memory.swaptotal,
-        swapfree: memory.swapfree,
-      },
-    },
+    payload: { memory },
   };
 }
 
@@ -207,10 +203,6 @@ function getMetrics() {
     payload: {
       cpus: os.cpus(),
       load: os.loadavg(),
-      memory: {
-        total: os.totalmem(),
-        free: os.freemem(),
-      },
     },
   };
 }
@@ -224,11 +216,38 @@ function getUptime() {
   };
 }
 
+function hasAMDGPU(controllers: si.Systeminformation.GraphicsControllerData[]) {
+  return controllers.some((controller) => controller.vendor.includes('AMD'));
+}
+
 async function getGPUs() {
+  const graphics = await si.graphics();
+
+  if (hasAMDGPU(graphics.controllers)) {
+    const amdGPUInfo = await getAMDGPUInfo();
+
+    for (const controller of graphics.controllers) {
+      const amdGPU = amdGPUInfo.find(
+        (amdgpu) => amdgpu['PCI Bus'].slice(5) === controller.busAddress,
+      );
+
+      if (amdGPU != null) {
+        controller.utilizationGpu = Number(amdGPU['GPU use (%)']);
+        controller.memoryTotal =
+          Number(amdGPU['VRAM Total Memory (B)']) / 1024 / 1024;
+        controller.memoryUsed =
+          Number(amdGPU['VRAM Total Used Memory (B)']) / 1024 / 1024;
+        controller.temperatureGpu = Number(
+          amdGPU['Temperature (Sensor edge) (C)'],
+        );
+      }
+    }
+  }
+
   return {
     type: 'metric',
     payload: {
-      gpus: (await si.graphics()).controllers,
+      gpus: graphics.controllers,
     },
   };
 }

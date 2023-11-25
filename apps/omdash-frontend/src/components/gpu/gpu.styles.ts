@@ -2,7 +2,16 @@ import { css } from 'lit';
 
 export const gpuStyles = css`
   :host {
+    position: relative;
     min-width: 180px; /* Aligned with cpu styles */
+    overflow: hidden;
+  }
+
+  om-bspark {
+    position: absolute;
+    bottom: 1.5em;
+    right: 0;
+    opacity: 0.5;
   }
 
   .memory {
@@ -19,6 +28,7 @@ export const gpuStyles = css`
   .gpu-text-overlay {
     position: absolute;
     top: 0;
+    fill: currentColor;
   }
 
   .gpu-usage {
@@ -27,9 +37,12 @@ export const gpuStyles = css`
     justify-content: center;
   }
 
+  .gpu-name {
+    font-size: 0.3em;
+  }
+
   .gpu-temperature {
     font-size: 0.5em;
-    fill: currentColor;
   }
 
   @container gauge (min-width: 200px) {

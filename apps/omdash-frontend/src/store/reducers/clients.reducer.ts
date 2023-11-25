@@ -43,6 +43,40 @@ export type TemperatureAction = OmClientAction<
   }
 >;
 
+export interface MemoryInfo {
+  total: number;
+  free: number;
+  used: number;
+  active: number;
+  available: number;
+  buffcache: number;
+  swaptotal: number;
+  swapused: number;
+  swapfree: number;
+}
+
+export interface GpuInfo {
+  bus?: string;
+  model?: string;
+  vendor?: string;
+  vram?: number;
+  vramDynamic?: boolean;
+  clockCore?: number;
+  clockMemory?: number;
+  driverVersion?: string;
+  memoryFree?: number;
+  memoryTotal?: number;
+  memoryUsed?: number;
+  name?: string;
+  pciBus?: string;
+  powerDraw?: number;
+  powerLimit?: number;
+  subDeviceId?: string;
+  temperatureGpu?: number;
+  utilizationGpu?: number;
+  utilizationMemory?: number;
+}
+
 export interface ClientState {
   addr: string;
   hostname: string;
@@ -52,17 +86,7 @@ export interface ClientState {
   lastUpdate: number;
   load: [number, number, number];
   cpus: HistoryState<CpuInfo[]>;
-  memory: {
-    total: number;
-    free: number;
-    used: number;
-    active: number;
-    available: number;
-    buffcache: number;
-    swaptotal: number;
-    swapused: number;
-    swapfree: number;
-  };
+  memory: HistoryState<MemoryInfo>;
   ps: {
     count: number;
     highestCpu: any[];
@@ -81,27 +105,7 @@ export interface ClientState {
       chipset: number;
     };
   };
-  gpus: Array<{
-    bus?: string;
-    model?: string;
-    vendor?: string;
-    vram?: number;
-    vramDynamic?: boolean;
-    clockCore?: number;
-    clockMemory?: number;
-    driverVersion?: string;
-    memoryFree?: number;
-    memoryTotal?: number;
-    memoryUsed?: number;
-    name?: string;
-    pciBus?: string;
-    powerDraw?: number;
-    powerLimit?: number;
-    subDeviceId?: string;
-    temperatureGpu?: number;
-    utilizationGpu?: number;
-    utilizationMemory?: number;
-  }>;
+  gpus: HistoryState<GpuInfo[]>;
   fsSize: Array<{
     size: number;
     used: number;
@@ -126,7 +130,42 @@ const clientCPUsHistoryReducer = createHistoryReducer(
 
     return action.payload.cpus;
   },
-  { limit: 2 },
+);
+
+const clientGPUsHistoryReducer = createHistoryReducer(
+  function clientGPUsReducer(
+    state: GpuInfo[] = [],
+    action: MetricAction,
+  ): GpuInfo[] {
+    if (action.type !== 'metric' || !action.payload.gpus) {
+      return state;
+    }
+
+    return action.payload.gpus;
+  },
+);
+
+const clientMemoryHistoryReducer = createHistoryReducer(
+  function clientMemoryReducer(
+    state: MemoryInfo = {
+      total: 0,
+      free: 0,
+      used: 0,
+      active: 0,
+      available: 0,
+      buffcache: 0,
+      swaptotal: 0,
+      swapused: 0,
+      swapfree: 0,
+    },
+    action: MetricAction,
+  ): MemoryInfo {
+    if (action.type !== 'metric' || !action.payload.memory) {
+      return state;
+    }
+
+    return action.payload.memory;
+  },
 );
 
 function clientReducer(
@@ -151,12 +190,8 @@ function clientReducer(
         ...state,
         ...action.payload,
         cpus: clientCPUsHistoryReducer(state.cpus, action),
-        // Merge memory metrics as they are emitted from two separate sources
-        // One containing memory only, and the other also containing swap.
-        memory: {
-          ...state.memory,
-          ...action.payload.memory,
-        },
+        memory: clientMemoryHistoryReducer(state.memory, action),
+        gpus: clientGPUsHistoryReducer(state.gpus, action),
       };
     }
 
