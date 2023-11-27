@@ -21,6 +21,7 @@
     "lit": "^3.1.0",
     "lodash-es": "^4.17.21",
     "omdash-gauge": "*",
+    "reflect-metadata": "^0.1.13",
     "serve": "^14.2.1"
   },
   "devDependencies": {
