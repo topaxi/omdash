@@ -43,6 +43,7 @@ export const cpuStyles = css`
   .cpu-text-overlay {
     position: absolute;
     top: 0;
+    fill: currentColor;
   }
 
   .cpu-speed {
@@ -50,9 +51,12 @@ export const cpuStyles = css`
     fill: var(--ctp-macchiato-peach);
   }
 
+  .cpu-name {
+    font-size: 0.3em;
+  }
+
   .cpu-temperature {
     font-size: 0.5em;
-    fill: currentColor;
   }
 
   @container gauge (min-width: 200px) {

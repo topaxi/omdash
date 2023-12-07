@@ -16,6 +16,9 @@ export class OmCpu extends connect()(LitElement) {
   accessor hostname = '';
 
   @state()
+  private accessor cpuModel = '';
+
+  @state()
   private accessor cpuTemperature = 0;
 
   @state()
@@ -46,6 +49,7 @@ export class OmCpu extends connect()(LitElement) {
 
     this.cpus = client.cpus ?? { limit: 0, history: [] };
     this.loadAverage = client.load ?? [0, 0, 0];
+    this.cpuModel = this.cpus.history.at(-1)?.[0]?.model ?? '';
     this.cpuTemperature = Math.round(client.temperature?.cpu?.max);
 
     const cpuSpeeds = this.currentCPUInfo.map(this.getCPUSpeed, this);
@@ -60,6 +64,10 @@ export class OmCpu extends connect()(LitElement) {
       this.averageCPUSpeed,
       ...cpuSpeeds,
     );
+  }
+
+  private get cpuName() {
+    return this.cpuModel.replace(/\d+-Core Processor/g, '').trim();
   }
 
   private get currentCPUInfo() {
@@ -231,6 +239,19 @@ export class OmCpu extends connect()(LitElement) {
                   dominant-baseline="central"
                 >
                    ${this.cpuTemperature}°C
+                </text>
+              `
+            : ''}
+          ${this.cpuName !== ''
+            ? svg`
+                <text
+                  class="cpu-name"
+                  x="50%"
+                  y="0"
+                  text-anchor="middle"
+                  dominant-baseline="hanging"
+                >
+                  ${this.cpuName}
                 </text>
               `
             : ''}
