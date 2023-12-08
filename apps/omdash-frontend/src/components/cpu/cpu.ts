@@ -232,8 +232,8 @@ export class OmCpu extends connect()(LitElement) {
             ? svg`
                 <text
                   class="cpu-temperature"
-                  x="8"
-                  y="10"
+                  x="5"
+                  y="15"
                   text-anchor="left"
                   alignment-baseline="middle"
                   dominant-baseline="central"
