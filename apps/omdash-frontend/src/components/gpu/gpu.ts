@@ -140,7 +140,7 @@ export class OmGpu extends connect()(LitElement) {
               ? svg`
                   <text
                     class="gpu-temperature"
-                    x="5"
+                    x="8"
                     y="10"
                     text-anchor="left"
                     alignment-baseline="middle"

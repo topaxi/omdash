@@ -52,7 +52,7 @@ export const cpuStyles = css`
   }
 
   .cpu-name {
-    font-size: 0.3em;
+    font-size: 0.4em;
   }
 
   .cpu-temperature {
@@ -60,6 +60,10 @@ export const cpuStyles = css`
   }
 
   @container gauge (min-width: 200px) {
+    .cpu-name {
+      font-size: 0.3em;
+    }
+
     .cpu-temperature {
       font-size: 0.4em;
     }
