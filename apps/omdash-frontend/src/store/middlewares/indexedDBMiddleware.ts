@@ -1,10 +1,7 @@
-import { AnyAction, Dispatch, Middleware, MiddlewareAPI } from 'redux';
+import { Dispatch, Middleware, MiddlewareAPI } from 'redux';
 import { IndexedDBStorage } from '../../db/IndexedDBStorage';
-import { Reducer } from '@reduxjs/toolkit';
+import { Action, Reducer, UnknownAction } from '@reduxjs/toolkit';
 import { debounce } from 'lodash-es';
-
-// Replace with the actual type of your Redux state
-type RootState = Record<string, any>;
 
 // Action type for initializing the store from IndexedDB
 const INIT_STORE_FROM_INDEXEDDB = 'INIT_STORE_FROM_INDEXEDDB';
@@ -14,78 +11,85 @@ export const initStoreFromIndexedDB = () => ({
   type: INIT_STORE_FROM_INDEXEDDB,
 });
 
-class IndexedDBStorageForMiddleware extends IndexedDBStorage {
-  async saveStateToIndexedDB(state: RootState): Promise<void> {
+class IndexedDBStorageForMiddleware<S = any> extends IndexedDBStorage {
+  async saveStateToIndexedDB(state: S): Promise<void> {
     await this.init();
     await this.setItem('reduxStore', state);
   }
 
-  async loadStateFromIndexedDB(): Promise<RootState | null> {
+  async loadStateFromIndexedDB(): Promise<S | null> {
     await this.init();
     return this.getItem('reduxStore');
   }
 }
 
-const indexedDBStorage = new IndexedDBStorageForMiddleware(
-  'omdash-db',
-  'omdash-store',
-);
-
 const SAVE_INTERVAL = 5000;
 
-export const reduxIndexedDBMiddleware: Middleware = ({
-  dispatch,
-  getState,
-}: MiddlewareAPI) => {
-  const saveStateToIndexedDB = () => {
-    const state = getState();
+export type IndexedDBMiddlewareActions<T = unknown> =
+  | ReturnType<typeof initStoreFromIndexedDB>
+  | { type: 'REPLACE_STATE'; payload: T };
 
-    return indexedDBStorage.saveStateToIndexedDB(state);
-  };
+export function createReduxIndexedDBMiddleware(): Middleware {
+  const indexedDBStorage = new IndexedDBStorageForMiddleware(
+    'omdash-db',
+    'omdash-store',
+  );
 
-  const saveDebounced = debounce(saveStateToIndexedDB, SAVE_INTERVAL, {
-    maxWait: SAVE_INTERVAL,
-  });
+  return ((api) => {
+    const { dispatch, getState } = api;
 
-  return (next: Dispatch<AnyAction>) => async (action: AnyAction) => {
-    if (action.type === INIT_STORE_FROM_INDEXEDDB) {
-      // If the action type is INIT_STORE_FROM_INDEXEDDB, load the state from IndexedDB
-      const storedState = await indexedDBStorage.loadStateFromIndexedDB();
-      if (storedState) {
-        // Dispatch an action to initialize the store with the loaded state
-        dispatch({ type: 'REPLACE_STATE', payload: storedState });
-      }
-    } else {
-      // Continue with the next middleware or reducer
-      const result = next(action);
+    const saveStateToIndexedDB = () => {
+      const state = getState();
 
-      if (action.type === 'REPLACE_STATE') {
-        await saveStateToIndexedDB();
-      } else {
-        // Save the state to IndexedDB after every action
-        saveDebounced();
-      }
+      return indexedDBStorage.saveStateToIndexedDB(state);
+    };
 
-      return result;
-    }
-  };
-};
+    const saveDebounced = debounce(saveStateToIndexedDB, SAVE_INTERVAL, {
+      maxWait: SAVE_INTERVAL,
+    });
 
-export function createRootReducerWithReplace<S, A extends AnyAction>(
-  rootReducer: Reducer<S, A>,
+    return (next) =>
+      async (action: UnknownAction | IndexedDBMiddlewareActions) => {
+        if (action.type === INIT_STORE_FROM_INDEXEDDB) {
+          // If the action type is INIT_STORE_FROM_INDEXEDDB, load the state from IndexedDB
+          const storedState = await indexedDBStorage.loadStateFromIndexedDB();
+          if (storedState) {
+            // Dispatch an action to initialize the store with the loaded state
+            dispatch({ type: 'REPLACE_STATE', payload: storedState });
+          }
+        } else {
+          // Continue with the next middleware or reducer
+          const result = next(action);
+
+          if (action.type === 'REPLACE_STATE') {
+            await saveStateToIndexedDB();
+          } else {
+            // Save the state to IndexedDB after every action
+            saveDebounced();
+          }
+
+          return result;
+        }
+      };
+  }) as Middleware;
+}
+
+export function createRootReducerWithReplace<S, A extends Action<string>, I>(
+  rootReducer: Reducer<S, A, I>,
 ): Reducer<
   S,
   | A
   | ReturnType<typeof initStoreFromIndexedDB>
-  | { type: 'REPLACE_STATE'; payload: S }
+  | { type: 'REPLACE_STATE'; payload: S },
+  I
 > {
-  return (state: S | undefined, action: any) => {
+  return (state, action) => {
     if (action.type === 'REPLACE_STATE') {
       // Replace the state with the payload
-      return rootReducer(action.payload, action);
+      return rootReducer((action as any).payload, action as any);
     }
 
     // Delegate to the original rootReducer for other actions
-    return rootReducer(state, action);
+    return rootReducer(state, action as any);
   };
 }

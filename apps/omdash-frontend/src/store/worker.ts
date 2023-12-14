@@ -1,26 +1,38 @@
 /// <reference lib="webworker" />
 import {
-  AnyAction,
+  Action,
   Reducer,
+  UnknownAction,
   applyMiddleware,
   legacy_createStore,
 } from '@reduxjs/toolkit';
 import { expose } from 'comlink';
 import { reducer } from './reducers/index.js';
 import {
+  createReduxIndexedDBMiddleware,
   createRootReducerWithReplace,
   initStoreFromIndexedDB,
-  reduxIndexedDBMiddleware,
 } from './middlewares/indexedDBMiddleware';
 import { composeWithDevToolsDevelopmentOnly } from '@redux-devtools/extension';
 
-function createRootReducer<S, A extends AnyAction>(reducer: Reducer<S, A>) {
+function createRootReducer<S, A extends Action<string> = UnknownAction, I = S>(
+  reducer: Reducer<S, A, I>,
+) {
   return createRootReducerWithReplace(reducer);
 }
 
+const rootReducer = createRootReducer(reducer);
+
+const middlewares = [createReduxIndexedDBMiddleware()] as const;
+const middlewareEnhancer = applyMiddleware(...middlewares);
+
+const enhancers = [middlewareEnhancer] as const;
+const composedEnhancers = composeWithDevToolsDevelopmentOnly(...enhancers);
+
 export const store = legacy_createStore(
-  createRootReducer(reducer),
-  composeWithDevToolsDevelopmentOnly(applyMiddleware(reduxIndexedDBMiddleware)),
+  rootReducer,
+  undefined,
+  composedEnhancers,
 );
 
 export type RootState = ReturnType<typeof store.getState>;
