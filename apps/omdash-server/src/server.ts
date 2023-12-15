@@ -71,6 +71,12 @@ function broadcastToDashboards(message: string) {
 
 const dashboardMessageQueue: string[] = [];
 
+setInterval(() => {
+  while (dashboardMessageQueue.length > 0) {
+    broadcastToDashboards(dashboardMessageQueue.shift()!);
+  }
+}, 2000);
+
 wssClients.on('connection', (ws, req) => {
   console.log('Client connected', req.socket.remoteAddress);
 
@@ -113,12 +119,6 @@ wssClients.on('connection', (ws, req) => {
     console.log('Client disconnected', req.socket.remoteAddress);
   });
 });
-
-setInterval(() => {
-  while (dashboardMessageQueue.length > 0) {
-    broadcastToDashboards(dashboardMessageQueue.shift()!);
-  }
-}, 1000);
 
 wssDashboard.on('connection', (ws, req) => {
   console.log('Dashboard connected', req.socket.remoteAddress);
