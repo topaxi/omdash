@@ -23,7 +23,7 @@ class IndexedDBStorageForMiddleware<S = any> extends IndexedDBStorage {
   }
 }
 
-const SAVE_INTERVAL = 5000;
+const SAVE_INTERVAL = 10_000;
 
 export type IndexedDBMiddlewareActions<T = unknown> =
   | ReturnType<typeof initStoreFromIndexedDB>
