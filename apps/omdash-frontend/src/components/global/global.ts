@@ -50,6 +50,10 @@ function quantile(arr: TypedArray, q: number) {
 @customElement('om-global-network-icon')
 export class OmGlobalNetworkIcon extends connect()(LitElement) {
   static styles = css`
+    :host {
+      position: relative;
+    }
+
     .high {
       color: var(--ctp-macchiato-red);
     }
@@ -61,15 +65,28 @@ export class OmGlobalNetworkIcon extends connect()(LitElement) {
     .low {
       color: var(--ctp-macchiato-green);
     }
+
+    .latest-ping {
+      font-size: 0.3em;
+      position: absolute;
+      top: 1.3em;
+      right: 1.2em;
+      color: var(--ctp-macchiato-crust);
+    }
   `;
 
   @state()
   private accessor networkQuality: 'high' | 'medium' | 'low' | 'verylow' =
     'verylow';
 
+  @state()
+  private latestPing: number | undefined;
+
   stateChanged(state: RootState): void {
     const pingTimings = Uint16Array.from(
-      Object.values(state.pings).flat(),
+      Object.values(state.pings)
+        .flat()
+        .sort((a, b) => b.timestamp - a.timestamp),
       (ping) => ping.time,
     );
 
@@ -77,6 +94,7 @@ export class OmGlobalNetworkIcon extends connect()(LitElement) {
 
     this.networkQuality =
       q75 > 200 ? 'high' : q75 > 100 ? 'medium' : q75 > 50 ? 'low' : 'verylow';
+    this.latestPing = pingTimings.at(-1);
   }
 
   protected render(): unknown {
@@ -84,6 +102,11 @@ export class OmGlobalNetworkIcon extends connect()(LitElement) {
       <om-app-icon class=${this.networkQuality} name="network-diagnostics">
         󰛳
       </om-app-icon>
+      <span class="latest-ping">
+        ${this.latestPing != null && this.latestPing > 1000
+          ? `${(this.latestPing / 1000).toFixed(1)}s`
+          : this.latestPing}
+      </span>
     `;
   }
 }
