@@ -67,7 +67,10 @@ export class OmCpu extends connect()(LitElement) {
   }
 
   private get cpuName() {
-    return this.cpuModel.replace(/\d+-Core Processor/g, '').trim();
+    return this.cpuModel
+      .replace(/\d+-Core Processor/g, '')
+      .replace(/with Radeon Graphics/g, '')
+      .trim();
   }
 
   private get currentCPUInfo() {
