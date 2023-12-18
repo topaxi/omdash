@@ -5,6 +5,7 @@ import { ClockController } from '../../controllers/clock.js';
 import { RootState } from '../../store/index.js';
 import { connect } from '../../store/connect.js';
 import { mapEntries } from '../../utils/object/mapEntries.js';
+import { bind } from '../../decorators/bind.js';
 
 import '../../components/box/box.js';
 import '../../components/host/host.js';
@@ -22,10 +23,14 @@ export class Hosts extends connect()(LitElement) {
   private accessor hostnames: string[] = [];
 
   @state()
+  private accessor selectedHosts: string[] = [];
+
+  @state()
   private accessor lastUpdatedHosts: Record<string, number> = {};
 
   override stateChanged(state: RootState) {
     this.hostnames = Object.keys(state.clients);
+    this.selectedHosts = state.ui.hosts.selectedHosts;
 
     this.lastUpdatedHosts = mapEntries(
       state.clients,
@@ -58,7 +63,7 @@ export class Hosts extends connect()(LitElement) {
     });
   }
 
-  private renderHost(hostname: string) {
+  private renderSelectedHost(hostname: string) {
     return html`
       <om-box data-hostname=${hostname}>
         <om-host hostname=${hostname}></om-host>
@@ -66,7 +71,42 @@ export class Hosts extends connect()(LitElement) {
     `;
   }
 
-  protected render(): unknown {
+  protected renderSelectedHosts(): unknown {
+    return repeat(this.selectedHosts, identity, this.renderSelectedHost);
+  }
+
+  @bind()
+  private renderHost(hostname: string) {
+    return html`
+      <om-box
+        data-hostname=${hostname}
+        .subtle=${!this.selectedHosts.includes(hostname)}
+        @click=${this.handleHostClick}
+      >
+        ${hostname}
+      </om-box>
+    `;
+  }
+
+  private handleHostClick(event: MouseEvent) {
+    const hostname = (event.target as HTMLElement).dataset.hostname;
+
+    this.dispatch({
+      type: 'ui/hosts/toggleSelectedHost',
+      payload: hostname,
+    });
+  }
+
+  private renderHosts() {
     return repeat(this.sortedHosts, identity, this.renderHost);
+  }
+
+  protected render(): unknown {
+    return html`
+      <div part="host-list" class="host-list">${this.renderHosts()}</div>
+      <div part="selected-hosts" class="selected-hosts">
+        ${this.renderSelectedHosts()}
+      </div>
+    `;
   }
 }

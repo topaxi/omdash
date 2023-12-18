@@ -24,11 +24,17 @@ export const boxStyles = css`
     border: var(--box-border-radius) solid transparent;
     border-image: linear-gradient(
         var(--rotate, 90deg),
-        #7dc4e4,
-        #c6a0f6 43%,
-        #ed8796
+        var(--om-box-border-color-1, #7dc4e4),
+        var(--om-box-border-color-2, #c6a0f6) 43%,
+        var(--om-box-border-color-3, #ed8796)
       )
       1;
+  }
+
+  .subtle {
+    --om-box-border-color-1: #b2b2b2;
+    --om-box-border-color-2: #b5b5b5;
+    --om-box-border-color-3: #a7a7a7;
   }
 
   .animated {

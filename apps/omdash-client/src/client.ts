@@ -48,7 +48,7 @@ function connect(url: string) {
   function unregister() {
     ws.send(
       encode({
-        type: 'unregister',
+        type: 'client/unregister',
       }),
     );
   }
@@ -61,7 +61,7 @@ function connect(url: string) {
 
     ws.send(
       encode({
-        type: 'register',
+        type: 'client/register',
         payload: {
           arch: os.arch(),
           platform: os.platform(),
@@ -120,7 +120,7 @@ function connect(url: string) {
         setIntervalImmediate(async () => {
           ws.send(
             encode({
-              type: 'battery',
+              type: 'client/battery',
               payload: pick(await si.battery(), [
                 'isCharging',
                 'percent',
@@ -181,7 +181,7 @@ async function getTemperatures() {
   const cpuTemperature = await si.cpuTemperature();
 
   return {
-    type: 'temperature',
+    type: 'client/temperature',
     payload: {
       cpu: cpuTemperature,
     },
@@ -192,14 +192,14 @@ async function getMemory() {
   const memory = await si.mem();
 
   return {
-    type: 'metric',
+    type: 'client/metric',
     payload: { memory },
   };
 }
 
 function getMetrics() {
   return {
-    type: 'metric',
+    type: 'client/metric',
     payload: {
       cpus: os.cpus(),
       load: os.loadavg(),
@@ -209,7 +209,7 @@ function getMetrics() {
 
 function getUptime() {
   return {
-    type: 'metric',
+    type: 'client/metric',
     payload: {
       uptime: os.uptime(),
     },
@@ -245,7 +245,7 @@ async function getGPUs() {
   }
 
   return {
-    type: 'metric',
+    type: 'client/metric',
     payload: {
       gpus: graphics.controllers,
     },
@@ -254,7 +254,7 @@ async function getGPUs() {
 
 async function getDisks() {
   return {
-    type: 'metric',
+    type: 'client/metric',
     payload: {
       fsSize: (await si.fsSize()).filter(
         ({ fs }) => fs.startsWith('/dev/') || /^[A-Z]:/.test(fs),

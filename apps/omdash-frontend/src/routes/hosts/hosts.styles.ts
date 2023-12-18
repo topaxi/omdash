@@ -7,7 +7,19 @@ export const hostsStyles = css`
     flex-grow: 1;
   }
 
-  :host > * {
+  .host-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tile-gap);
+  }
+
+  .selected-hosts {
+    display: flex;
+    gap: var(--tile-gap);
+    flex-grow: 1;
+  }
+
+  .selected-hosts > * {
     flex: 1 1 0px;
   }
 

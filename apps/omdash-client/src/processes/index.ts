@@ -57,7 +57,7 @@ export async function getProcesses() {
   const processCount = 5;
 
   return {
-    type: 'ps',
+    type: 'client/ps',
     payload: {
       count: processes.length,
       highestCpu: merged.sort(byCpu).slice(0, processCount),

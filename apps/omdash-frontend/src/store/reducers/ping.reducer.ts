@@ -1,15 +1,17 @@
+import { OmServerAction } from '../action';
+
 const MAX_PING_HISTORY = 50;
 const MAX_PING_AGE = Math.floor(MAX_PING_HISTORY * 2 + MAX_PING_HISTORY / 2);
 
-export interface PingAction {
-  type: 'ping';
-  payload: {
+export type PingAction = OmServerAction<
+  'ping',
+  {
     timestamp: number;
     ip: string;
     time: number;
     host: string;
-  };
-}
+  }
+>;
 
 export interface PingState {
   [targetHostname: string]: Array<{
@@ -40,7 +42,7 @@ export function pingReducer(
   action: PingAction,
 ): PingState {
   switch (action.type) {
-    case 'ping':
+    case 'server/ping':
       return filterOldPings({
         ...state,
         [action.payload.host]: [

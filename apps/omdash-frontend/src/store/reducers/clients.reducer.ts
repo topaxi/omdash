@@ -124,7 +124,7 @@ const clientCPUsHistoryReducer = createHistoryReducer(
     state: CpuInfo[] = [],
     action: MetricAction,
   ): CpuInfo[] {
-    if (action.type !== 'metric' || !action.payload.cpus) {
+    if (action.type !== 'client/metric' || !action.payload.cpus) {
       return state;
     }
 
@@ -137,7 +137,7 @@ const clientGPUsHistoryReducer = createHistoryReducer(
     state: GpuInfo[] = [],
     action: MetricAction,
   ): GpuInfo[] {
-    if (action.type !== 'metric' || !action.payload.gpus) {
+    if (action.type !== 'client/metric' || !action.payload.gpus) {
       return state;
     }
 
@@ -160,7 +160,7 @@ const clientMemoryHistoryReducer = createHistoryReducer(
     },
     action: MetricAction,
   ): MemoryInfo {
-    if (action.type !== 'metric' || !action.payload.memory) {
+    if (action.type !== 'client/metric' || !action.payload.memory) {
       return state;
     }
 
@@ -179,13 +179,13 @@ function clientReducer(
     | TemperatureAction,
 ): ClientState {
   switch (action.type) {
-    case 'register':
+    case 'client/register':
       return {
         ...state,
         ...action.payload,
       };
 
-    case 'metric': {
+    case 'client/metric': {
       return {
         ...state,
         ...action.payload,
@@ -195,21 +195,21 @@ function clientReducer(
       };
     }
 
-    case 'ps': {
+    case 'client/ps': {
       return {
         ...state,
         ps: action.payload,
       };
     }
 
-    case 'battery': {
+    case 'client/battery': {
       return {
         ...state,
         battery: action.payload,
       };
     }
 
-    case 'temperature': {
+    case 'client/temperature': {
       return {
         ...state,
         temperature: action.payload,
@@ -237,7 +237,7 @@ export function clientsReducer(
 
   switch (action.type) {
     default:
-    case 'register':
+    case 'client/register':
       return {
         ...state,
         [action.client]: {
@@ -248,7 +248,7 @@ export function clientsReducer(
         },
       };
 
-    case 'unregister': {
+    case 'client/unregister': {
       const { [action.client]: _, ...clients } = state;
 
       return clients;

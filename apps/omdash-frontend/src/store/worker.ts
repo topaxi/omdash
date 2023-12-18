@@ -35,8 +35,13 @@ export const store = legacy_createStore(
   composedEnhancers,
 );
 
+type InferFunctionArguments<T> = T extends (arg: infer U) => unknown
+  ? U
+  : never;
+
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
+export type AppAction = InferFunctionArguments<typeof store.dispatch>;
 
 store.dispatch(initStoreFromIndexedDB());
 

@@ -90,7 +90,7 @@ wssClients.on('connection', (ws, req) => {
     try {
       const { type, payload } = decode(message);
 
-      if (type === 'register') {
+      if (type === 'client/register') {
         metadata.hostname = payload.hostname;
         metadata.arch = payload.arch;
         metadata.platform = payload.platform;
@@ -130,7 +130,7 @@ wssDashboard.on('connection', (ws, req) => {
 
       ws.send(
         encode({
-          type: 'register',
+          type: 'client/register',
           payload: {
             hostname: metadata.hostname,
             arch: metadata.arch,
@@ -213,7 +213,7 @@ async function broadcastPing(host: string) {
     try {
       broadcastToDashboards(
         encode({
-          type: 'ping',
+          type: 'server/ping',
           payload: {
             timestamp: Math.floor(Date.now() / 1000),
             ...payload,

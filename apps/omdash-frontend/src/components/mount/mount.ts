@@ -30,8 +30,8 @@ export class OmMount extends LitElement {
         class="${usedRatio > 0.9
           ? 'very-high'
           : usedRatio > 0.75
-          ? 'high'
-          : 'normal'}"
+            ? 'high'
+            : 'normal'}"
         min="0"
         max=${this.size}
         value=${this.used}

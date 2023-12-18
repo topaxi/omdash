@@ -1,8 +1,9 @@
-import { Action, Store, Unsubscribe } from '@reduxjs/toolkit';
+import { AnyAction, Store, Unsubscribe } from '@reduxjs/toolkit';
 import { debounce } from 'lodash-es';
-import { store as defaultStore } from './index.js';
+import { RootState, store as defaultStore } from './index.js';
 import { LitElement, ReactiveController, ReactiveControllerHost } from 'lit';
 import { bind } from '../decorators/bind.js';
+import { AppAction } from './worker.js';
 
 type Constructor<T> = new (...args: any[]) => T;
 
@@ -50,7 +51,7 @@ export interface ConnectOptions<S extends Store<any, any>> {
 }
 
 export const connect =
-  <S, A extends Action>({
+  <S = RootState, A extends AnyAction = AppAction>({
     store = defaultStore as any,
   }: ConnectOptions<Store<S, A>> = {}) =>
   <T extends Constructor<LitElement>>(BaseElement: T) =>
