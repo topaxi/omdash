@@ -38,6 +38,10 @@ export class Hosts extends connect()(LitElement) {
     );
   }
 
+  private filterByActiveHosts(hostnames: string[]) {
+    return hostnames.filter((hostname) => this.activeHosts.includes(hostname));
+  }
+
   private get activeHosts() {
     const now = this.now.value;
 
@@ -72,7 +76,7 @@ export class Hosts extends connect()(LitElement) {
   }
 
   protected renderSelectedHosts(): unknown {
-    return repeat(this.selectedHosts, identity, this.renderSelectedHost);
+    return repeat(this.filterByActiveHosts(this.selectedHosts), identity, this.renderSelectedHost);
   }
 
   @bind()
