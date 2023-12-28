@@ -76,7 +76,11 @@ export class Hosts extends connect()(LitElement) {
   }
 
   protected renderSelectedHosts(): unknown {
-    return repeat(this.filterByActiveHosts(this.selectedHosts), identity, this.renderSelectedHost);
+    return repeat(
+      this.filterByActiveHosts(this.selectedHosts),
+      identity,
+      this.renderSelectedHost,
+    );
   }
 
   @bind()
@@ -93,7 +97,7 @@ export class Hosts extends connect()(LitElement) {
   }
 
   private handleHostClick(event: MouseEvent) {
-    const hostname = (event.target as HTMLElement).dataset.hostname;
+    const { hostname } = (event.target as HTMLElement).dataset;
 
     this.dispatch({
       type: 'ui/hosts/toggleSelectedHost',
