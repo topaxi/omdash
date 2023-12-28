@@ -1,5 +1,9 @@
 import type { OmClientAction } from '../action.js';
-import { HistoryState, createHistoryReducer } from './history.reducer.js';
+import {
+  HistoryState,
+  createHistoryReducer,
+  selectHistory,
+} from './history.reducer.js';
 
 export interface CpuInfo {
   model: string;

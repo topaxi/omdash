@@ -3,10 +3,53 @@ import { customElement, property, state } from 'lit/decorators.js';
 import { connect } from '../../store/connect.js';
 import { type RootState } from '../../store';
 import { type CpuInfo } from '../../store/reducers/clients.reducer.js';
+import { selectCPUHistory } from '../../store/reducers/clients.selectors.js';
 import { formatMegahertz } from '../../utils/format/formatMegahertz.js';
 import { cpuStyles } from './cpu.styles.js';
 
 import '../bspark/bspark.js';
+
+function getCPUSpeed(cpu: Readonly<CpuInfo>): number {
+  return cpu.speed;
+}
+
+function getTotalCPUTimes(cpus: readonly CpuInfo[]) {
+  return cpus
+    .map((cpu) => cpu.times)
+    .reduce(
+      (acc, times) => {
+        acc.idle += times.idle;
+        acc.total +=
+          times.user + times.nice + times.sys + times.idle + times.irq;
+
+        return acc;
+      },
+      { idle: 0, total: 0 },
+    );
+}
+
+function getAverageCPUUsage(prev: CpuInfo[], current: CpuInfo[]) {
+  const prevCpuTimes = getTotalCPUTimes(prev);
+  const cpuTimes = getTotalCPUTimes(current);
+
+  if (prevCpuTimes.idle === 0) {
+    return 0;
+  }
+
+  const idleDifference = cpuTimes.idle - prevCpuTimes.idle;
+  const totalDifference = cpuTimes.total - prevCpuTimes.total;
+
+  if (totalDifference === 0) {
+    return 0;
+  }
+
+  return 100 - (100 * idleDifference) / totalDifference;
+}
+
+// TODO: This should be moved to a selector.
+export function getAverageCPUUsageByHistory(history: CpuInfo[][]) {
+  return getAverageCPUUsage(history.at(-2) ?? [], history.at(-1) ?? []);
+}
 
 @customElement('om-cpu')
 export class OmCpu extends connect()(LitElement) {
@@ -22,10 +65,8 @@ export class OmCpu extends connect()(LitElement) {
   private accessor cpuTemperature = 0;
 
   @state()
-  private accessor cpus: RootState['clients'][string]['cpus'] = {
-    limit: 0,
-    history: [],
-  };
+  private accessor cpuHistory: RootState['clients'][string]['cpus']['history'] =
+    [];
 
   @state()
   private accessor loadAverage: [number, number, number] = [0, 0, 0];
@@ -36,10 +77,6 @@ export class OmCpu extends connect()(LitElement) {
   @state()
   private accessor cpuMaxSpeed = Number.MIN_SAFE_INTEGER;
 
-  private getCPUSpeed(cpu: Readonly<CpuInfo>): number {
-    return cpu.speed;
-  }
-
   override stateChanged(state: RootState): void {
     const client = state.clients[this.hostname];
 
@@ -47,12 +84,12 @@ export class OmCpu extends connect()(LitElement) {
       return;
     }
 
-    this.cpus = client.cpus ?? { limit: 0, history: [] };
+    this.cpuHistory = selectCPUHistory(client);
     this.loadAverage = client.load ?? [0, 0, 0];
-    this.cpuModel = this.cpus.history.at(-1)?.[0]?.model ?? '';
+    this.cpuModel = this.cpuHistory.at(-1)?.[0]?.model ?? '';
     this.cpuTemperature = Math.round(client.temperature?.cpu?.max);
 
-    const cpuSpeeds = this.currentCPUInfo.map(this.getCPUSpeed, this);
+    const cpuSpeeds = this.currentCPUInfo.map(getCPUSpeed);
 
     this.cpuMinSpeed = Math.min(
       this.cpuMinSpeed,
@@ -74,48 +111,11 @@ export class OmCpu extends connect()(LitElement) {
   }
 
   private get currentCPUInfo() {
-    return this.cpus.history.at(-1) ?? [];
-  }
-
-  private get previousCPUInfo() {
-    return this.cpus.history.at(-2) ?? [];
-  }
-
-  private getAverageCPUUsage(prev: CpuInfo[], current: CpuInfo[]) {
-    const prevCpuTimes = this.getTotalCPUTimes(prev);
-    const cpuTimes = this.getTotalCPUTimes(current);
-
-    if (prevCpuTimes.idle === 0) {
-      return 0;
-    }
-
-    const idleDifference = cpuTimes.idle - prevCpuTimes.idle;
-    const totalDifference = cpuTimes.total - prevCpuTimes.total;
-
-    if (totalDifference === 0) {
-      return 0;
-    }
-
-    return 100 - (100 * idleDifference) / totalDifference;
+    return this.cpuHistory.at(-1) ?? [];
   }
 
   private get averageCPUUsage() {
-    return this.getAverageCPUUsage(this.previousCPUInfo, this.currentCPUInfo);
-  }
-
-  private getTotalCPUTimes(cpus: readonly CpuInfo[]) {
-    return cpus
-      .map((cpu) => cpu.times)
-      .reduce(
-        (acc, times) => {
-          acc.idle += times.idle;
-          acc.total +=
-            times.user + times.nice + times.sys + times.idle + times.irq;
-
-          return acc;
-        },
-        { idle: 0, total: 0 },
-      );
+    return getAverageCPUUsageByHistory(this.cpuHistory);
   }
 
   private renderLoadAverage() {
@@ -171,9 +171,9 @@ export class OmCpu extends connect()(LitElement) {
   }
 
   private get averageCPUSpeed() {
-    const cpuCount = this.cpuCount;
+    const { cpuCount } = this;
 
-    if (this.cpuCount === 0) {
+    if (cpuCount === 0) {
       return 0;
     }
 
@@ -195,14 +195,14 @@ export class OmCpu extends connect()(LitElement) {
   }
 
   private get sparkValues() {
-    return this.cpus.history
+    return this.cpuHistory
       .slice(-60)
       .map((cpus, i, history) => {
         if (i === 0) {
           return 0;
         }
 
-        return Math.round(this.getAverageCPUUsage(history[i - 1], cpus));
+        return Math.round(getAverageCPUUsage(history[i - 1], cpus));
       })
       .slice(1);
   }
