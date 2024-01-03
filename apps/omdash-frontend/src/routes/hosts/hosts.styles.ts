@@ -29,7 +29,7 @@ export const hostsStyles = css`
     max-width: 250px;
   }
 
-  om-box[data-hostname='ompi'] {
+  om-box[data-hostname='ompi']:not(:only-child) {
     max-width: 400px;
   }
 `;
