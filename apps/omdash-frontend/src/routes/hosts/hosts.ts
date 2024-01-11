@@ -1,4 +1,4 @@
-import { LitElement, html } from 'lit';
+import { html } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { ClockController } from '../../controllers/clock.js';
@@ -11,11 +11,12 @@ import '../../components/box/box.js';
 import '../../components/host/host.js';
 import { hostsStyles } from './hosts.styles.js';
 import './components/host-button.js';
+import { OmdashComponent } from '../../base/OmdashComponent.js';
 
 const identity = <T>(value: T) => value;
 
 @customElement('om-hosts')
-export class Hosts extends connect()(LitElement) {
+export class Hosts extends connect()(OmdashComponent) {
   static styles = hostsStyles;
 
   private now = new ClockController(this, 5000);

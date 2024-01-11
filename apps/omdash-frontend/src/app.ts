@@ -1,14 +1,15 @@
 import { Router } from '@vaadin/router';
-import { LitElement, html } from 'lit';
+import { html } from 'lit';
 import { customElement, query } from 'lit/decorators.js';
 
 import { connect } from './store/connect.js';
 
 import './components/global/global.js';
 import { appStyles } from './app.styles.js';
+import { OmdashComponent } from './base/OmdashComponent.js';
 
 @customElement('om-app')
-export class OmApp extends connect()(LitElement) {
+export class OmApp extends connect()(OmdashComponent) {
   static styles = appStyles;
 
   @query('#outlet')

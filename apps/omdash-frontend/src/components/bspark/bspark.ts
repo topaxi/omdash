@@ -1,6 +1,7 @@
-import { html, LitElement } from 'lit';
+import { html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { bsparkStyles } from './bspark.styles';
+import { OmdashComponent } from '../../base/OmdashComponent';
 
 const GRAPH_SYMBOLS_UP = [
   [' ', '⢀', '⢠', '⢰', '⢸'],
@@ -94,7 +95,7 @@ function renderSparklines(
 }
 
 @customElement('om-bspark')
-export class Bspark extends LitElement {
+export class Bspark extends OmdashComponent {
   static styles = bsparkStyles;
 
   @property({ type: Array })

@@ -1,7 +1,8 @@
 import * as d3 from 'd3';
-import { LitElement, PropertyValueMap, html } from 'lit';
+import { PropertyValueMap, html } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
 import { lineGraphStyles } from './line-graph.styles.js';
+import { OmdashComponent } from '../../base/OmdashComponent.js';
 
 const MARGIN_LEFT = 24;
 
@@ -9,7 +10,7 @@ const getx = <T>(d: { x: T }) => d.x;
 const gety = <T>(d: { y: T }) => d.y;
 
 @customElement('om-line-graph')
-export class OmLineGraph extends LitElement {
+export class OmLineGraph extends OmdashComponent {
   static styles = lineGraphStyles;
 
   @property({ type: Array })

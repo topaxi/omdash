@@ -1,14 +1,15 @@
 import { type TypedArray } from 'd3';
-import { LitElement, css, html } from 'lit';
+import { css, html } from 'lit';
 import { customElement, state } from 'lit/decorators.js';
 import { ClockController } from '../../controllers/clock.js';
 
 import '../link/link.js';
 import { connect } from '../../store/connect.js';
 import { RootState } from '../../store/index.js';
+import { OmdashComponent } from '../../base/OmdashComponent.js';
 
 @customElement('om-global-clock')
-export class OmGlobalClock extends LitElement {
+export class OmGlobalClock extends OmdashComponent {
   now = new ClockController(this, 5000);
 
   protected render(): unknown {
@@ -20,7 +21,7 @@ export class OmGlobalClock extends LitElement {
 }
 
 @customElement('om-global-date')
-export class OmGlobalDate extends LitElement {
+export class OmGlobalDate extends OmdashComponent {
   now = new ClockController(this, 60_000);
 
   protected render(): unknown {
@@ -48,7 +49,7 @@ function quantile(arr: TypedArray, q: number) {
 }
 
 @customElement('om-global-network-icon')
-export class OmGlobalNetworkIcon extends connect()(LitElement) {
+export class OmGlobalNetworkIcon extends connect()(OmdashComponent) {
   static styles = css`
     :host {
       position: relative;
@@ -112,7 +113,7 @@ export class OmGlobalNetworkIcon extends connect()(LitElement) {
 }
 
 @customElement('om-global')
-export class OmGlobal extends LitElement {
+export class OmGlobal extends OmdashComponent {
   static styles = css`
     :host {
       display: flex;

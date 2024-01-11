@@ -1,12 +1,13 @@
-import { LitElement, html } from 'lit';
+import { html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { connect } from '../../store/connect.js';
 import { RootState } from '../../store/index.js';
 import { processListStyles } from './process-list.styles.js';
+import { OmdashComponent } from '../../base/OmdashComponent.js';
 
 @customElement('om-process-list')
-export class OmProcessList extends connect()(LitElement) {
+export class OmProcessList extends connect()(OmdashComponent) {
   static styles = processListStyles;
 
   @property()

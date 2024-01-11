@@ -1,4 +1,4 @@
-import { LitElement, html, svg } from 'lit';
+import { html, svg } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { connect } from '../../store/connect.js';
 import { RootState } from '../../store/index.js';
@@ -7,9 +7,10 @@ import { formatBytes } from '../../utils/format/formatBytes.js';
 import { GpuInfo } from '../../store/reducers/clients.reducer.js';
 
 import '../bspark/bspark.js';
+import { OmdashComponent } from '../../base/OmdashComponent.js';
 
 @customElement('om-gpu')
-export class OmGpu extends connect()(LitElement) {
+export class OmGpu extends connect()(OmdashComponent) {
   static styles = gpuStyles;
 
   @property()

@@ -1,4 +1,4 @@
-import { LitElement, html, svg } from 'lit';
+import { html, svg } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { connect } from '../../store/connect.js';
 import { type RootState } from '../../store';
@@ -8,6 +8,7 @@ import { formatMegahertz } from '../../utils/format/formatMegahertz.js';
 import { cpuStyles } from './cpu.styles.js';
 
 import '../bspark/bspark.js';
+import { OmdashComponent } from '../../base/OmdashComponent.js';
 
 function getCPUSpeed(cpu: Readonly<CpuInfo>): number {
   return cpu.speed;
@@ -52,7 +53,7 @@ export function getAverageCPUUsageByHistory(history: CpuInfo[][]) {
 }
 
 @customElement('om-cpu')
-export class OmCpu extends connect()(LitElement) {
+export class OmCpu extends connect()(OmdashComponent) {
   static styles = cpuStyles;
 
   @property()

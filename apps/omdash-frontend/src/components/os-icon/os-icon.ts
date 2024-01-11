@@ -1,8 +1,8 @@
-import { LitElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
+import { OmdashComponent } from '../../base/OmdashComponent';
 
 @customElement('om-os-icon')
-export class OmOsIcon extends LitElement {
+export class OmOsIcon extends OmdashComponent {
   @property()
   accessor hostname = '';
 

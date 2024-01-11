@@ -1,10 +1,11 @@
 import { Router } from '@vaadin/router';
-import { LitElement, html } from 'lit';
+import { html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { linkStyles } from './line.styles.js';
+import { OmdashComponent } from '../../base/OmdashComponent.js';
 
 @customElement('om-link')
-export class OmLink extends LitElement {
+export class OmLink extends OmdashComponent {
   static styles = linkStyles;
 
   @property()

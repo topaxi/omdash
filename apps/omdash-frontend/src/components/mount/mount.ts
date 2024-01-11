@@ -1,10 +1,11 @@
-import { LitElement, html } from 'lit';
+import { html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { mountStyles } from './mount.styles.js';
 import { formatBytes } from '../../utils/format/formatBytes.js';
+import { OmdashComponent } from '../../base/OmdashComponent.js';
 
 @customElement('om-mount')
-export class OmMount extends LitElement {
+export class OmMount extends OmdashComponent {
   static styles = mountStyles;
 
   @property({ attribute: 'mount' })

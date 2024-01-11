@@ -1,6 +1,6 @@
-import { LitElement } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { ClockController } from '../../controllers/clock.js';
+import { OmdashComponent } from '../../base/OmdashComponent.js';
 
 function timeDifference(
   previous: number,
@@ -34,7 +34,7 @@ function timeDifference(
 }
 
 @customElement('om-ago')
-export class OmAgo extends LitElement {
+export class OmAgo extends OmdashComponent {
   @property({ type: Number })
   accessor date = 0;
 

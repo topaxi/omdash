@@ -1,12 +1,13 @@
-import { LitElement, html } from 'lit';
+import { html } from 'lit';
 import { customElement } from 'lit/decorators.js';
 
 import '../../components/box/box.js';
 import { connect } from '../../store/connect.js';
 import { settingsStyles } from './settings.styles.js';
+import { OmdashComponent } from '../../base/OmdashComponent.js';
 
 @customElement('om-settings')
-export class OmSettings extends connect()(LitElement) {
+export class OmSettings extends connect()(OmdashComponent) {
   static styles = settingsStyles;
 
   private refresh() {

@@ -1,10 +1,11 @@
-import { LitElement, html } from 'lit';
+import { html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import { classMap } from 'lit/directives/class-map.js';
 import { boxStyles } from './box.styles.js';
+import { OmdashComponent } from '../../base/OmdashComponent.js';
 
 @customElement('om-box')
-export class OmBox extends LitElement {
+export class OmBox extends OmdashComponent {
   static styles = boxStyles;
 
   @property({ type: Boolean })

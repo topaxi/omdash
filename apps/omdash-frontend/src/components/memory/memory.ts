@@ -1,4 +1,4 @@
-import { LitElement, html } from 'lit';
+import { html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { connect } from '../../store/connect.js';
 import { RootState } from '../../store';
@@ -6,9 +6,10 @@ import { memoryStyles } from './memory.styles.js';
 import { formatBytes } from '../../utils/format/formatBytes.js';
 
 import '../bspark/bspark.js';
+import { OmdashComponent } from '../../base/OmdashComponent.js';
 
 @customElement('om-memory')
-export class OmMemory extends connect()(LitElement) {
+export class OmMemory extends connect()(OmdashComponent) {
   static styles = memoryStyles;
 
   @property()

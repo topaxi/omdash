@@ -1,11 +1,12 @@
-import { LitElement, PropertyValueMap, html } from 'lit';
+import { PropertyValueMap, html } from 'lit';
 import { customElement, property, query } from 'lit/decorators.js';
 import { Gauge } from 'omdash-gauge';
 import { bind } from '../../decorators/bind.js';
 import { gaugeStyles } from './gauge.styles.js';
+import { OmdashComponent } from '../../base/OmdashComponent.js';
 
 @customElement('om-gauge')
-export class OmGauge extends LitElement {
+export class OmGauge extends OmdashComponent {
   static styles = gaugeStyles;
 
   @property({ type: Number })

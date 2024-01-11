@@ -1,4 +1,4 @@
-import { LitElement, html } from 'lit';
+import { html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 import { ClockController } from '../../controllers/clock.js';
@@ -15,6 +15,7 @@ import '../os-icon/os-icon.js';
 import '../process-list/process-list.js';
 import { hostStyles } from './host.styles.js';
 import { GpuInfo } from '../../store/reducers/clients.reducer.js';
+import { OmdashComponent } from '../../base/OmdashComponent.js';
 
 function formatTime(seconds: number) {
   if (seconds < 60) {
@@ -41,7 +42,7 @@ function formatTime(seconds: number) {
 }
 
 @customElement('om-host')
-export class OmHost extends connect()(LitElement) {
+export class OmHost extends connect()(OmdashComponent) {
   static styles = hostStyles;
 
   private now = new ClockController(this, 5000);

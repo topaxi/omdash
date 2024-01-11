@@ -1,77 +1,85 @@
+@layer reset, global, components, utilities;
+
 @import './catppuccin.css';
 
-:root {
-  font-family: 'VictorMono NFP', 'VictorMono Nerd Font', monospace;
-  color: var(--ctp-macchiato-text);
-  background-color: #000;
+@layer reset {
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  * {
+    margin: 0;
+    min-width: 0;
+  }
+
+  body {
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  img,
+  picture,
+  video,
+  canvas,
+  svg {
+    display: block;
+    max-width: 100%;
+  }
+
+  input,
+  button,
+  textarea,
+  select {
+    font: inherit;
+  }
+
+  p,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    overflow-wrap: break-word;
+  }
 }
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
+@layer global {
+  :root {
+    font-family: 'VictorMono NFP', 'VictorMono Nerd Font', monospace;
+    color: var(--ctp-macchiato-text);
+    background-color: #000;
+  }
 
-* {
-  margin: 0;
-}
+  html,
+  body {
+    width: 100vw;
+    height: 100vh;
 
-body {
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-}
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-img,
-picture,
-video,
-canvas,
-svg {
-  display: block;
-  max-width: 100%;
-}
+    overflow: hidden;
+  }
 
-input,
-button,
-textarea,
-select {
-  font: inherit;
-}
+  om-fake-screen {
+    display: grid;
 
-p,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  overflow-wrap: break-word;
-}
+    width: 1280px;
+    height: 400px;
 
-html,
-body {
-  width: 100vw;
-  height: 100vh;
+    box-sizing: content-box;
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    border: 1px solid var(--ctp-macchiato-crust);
+  }
 
-  overflow: hidden;
-}
-
-om-fake-screen {
-  display: grid;
-
-  width: 1280px;
-  height: 400px;
-
-  box-sizing: content-box;
-
-  border: 1px solid var(--ctp-macchiato-crust);
-}
-
-@property --rotate {
-  syntax: '<angle>';
-  initial-value: 132deg;
-  inherits: false;
+  @property --rotate {
+    syntax: '<angle>';
+    initial-value: 132deg;
+    inherits: false;
+  }
 }

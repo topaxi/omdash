@@ -1,4 +1,4 @@
-import { LitElement, html } from 'lit';
+import { html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { connect } from '../../../store/connect.js';
 import { hostButtonStyles } from './host-button.styles.js';
@@ -9,9 +9,10 @@ import {
 } from '../../../store/reducers/clients.selectors.js';
 import { getAverageCPUUsageByHistory } from '../../../components/cpu/cpu.js';
 import { classMap } from 'lit/directives/class-map.js';
+import { OmdashComponent } from '../../../base/OmdashComponent.js';
 
 @customElement('om-host-button')
-export class HostButton extends connect()(LitElement) {
+export class HostButton extends connect()(OmdashComponent) {
   static styles = hostButtonStyles;
 
   @property()

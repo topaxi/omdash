@@ -1,4 +1,4 @@
-import { LitElement, PropertyValueMap, html } from 'lit';
+import { PropertyValueMap, html } from 'lit';
 import { customElement, query, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 
@@ -8,9 +8,10 @@ import { OmLineGraph } from '../../components/line-graph/line-graph.js';
 import { connect } from '../../store/connect.js';
 import { RootState } from '../../store/index.js';
 import { networkStyles } from './network.styles.js';
+import { OmdashComponent } from '../../base/OmdashComponent.js';
 
 @customElement('om-network')
-export class OmNetwork extends connect()(LitElement) {
+export class OmNetwork extends connect()(OmdashComponent) {
   static styles = networkStyles;
 
   @query('.content')
