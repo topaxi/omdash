@@ -22,10 +22,14 @@ export class HostButton extends connect()(OmdashComponent) {
   accessor subtle = false;
 
   @state()
-  private accessor cpuUsage = 0;
+  private accessor cpuUsages = [0, 0];
 
   @state()
   private accessor memoryUsage = 0;
+
+  get cpuUsage() {
+    return (this.cpuUsages[0] + this.cpuUsages[1]) / 2;
+  }
 
   override stateChanged(state: RootState) {
     const client = state.clients[this.hostname];
@@ -35,8 +39,26 @@ export class HostButton extends connect()(OmdashComponent) {
       total: 1,
       available: 1,
     };
+    const cpus = (cpuHistory.at(-1) ?? []).length;
 
-    this.cpuUsage = Math.round(getAverageCPUUsageByHistory(cpuHistory));
+    if (cpus > 1) {
+      this.cpuUsages = [
+        Math.round(
+          getAverageCPUUsageByHistory(cpuHistory, (cpuInfo) =>
+            cpuInfo.slice(0, cpus / 2),
+          ),
+        ),
+        Math.round(
+          getAverageCPUUsageByHistory(cpuHistory, (cpuInfo) =>
+            cpuInfo.slice(cpus / 2),
+          ),
+        ),
+      ];
+    } else {
+      const cpuUsage = Math.round(getAverageCPUUsageByHistory(cpuHistory));
+
+      this.cpuUsages = [cpuUsage, cpuUsage];
+    }
     this.memoryUsage = Math.round(((total - available) / total) * 100);
   }
 
@@ -50,9 +72,14 @@ export class HostButton extends connect()(OmdashComponent) {
       })}
     >
       <div
-        part="cpu-usage"
-        class="cpu-usage"
-        style="width: ${this.cpuUsage}%"
+        part="cpu-usage0"
+        class="cpu-usage0"
+        style="width: ${this.cpuUsages[0]}%"
+      ></div>
+      <div
+        part="cpu-usage1"
+        class="cpu-usage1"
+        style="width: ${this.cpuUsages[1]}%"
       ></div>
       <div
         part="memory-usage"

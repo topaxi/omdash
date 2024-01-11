@@ -48,8 +48,14 @@ function getAverageCPUUsage(prev: CpuInfo[], current: CpuInfo[]) {
 }
 
 // TODO: This should be moved to a selector.
-export function getAverageCPUUsageByHistory(history: CpuInfo[][]) {
-  return getAverageCPUUsage(history.at(-2) ?? [], history.at(-1) ?? []);
+export function getAverageCPUUsageByHistory(
+  history: CpuInfo[][],
+  projectCpuInfo = (cpuInfo: CpuInfo[]) => cpuInfo,
+) {
+  return getAverageCPUUsage(
+    projectCpuInfo(history.at(-2) ?? []),
+    projectCpuInfo(history.at(-1) ?? []),
+  );
 }
 
 @customElement('om-cpu')

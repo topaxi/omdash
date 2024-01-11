@@ -9,21 +9,28 @@ export const hostButtonStyles = css`
     z-index: 0;
   }
 
-  .cpu-usage,
+  .cpu-usage0,
+  .cpu-usage1,
   .memory-usage {
     position: absolute;
     top: 0;
     left: 0;
-    height: 50%;
+    height: 25%;
     opacity: 0.5;
   }
 
-  .cpu-usage {
+  .cpu-usage0,
+  .cpu-usage1 {
     background-color: var(--ctp-macchiato-red);
+  }
+
+  .cpu-usage1 {
+    top: 25%;
   }
 
   .memory-usage {
     top: 50%;
+    height: 50%;
     background-color: var(--ctp-macchiato-mauve);
   }
 
