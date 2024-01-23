@@ -5,8 +5,30 @@
 
 version: 2
 updates:
-  - package-ecosystem: "npm" # See documentation for possible values
-    versioning-strategy: "increase"
-    directory: "/" # Location of package manifests
+  - package-ecosystem: 'npm' # See documentation for possible values
+    versioning-strategy: 'increase'
+    directory: '/' # Location of package manifests
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
+    groups:
+      linting-formatting:
+        patterns:
+          - 'eslint'
+          - 'eslint-*'
+          - '@typescript-eslint/*'
+          - 'prettier'
+      redux:
+        patterns:
+          - '@redux-devtools/*'
+          - '@reduxjs/*'
+      lit:
+        patterns:
+          - 'lit'
+          - 'ts-lit-plugin'
+      typescript:
+        patterns:
+          - 'typescript'
+          - 'tslib'
+          - 'ts-node'
+          - '@types/node'
+          - 'node-dev'
