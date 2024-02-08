@@ -160,11 +160,11 @@ function executableExists(cmd: string) {
 // Hardcoded for now, will be configurable later.
 // List of hosts that should always be considered "on".
 // Hosts that are always on should not affect DPMS.
-const alwaysOn = new Set([hostname]);
+const alwaysOn = [hostname, 'colon'];
 
 function hasOpenClients() {
   const clients = Array.from(wssClients.clients).filter(
-    (c) => !alwaysOn.has(clientMetadata.get(c)?.hostname ?? ''),
+    (c) => !alwaysOn.includes(clientMetadata.get(c)?.hostname ?? ''),
   );
 
   return clients.some((c) => c.readyState === WebSocket.OPEN);
