@@ -60,8 +60,14 @@ export async function getProcesses() {
     type: 'client/ps',
     payload: {
       count: processes.length,
-      highestCpu: merged.sort(byCpu).slice(0, processCount),
-      highestMemory: merged.sort(byMemory).slice(0, processCount),
+      highestCpu: merged
+        .sort(byCpu)
+        .slice(0, processCount)
+        .filter((p) => p.cpu >= 0.05),
+      highestMemory: merged
+        .sort(byMemory)
+        .slice(0, processCount)
+        .filter((p) => p.memory >= 0.05),
     },
   };
 }
@@ -75,9 +81,7 @@ function byMemory(a: { memory: number }, b: { memory: number }) {
 }
 
 function filterProcesses(processes: ProcessDescriptor[]) {
-  return processes
-    .filter((p) => !processNameFilters.includes(p.name))
-    .filter((p) => Number(p.cpu) > 0 || Number(p.memory) > 0);
+  return processes.filter((p) => !processNameFilters.includes(p.name));
 }
 
 function mergeProcesses(processes: ProcessDescriptor[]) {
