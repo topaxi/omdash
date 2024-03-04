@@ -1,7 +1,7 @@
 import os from 'node:os';
 import { ProcessDescriptor } from 'ps-list';
 
-const processNameFilters = ['ps', '0', '1'];
+const processNameFilters = ['ps'];
 
 const psList = async function (...args: any[]) {
   const m = (await Function('return import("ps-list")')()) as Promise<
@@ -75,7 +75,9 @@ function byMemory(a: { memory: number }, b: { memory: number }) {
 }
 
 function filterProcesses(processes: ProcessDescriptor[]) {
-  return processes.filter((p) => !processNameFilters.includes(p.name));
+  return processes
+    .filter((p) => !processNameFilters.includes(p.name))
+    .filter((p) => Number(p.cpu) > 0 || Number(p.memory) > 0);
 }
 
 function mergeProcesses(processes: ProcessDescriptor[]) {
