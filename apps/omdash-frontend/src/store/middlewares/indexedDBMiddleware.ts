@@ -1,4 +1,4 @@
-import { Dispatch, Middleware, MiddlewareAPI } from 'redux';
+import { Middleware } from 'redux';
 import { IndexedDBStorage } from '../../db/IndexedDBStorage';
 import { Action, Reducer, UnknownAction } from '@reduxjs/toolkit';
 import { debounce } from 'lodash-es';

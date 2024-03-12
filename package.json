@@ -12,6 +12,7 @@
     "dev": "cross-env OMDASH_SERVER_HOST=localhost:3200 turbo dev",
     "build": "turbo build",
     "build:noturbo": "npm run build -ws",
+    "lint": "eslint .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Damian Senn <damian.senn@topaxi.codes>",

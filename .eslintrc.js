@@ -13,9 +13,12 @@ module.exports = {
       env: {
         node: true,
       },
-      files: ['.eslintrc.{js,cjs}'],
+      files: ['bin/*', '.eslintrc.{js,cjs}'],
       parserOptions: {
         sourceType: 'script',
+      },
+      rules: {
+        '@typescript-eslint/no-var-requires': 'off',
       },
     },
   ],
@@ -35,6 +38,6 @@ module.exports = {
     ],
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/ban-types': 'off',
-    '@typescript-eslint/ban-ts-comments': 'off',
+    '@typescript-eslint/ban-ts-comment': 'off',
   },
 };
