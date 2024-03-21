@@ -45,7 +45,7 @@ export type AppAction = InferFunctionArguments<typeof store.dispatch>;
 
 store.dispatch(initStoreFromIndexedDB());
 
-if (import.meta.env.VITE_REDUX_WORKER !== 'false') {
+if (import.meta.env.VITE_REDUX_WORKER === 'true') {
   if (import.meta.env.VITE_SHARED_WORKER === 'true') {
     self.addEventListener('connect', (event: any) => {
       const [port] = event.ports;

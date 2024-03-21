@@ -7,7 +7,7 @@ export type { RootState };
 
 let store = {} as Remote<Store<RootState>>;
 
-if (import.meta.env.VITE_REDUX_WORKER !== 'false') {
+if (import.meta.env.VITE_REDUX_WORKER === 'true') {
   let remoteStore: Remote<Store<RootState>>;
 
   if (import.meta.env.VITE_SHARED_WORKER === 'true') {
