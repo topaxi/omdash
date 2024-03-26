@@ -8,6 +8,10 @@ import './components/global/global.js';
 import { appStyles } from './app.styles.js';
 import { OmdashComponent } from './base/OmdashComponent.js';
 
+function v(p: Promise<unknown>): Promise<void> {
+  return p.then(() => {});
+}
+
 @customElement('om-app')
 export class OmApp extends connect()(OmdashComponent) {
   static styles = appStyles;
@@ -48,18 +52,12 @@ export class OmApp extends connect()(OmdashComponent) {
       {
         path: '/',
         component: 'om-hosts',
-        action: () =>
-          import('./routes/hosts/hosts').then(
-            (m) => m.Hosts as unknown as HTMLElement,
-          ),
+        action: () => v(import('./routes/hosts/hosts')),
       },
       {
         path: '/network',
         component: 'om-network',
-        action: () =>
-          import('./routes/network/network').then(
-            (m) => m.OmNetwork as unknown as HTMLElement,
-          ),
+        action: () => v(import('./routes/network/network')),
       },
       {
         path: '/spotify',
@@ -68,10 +66,7 @@ export class OmApp extends connect()(OmdashComponent) {
       {
         path: '/settings',
         component: 'om-settings',
-        action: () =>
-          import('./routes/settings/settings').then(
-            (m) => m.OmSettings as unknown as HTMLElement,
-          ),
+        action: () => v(import('./routes/settings/settings')),
       },
     ]);
   }
