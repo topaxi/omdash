@@ -27,7 +27,7 @@
     "node-windows": "^1.0.0-beta.8",
     "prettier": "^3.2.5",
     "turbo": "^1.13.1",
-    "typescript": "^5.4.3"
+    "typescript": "^5.4.4"
   },
   "volta": {
     "node": "21.7.1"
