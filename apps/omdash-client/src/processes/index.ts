@@ -80,7 +80,7 @@ function byMemory(a: { memory: number }, b: { memory: number }) {
   return b.memory - a.memory;
 }
 
-function filterProcesses(processes: ProcessDescriptor[]) {
+function filterProcesses<T extends { name: string }>(processes: T[]) {
   return processes.filter((p) => !processNameFilters.includes(p.name));
 }
 
