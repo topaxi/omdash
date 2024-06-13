@@ -19,7 +19,7 @@
     "@types/ws": "^8.5.10",
     "node-dev": "^8.0.0",
     "ts-node": "^10.9.1",
-    "tslib": "^2.6.2"
+    "tslib": "^2.6.3"
   },
   "dependencies": {
     "ws": "^8.17.0"
