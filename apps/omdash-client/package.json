@@ -13,7 +13,7 @@
   "optionalDependencies": {
     "bufferutil": "^4.0.8",
     "osx-temperature-sensor": "1.0.8",
-    "utf-8-validate": "^6.0.3"
+    "utf-8-validate": "^6.0.4"
   },
   "devDependencies": {
     "@types/node": "^20.12.12",
