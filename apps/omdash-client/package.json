@@ -26,6 +26,6 @@
     "ps-list": "^8.1.1",
     "systeminformation": "^5.22.11",
     "wmi-client": "^0.5.0",
-    "ws": "^8.17.0"
+    "ws": "^8.18.0"
   }
 }
