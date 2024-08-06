@@ -1,4 +1,3 @@
-/* eslint-disable prefer-const */
 // Based on https://github.com/naikus/svg-gauge
 
 import { Animation } from './animation.js';

@@ -13,7 +13,7 @@ export type RegisterAction = OmClientAction<
   'register',
   { addr: string; hostname: string }
 >;
-export type UnregisterAction = OmClientAction<'unregister', {}>;
+export type UnregisterAction = OmClientAction<'unregister', unknown>;
 export type MetricAction = OmClientAction<'metric', Record<string, any>>;
 export type PsAction = OmClientAction<
   'ps',

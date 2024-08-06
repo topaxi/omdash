@@ -152,7 +152,7 @@ function executableExists(cmd: string) {
   try {
     childProcess.execSync(`which ${cmd}`, { stdio: 'ignore' });
     return true;
-  } catch (err) {
+  } catch (_err) {
     return false;
   }
 }

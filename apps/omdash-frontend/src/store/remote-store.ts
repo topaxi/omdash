@@ -2,7 +2,7 @@
 import { Remote, proxy } from 'comlink';
 import { Store } from '@reduxjs/toolkit';
 
-export async function remoteStoreWrapper<S extends Store<{}>>(
+export async function remoteStoreWrapper<S extends Store<unknown>>(
   store: Remote<S>,
 ) {
   const subscribers = new Set<() => void>();

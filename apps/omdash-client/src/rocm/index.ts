@@ -22,7 +22,7 @@ export function execRocmSmi(args: string[]): Promise<Record<string, any>> {
     try {
       exec(`${rocmSmiPath()} --version`);
       rocsmiExists = true;
-    } catch (error) {
+    } catch (_error) {
       rocsmiExists = false;
     }
   }
