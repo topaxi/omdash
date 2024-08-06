@@ -16,7 +16,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.14.12",
-    "@types/ws": "^8.5.11",
+    "@types/ws": "^8.5.12",
     "node-dev": "^8.0.0",
     "ts-node": "^10.9.1",
     "tslib": "^2.6.3"
