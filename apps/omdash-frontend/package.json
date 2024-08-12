@@ -13,7 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "@redux-devtools/extension": "^3.2.6",
-    "@reduxjs/toolkit": "^2.2.5",
+    "@reduxjs/toolkit": "^2.2.7",
     "@types/lodash-es": "^4.17.12",
     "@vaadin/router": "^1.7.5",
     "comlink": "^4.4.1",
