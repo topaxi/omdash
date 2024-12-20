@@ -16,7 +16,7 @@
     "utf-8-validate": "^6.0.4"
   },
   "devDependencies": {
-    "@types/node": "^22.7.2",
+    "@types/node": "^22.10.2",
     "@types/ws": "^8.5.12",
     "node-dev": "^8.0.0",
     "ts-node": "^10.9.1",
