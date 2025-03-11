@@ -13,6 +13,7 @@ updates:
     groups:
       linting-formatting:
         patterns:
+          - 'globals'
           - 'eslint'
           - 'eslint-*'
           - '@typescript-eslint/*'
