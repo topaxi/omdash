@@ -19,9 +19,9 @@
   "license": "ISC",
   "devDependencies": {
     "cross-env": "^7.0.3",
-    "eslint": "^9.22.0",
+    "eslint": "^9.23.0",
     "eslint-config-prettier": "^10.1.1",
-    "eslint-plugin-prettier": "^5.2.3",
+    "eslint-plugin-prettier": "^5.2.4",
     "globals": "^16.0.0",
     "node-windows": "^1.0.0-beta.8",
     "prettier": "^3.5.3",
