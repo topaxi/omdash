@@ -7,11 +7,11 @@ export default defineConfig({
     format: 'es',
   },
   esbuild: {
-    target: ['firefox118', 'safari17'],
+    target: ['firefox146', 'safari26'],
   },
   build: {
     outDir: 'build',
-    target: ['firefox118', 'safari17'],
+    target: ['firefox146', 'safari26'],
     manifest: true,
     sourcemap: true,
     rollupOptions: {

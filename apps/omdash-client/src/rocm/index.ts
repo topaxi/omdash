@@ -32,16 +32,16 @@ export function execRocmSmi(args: string[]): Promise<Record<string, any>> {
   }
 
   return new Promise((resolve, reject) => {
-    exec(`${rocmSmiPath()} ${args.join(' ')}`, (error, stdout, stderr) => {
+    exec(`${rocmSmiPath()} ${args.join(' ')}`, (error, stdout, _stderr) => {
       if (error) {
         reject(error);
         return;
       }
 
-      if (stderr) {
-        reject(new Error(stderr));
-        return;
-      }
+      //if (stderr) {
+      //  reject(new Error(stderr));
+      //  return;
+      //}
 
       try {
         const result = JSON.parse(stdout);
