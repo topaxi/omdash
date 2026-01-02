@@ -22,7 +22,7 @@ export const appStyles = css`
     left: -4px;
     top: -4px;
 
-    background-image: url(https://source.unsplash.com/random/1280×400/?pcb);
+    background-image: var(--background-image);
     background-size: cover;
 
     filter: grayscale(0.5) brightness(0.25);

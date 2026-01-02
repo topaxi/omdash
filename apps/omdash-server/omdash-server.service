@@ -5,6 +5,7 @@ After=network.target
 Type=simple
 ExecStart=/usr/bin/node /home/topaxi/projects/omdash/apps/omdash-server/build/server.js
 Restart=on-failure
+Environment="OMDASH_UNSPLASH_CLIENT_ID="
 
 [Install]
 WantedBy=default.target

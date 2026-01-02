@@ -123,6 +123,16 @@ wssClients.on('connection', (ws, req) => {
 wssDashboard.on('connection', (ws, req) => {
   console.log('Dashboard connected', req.socket.remoteAddress);
 
+  ws.send(
+    encode({
+      type: 'server/env',
+      payload: {
+        unsplash: { client_id: process.env.OMDASH_UNSPLASH_CLIENT_ID ?? '' },
+      },
+    }),
+    { binary: false },
+  );
+
   Array.from(wssClients.clients)
     .filter((c) => c.readyState === WebSocket.OPEN)
     .forEach((client) => {

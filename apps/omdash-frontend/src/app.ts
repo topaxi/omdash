@@ -7,6 +7,8 @@ import { connect } from './store/connect.js';
 import './components/global/global.js';
 import { appStyles } from './app.styles.js';
 import { OmdashComponent } from './base/OmdashComponent.js';
+import { RootState } from './store/index.js';
+import { selectUnsplashClientId } from './store/reducers/env.selectors.js';
 
 function v(p: Promise<unknown>): Promise<void> {
   return p.then(() => {});
@@ -45,6 +47,26 @@ export class OmApp extends connect()(OmdashComponent) {
   protected override firstUpdated() {
     this.router = new Router(this.outlet);
     this.setupRoutes(this.router);
+  }
+
+  override stateChanged(state: RootState): void {
+    const unsplash_client_id = selectUnsplashClientId(state);
+
+    if (
+      unsplash_client_id &&
+      !this.style.getPropertyValue('--background-image')
+    ) {
+      fetch(
+        `https://api.unsplash.com/photos/random?orientation=landscape&query=pcb&client_id=${encodeURIComponent(unsplash_client_id)}`,
+      )
+        .then((res) => res.json())
+        .then((res: any) => {
+          this.style.setProperty(
+            '--background-image',
+            `url("${res.urls.regular}")`,
+          );
+        });
+    }
   }
 
   private setupRoutes(router: Router) {
