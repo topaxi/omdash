@@ -13,15 +13,16 @@
   "license": "ISC",
   "dependencies": {
     "@redux-devtools/extension": "^3.2.6",
-    "@reduxjs/toolkit": "^2.6.1",
+    "@reduxjs/toolkit": "^2.11.2",
     "@types/lodash-es": "^4.17.12",
     "@vaadin/router": "^2.0.1",
     "comlink": "^4.4.2",
     "d3": "^7.9.0",
-    "lit": "^3.2.1",
-    "lodash-es": "^4.17.21",
+    "lit": "^3.3.2",
+    "lodash-es": "^4.17.22",
     "omdash-gauge": "*",
-    "serve": "^14.2.4"
+    "serve": "^14.2.5",
+    "systeminformation": "^5.28.9"
   },
   "devDependencies": {
     "@types/d3": "^7.4.3",
