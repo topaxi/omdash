@@ -68,7 +68,7 @@ export class HostButton extends connect()(OmdashComponent) {
       part="host-button"
       class=${classMap({
         'host-button': true,
-        'critical': this.cpuUsage > 95 || this.memoryUsage > 80,
+        'critical': this.cpuUsage > 95 || this.memoryUsage > 90,
       })}
     >
       <div
