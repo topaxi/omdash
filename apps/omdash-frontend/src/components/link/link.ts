@@ -11,6 +11,8 @@ export class OmLink extends OmdashComponent {
   @property()
   accessor to = '';
 
+  #locationChangeTimeout: ReturnType<typeof setTimeout> | undefined;
+
   constructor() {
     super();
 
@@ -22,9 +24,11 @@ export class OmLink extends OmdashComponent {
   }
 
   override disconnectedCallback() {
+    super.disconnectedCallback();
     this.removeEventListener('click', this);
     this.removeEventListener('touchstart', this);
     window.removeEventListener('vaadin-router-go', this);
+    clearTimeout(this.#locationChangeTimeout);
   }
 
   handleEvent(event: Event) {
@@ -42,7 +46,8 @@ export class OmLink extends OmdashComponent {
   }
 
   private onLocationChange() {
-    setTimeout(() => {
+    clearTimeout(this.#locationChangeTimeout);
+    this.#locationChangeTimeout = setTimeout(() => {
       if (window.location.pathname === this.to) {
         this.setAttribute('aria-selected', 'true');
       } else {
