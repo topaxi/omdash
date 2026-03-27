@@ -19,12 +19,12 @@
   "license": "ISC",
   "devDependencies": {
     "cross-env": "^7.0.3",
-    "eslint": "^9.22.0",
-    "eslint-config-prettier": "^10.1.1",
-    "eslint-plugin-prettier": "^5.2.3",
-    "globals": "^16.0.0",
+    "eslint": "^9.29.0",
+    "eslint-config-prettier": "^10.1.5",
+    "eslint-plugin-prettier": "^5.5.0",
+    "globals": "^16.2.0",
     "node-windows": "^1.0.0-beta.8",
-    "prettier": "^3.5.3",
+    "prettier": "^3.6.0",
     "turbo": "^2.4.4",
     "typescript": "^5.8.2",
     "typescript-eslint": "^8.26.1"
