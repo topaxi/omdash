@@ -45,31 +45,46 @@ impl ProcessWatcher {
     /// turns every process's raw byte count into its own "percentage")
     /// unless `refresh_memory()` is also called - reusing the value we
     /// already read elsewhere avoids that footgun entirely.
-    pub fn refresh_and_snapshot(&mut self, total_memory_bytes: u64) -> PsPayload {
-        self.system
-            .refresh_processes(sysinfo::ProcessesToUpdate::All, true);
+    ///
+    /// The scan itself runs on `spawn_blocking`'s dedicated thread pool
+    /// rather than inline: on the `current_thread` runtime this process uses,
+    /// a synchronous walk of every `/proc/<pid>/*` entry would otherwise
+    /// stall the WebSocket heartbeat and every other metric timer for its
+    /// duration - the same reasoning tpx-sysmon's `gpu::intel` module applies
+    /// to its own full-process `/proc/*/fdinfo` scan.
+    pub async fn refresh_and_snapshot(&mut self, total_memory_bytes: u64) -> PsPayload {
+        let mut system = std::mem::replace(&mut self.system, System::new());
 
-        let total_memory = (total_memory_bytes.max(1)) as f64;
-        // `sysinfo` enumerates Linux tasks under /proc/[pid]/task, not just
-        // top-level processes - on a multi-threaded process each thread shows
-        // up as its own entry reporting that same process's whole RSS, which
-        // silently multiplies both the process count and every merged memory
-        // sum by however many threads a process happens to have. Real
-        // processes report `thread_kind() == None`; anything else is a task.
-        let raw: Vec<(String, f64, f64)> = self
-            .system
-            .processes()
-            .values()
-            .filter(|p| p.thread_kind().is_none())
-            .map(|p| {
-                let name = p.name().to_string_lossy().into_owned();
-                let cpu = p.cpu_usage() as f64;
-                let memory = (p.memory() as f64 / total_memory) * 100.0;
-                (name, cpu, memory)
-            })
-            .collect();
+        let (system, payload) = tokio::task::spawn_blocking(move || {
+            system.refresh_processes(sysinfo::ProcessesToUpdate::All, true);
 
-        build_payload(raw)
+            let total_memory = (total_memory_bytes.max(1)) as f64;
+            // `sysinfo` enumerates Linux tasks under /proc/[pid]/task, not
+            // just top-level processes - on a multi-threaded process each
+            // thread shows up as its own entry reporting that same process's
+            // whole RSS, which silently multiplies both the process count and
+            // every merged memory sum by however many threads a process
+            // happens to have. Real processes report `thread_kind() ==
+            // None`; anything else is a task.
+            let raw: Vec<(String, f64, f64)> = system
+                .processes()
+                .values()
+                .filter(|p| p.thread_kind().is_none())
+                .map(|p| {
+                    let name = p.name().to_string_lossy().into_owned();
+                    let cpu = p.cpu_usage() as f64;
+                    let memory = (p.memory() as f64 / total_memory) * 100.0;
+                    (name, cpu, memory)
+                })
+                .collect();
+
+            (system, build_payload(raw))
+        })
+        .await
+        .expect("process refresh task panicked");
+
+        self.system = system;
+        payload
     }
 }
 

@@ -27,7 +27,7 @@ type WsSink = futures_util::stream::SplitSink<
     Message,
 >;
 
-#[tokio::main]
+#[tokio::main(flavor = "current_thread")]
 async fn main() {
     tracing_subscriber::fmt()
         .with_env_filter(
@@ -273,12 +273,13 @@ async fn run_metric_loops(out_tx: mpsc::UnboundedSender<Message>) {
         async {
             let mut watcher = processes::ProcessWatcher::new();
             let memory_rx = memory_rx.clone();
-            interval_immediate(Duration::from_secs(4), move || {
+            let mut ticker = tokio::time::interval(Duration::from_secs(4));
+            loop {
+                ticker.tick().await;
                 let total_memory_bytes = memory_rx.borrow().total_bytes;
-                let payload = watcher.refresh_and_snapshot(total_memory_bytes);
+                let payload = watcher.refresh_and_snapshot(total_memory_bytes).await;
                 send(&out_tx, &ClientMessage::Ps(payload));
-            })
-            .await;
+            }
         },
     );
 }
