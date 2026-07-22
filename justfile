@@ -36,6 +36,15 @@ build-server:
 build-rust:
     cargo build --release --manifest-path apps/omdash-client-rs/Cargo.toml
 
+# Run the dev stack (turbo) plus the Rust client, excluding the Node client
+dev:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    trap 'kill 0' EXIT
+    npm run dev -- --filter='!omdash-client' &
+    OMDASH_SERVER_HOST=localhost:3200 cargo run --manifest-path apps/omdash-client-rs/Cargo.toml &
+    wait
+
 # Lint all workspaces
 lint:
     npm run lint

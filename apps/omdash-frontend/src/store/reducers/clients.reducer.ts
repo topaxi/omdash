@@ -53,6 +53,18 @@ export interface MemoryInfo {
   swaptotal: number;
   swapused: number;
   swapfree: number;
+  /**
+   * Linux-only compressed-memory tiers, sent by the Rust client (tpx-sysmon)
+   * and absent from the Node client's `si.mem()` payload. All in bytes.
+   */
+  zswap?: number;
+  zswapped?: number;
+  zram?: {
+    memUsed: number;
+    comprData: number;
+    origData: number;
+    diskSize: number;
+  };
 }
 
 export interface GpuInfo {

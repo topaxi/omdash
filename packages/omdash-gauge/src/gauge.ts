@@ -161,6 +161,8 @@ export class Gauge {
   private gaugeColor: ((value: number) => string) | null;
   private gaugeValueElem: SVGElement | null = null;
   private gaugeValuePath: SVGElement | null = null;
+  private gaugeSvg: SVGElement | null = null;
+  private segmentPaths: SVGElement[] = [];
   private label: (value: number) => string | number;
   private viewBox: string | undefined;
 
@@ -239,7 +241,76 @@ export class Gauge {
         this.gaugeValuePath,
       ],
     );
+    this.gaugeSvg = gaugeElement;
     elem.appendChild(gaugeElement);
+  }
+
+  /**
+   * Compute the SVG path `d` for an arc spanning [startValue, endValue] of the
+   * gauge's [min, max] domain. Used to draw stacked segments where each segment
+   * begins where the previous one ended.
+   */
+  private segmentPath(startValue: number, endValue: number): string {
+    const span = 360 - Math.abs(this.startAngle - this.endAngle);
+    const startPct = getValueInPercentage(startValue, this.min, this.limit);
+    const endPct = getValueInPercentage(endValue, this.min, this.limit);
+    const a1 = this.startAngle + getAngle(startPct, span);
+    const a2 = this.startAngle + getAngle(endPct, span);
+    const flag = a2 - a1 <= 180 ? 0 : 1;
+
+    return pathString(this.radius, a1, a2, flag);
+  }
+
+  /**
+   * Render the value arc as a series of colored, stacked segments instead of a
+   * single arc. Each segment's value is in the gauge's [min, max] domain and
+   * segments are laid end to end from `min`. The single value arc is hidden
+   * while segments are active; the center text is still driven by `setValue`.
+   */
+  setSegments(segments: Array<{ value: number; color: string }>): void {
+    if (this.gaugeSvg == null) {
+      return;
+    }
+
+    for (const path of this.segmentPaths) {
+      path.remove();
+    }
+    this.segmentPaths = [];
+
+    // Hide the default single arc; segments replace it.
+    this.gaugeValuePath!.style.display = 'none';
+
+    let cursor = this.min;
+
+    for (const segment of segments) {
+      const end = clamp(cursor + segment.value, this.min, this.limit);
+      const path = svg('path', {
+        'class': this.valueDialClass,
+        'fill': 'none',
+        'stroke-width': 2.5,
+        'd': this.segmentPath(cursor, end),
+      });
+      path.style.stroke = segment.color;
+      this.gaugeSvg.appendChild(path);
+      this.segmentPaths.push(path);
+      cursor = end;
+    }
+  }
+
+  /**
+   * Remove any rendered segments and restore the single value arc. No-op when
+   * segments were never used, so it is cheap to call on every update.
+   */
+  clearSegments(): void {
+    if (this.segmentPaths.length === 0) {
+      return;
+    }
+
+    for (const path of this.segmentPaths) {
+      path.remove();
+    }
+    this.segmentPaths = [];
+    this.gaugeValuePath!.style.display = '';
   }
 
   private updateGauge(theValue: number): void {

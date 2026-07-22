@@ -15,6 +15,15 @@ export class OmGauge extends OmdashComponent {
   @property()
   accessor label = '';
 
+  /**
+   * When set, the value arc is rendered as stacked colored segments (each
+   * `percent` is a share of the gauge's 0-100 range) instead of a single arc.
+   * `percent`/`label` still drive the center text. Colors are any CSS color
+   * string, e.g. `var(--ctp-macchiato-mauve)`.
+   */
+  @property({ type: Array })
+  accessor segments: Array<{ percent: number; color: string }> | undefined;
+
   @query('.gauge-container')
   accessor gaugeElement!: HTMLDivElement | null;
 
@@ -43,6 +52,18 @@ export class OmGauge extends OmdashComponent {
   protected updated(
     _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>,
   ): void {
+    if (this.segments != null) {
+      this.gauge.setSegments(
+        this.segments.map((s) => ({ value: s.percent, color: s.color })),
+      );
+      // Center text still shows the aggregate percent.
+      this.gauge.setValue(this.percent);
+      return;
+    }
+
+    // Restore the single arc if this gauge previously rendered segments.
+    this.gauge.clearSegments();
+
     if (window.navigator.hardwareConcurrency > 4) {
       this.gauge.setValueAnimated(this.percent, 0.5);
     } else {

@@ -86,12 +86,36 @@ pub struct GpuInfo {
 
 /// Only the fields `memory.ts` actually reads; the rest of `si.mem()`'s shape
 /// (free/used/active/buffcache) is dead weight on the frontend and omitted.
+/// The compressed-memory fields (zswap/zram) are Linux-only extras the Node
+/// client never sends, so they are all optional and omitted when absent.
 #[derive(Serialize)]
 pub struct MemoryInfo {
     pub total: u64,
     pub available: u64,
     pub swaptotal: u64,
     pub swapfree: u64,
+    /// zswap compressed-pool RAM cost, in bytes.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub zswap: Option<u64>,
+    /// Uncompressed size of the pages held in zswap, in bytes.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub zswapped: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub zram: Option<ZramInfo>,
+}
+
+/// Aggregated zram device stats, all in bytes. Mirrors the frontend's
+/// `MemoryInfo['zram']` shape.
+#[derive(Serialize)]
+pub struct ZramInfo {
+    #[serde(rename = "memUsed")]
+    pub mem_used: u64,
+    #[serde(rename = "comprData")]
+    pub compr_data: u64,
+    #[serde(rename = "origData")]
+    pub orig_data: u64,
+    #[serde(rename = "diskSize")]
+    pub disk_size: u64,
 }
 
 #[derive(Serialize)]
