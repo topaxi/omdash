@@ -61,10 +61,21 @@ export class OmApp extends connect()(OmdashComponent) {
       )
         .then((res) => res.json())
         .then((res: any) => {
-          this.style.setProperty(
-            '--background-image',
-            `url("${res.urls.regular}")`,
-          );
+          // Request the image at the actual on-screen size (om-app fills the
+          // om-fake-screen viewport) via Unsplash's raw imgix URL, so
+          // QtWebEngine decodes a viewport-sized bitmap instead of upscaling
+          // the full-res `regular` variant. The literals are only a fallback
+          // for the rare case layout isn't ready; the CSS remains the single
+          // source of truth for the screen size.
+          const rect = this.getBoundingClientRect();
+          const width = Math.round(rect.width) || 1280;
+          const height = Math.round(rect.height) || 400;
+          const raw = res?.urls?.raw;
+          const url = raw
+            ? `${raw}&w=${width}&h=${height}&fit=crop&crop=entropy&auto=format&q=80`
+            : res.urls.regular;
+
+          this.style.setProperty('--background-image', `url("${url}")`);
         });
     }
   }
