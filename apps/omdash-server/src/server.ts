@@ -180,33 +180,42 @@ function hasOpenClients() {
   return clients.some((c) => c.readyState === WebSocket.OPEN);
 }
 
-let hadOpenClients = false;
+// Reassert the desired display power on every tick rather than only when the
+// connected-client set flips. Transition-only control cannot recover once the
+// display and the server's belief diverge - a failed swaymsg, sway restarting,
+// or the output coming back powered off would leave the screen stuck off while
+// clients are connected, with no further transition to correct it. `dpms on`
+// when already on (and `dpms off` when already off) is a harmless no-op, so
+// unconditionally reasserting is self-healing.
 function setDPMSInterval(
   callback: (hasOpenClients: boolean) => void,
   interval: number,
 ) {
-  return setInterval(async () => {
-    const hasCurrentlyOpenClients = hasOpenClients();
-
-    if (hadOpenClients !== hasCurrentlyOpenClients) {
-      callback(hasCurrentlyOpenClients);
-
-      hadOpenClients = hasCurrentlyOpenClients;
-    }
-  }, interval);
+  return setInterval(() => callback(hasOpenClients()), interval);
 }
 
 if (executableExists('swaymsg')) {
   setDPMSInterval(async (hasCurrentlyOpenClients) => {
-    childProcess.exec(dpms(hasCurrentlyOpenClients), {
-      env: {
-        SWAYSOCK: await getSwaySocket(),
+    const swaysock = await getSwaySocket();
+
+    if (!swaysock) {
+      console.error('DPMS: no sway IPC socket found');
+      return;
+    }
+
+    childProcess.exec(
+      dpms(hasCurrentlyOpenClients),
+      { env: { ...process.env, SWAYSOCK: swaysock } },
+      (err, _stdout, stderr) => {
+        if (err) {
+          console.error(`DPMS command failed: ${err.message} ${stderr.trim()}`);
+        }
       },
-    });
+    );
   }, 10_000);
 } else if (process.env.DEBUG_DPMS) {
-  setDPMSInterval((hasOpenClients) => {
-    console.log(dpms(hasOpenClients));
+  setDPMSInterval((hasCurrentlyOpenClients) => {
+    console.log(dpms(hasCurrentlyOpenClients));
   }, 10_000);
 }
 

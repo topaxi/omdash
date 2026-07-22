@@ -1,20 +1,23 @@
 import fs from 'node:fs/promises';
 
-let SWAYSOCK = process.env.SWAYSOCK;
-export async function getSwaySocket() {
-  if (SWAYSOCK) {
-    return SWAYSOCK;
+// Resolved fresh on each call rather than cached for the process lifetime:
+// the socket filename embeds sway's pid, so a cached path goes stale (and
+// every subsequent swaymsg silently fails) if sway restarts after the server.
+export async function getSwaySocket(): Promise<string | undefined> {
+  if (process.env.SWAYSOCK) {
+    return process.env.SWAYSOCK;
   }
 
-  const uid = process.getuid?.() || 1000;
+  const uid = process.getuid?.() ?? 1000;
 
-  SWAYSOCK = await fs
-    .readdir(`/run/user/${uid}`)
-    .then((files) => files.find((f) => f.startsWith('sway-ipc')))
-    .then((file) => `/run/user/${uid}/${file}`)
-    .then((SWAYSOCK) => process.env.SWAYSOCK || SWAYSOCK);
+  try {
+    const files = await fs.readdir(`/run/user/${uid}`);
+    const socket = files.find((f) => f.startsWith('sway-ipc'));
 
-  return SWAYSOCK;
+    return socket ? `/run/user/${uid}/${socket}` : undefined;
+  } catch {
+    return undefined;
+  }
 }
 
 export function dpms(toggle: boolean) {
