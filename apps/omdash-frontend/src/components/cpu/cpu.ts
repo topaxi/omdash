@@ -72,13 +72,6 @@ export class OmCpu extends connect()(OmdashComponent) {
     );
   }
 
-  private get cpuName() {
-    return this.cpuModel
-      .replace(/\d+-Core Processor/g, '')
-      .replace(/with Radeon Graphics/g, '')
-      .trim();
-  }
-
   private get currentCPUInfo() {
     return this.cpuLatest;
   }
@@ -205,7 +198,7 @@ export class OmCpu extends connect()(OmdashComponent) {
                 </text>
               `
             : ''}
-          ${this.cpuName !== ''
+          ${this.cpuModel !== ''
             ? svg`
                 <text
                   class="cpu-name"
@@ -214,7 +207,7 @@ export class OmCpu extends connect()(OmdashComponent) {
                   text-anchor="middle"
                   dominant-baseline="hanging"
                 >
-                  ${this.cpuName}
+                  ${this.cpuModel}
                 </text>
               `
             : ''}

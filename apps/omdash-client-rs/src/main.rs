@@ -49,6 +49,8 @@ async fn main() {
     let mut sigint = signal(SignalKind::interrupt()).expect("failed to install SIGINT handler");
     let mut sigterm = signal(SignalKind::terminate()).expect("failed to install SIGTERM handler");
 
+    cpu::init_model().await;
+
     let mut reconnect_delay = INITIAL_RECONNECT_DELAY;
     loop {
         tracing::info!("Connecting to {url}");

@@ -10,22 +10,35 @@
 //! would have from the Node client.
 
 use std::collections::HashMap;
+use std::sync::OnceLock;
 
 use crate::protocol::{CpuInfo, CpuTimes};
 
+/// The marketing model name shared by every core (identical per-core "model
+/// name" values in `/proc/cpuinfo` aren't worth re-deriving), resolved once
+/// via `init_model` since it never changes at runtime. See
+/// `tpx_sysmon::cpu::resolve_model` for the cleanup (trademark markers,
+/// core-count marketing suffixes) and ARM fallback raw `/proc/cpuinfo` lacks.
+static MODEL: OnceLock<String> = OnceLock::new();
+
+/// Must be called once before `read_per_core` - see `MODEL`. Async because
+/// resolution may shell out (e.g. to `lscpu` on ARM).
+pub async fn init_model() {
+    let model = tpx_sysmon::cpu::resolve_model().await.unwrap_or_default();
+    let _ = MODEL.set(model);
+}
+
 pub fn read_per_core() -> Vec<CpuInfo> {
-    let models = read_cpuinfo();
+    let model = MODEL.get().cloned().unwrap_or_default();
+    let speeds = read_cpuinfo_speeds();
     let times = read_proc_stat_per_core();
 
     times
         .into_iter()
-        .map(|(idx, times)| {
-            let (model, speed) = models.get(&idx).cloned().unwrap_or_default();
-            CpuInfo {
-                model,
-                speed,
-                times,
-            }
+        .map(|(idx, times)| CpuInfo {
+            model: model.clone(),
+            speed: speeds.get(&idx).copied().unwrap_or_default(),
+            times,
         })
         .collect()
 }
@@ -79,24 +92,23 @@ fn read_proc_stat_per_core() -> Vec<(u32, CpuTimes)> {
     result
 }
 
-/// Reads `model name` and `cpu MHz` per logical processor index from
-/// `/proc/cpuinfo`, matching what `os.cpus()[].model`/`.speed` report.
-fn read_cpuinfo() -> HashMap<u32, (String, u32)> {
+/// Reads `cpu MHz` per logical processor index from `/proc/cpuinfo`,
+/// matching what `os.cpus()[].speed` reports. Unlike the model name, current
+/// clock speed genuinely varies per core (frequency scaling), so this stays
+/// a live per-tick read.
+fn read_cpuinfo_speeds() -> HashMap<u32, u32> {
     let Ok(content) = std::fs::read_to_string("/proc/cpuinfo") else {
         return HashMap::new();
     };
 
     let mut result = HashMap::new();
     let mut current_idx: Option<u32> = None;
-    let mut current_model: Option<String> = None;
     let mut current_mhz: Option<f64> = None;
 
     for line in content.lines() {
         if line.is_empty() {
-            if let (Some(idx), Some(model), Some(mhz)) =
-                (current_idx.take(), current_model.take(), current_mhz.take())
-            {
-                result.insert(idx, (model, mhz.round() as u32));
+            if let (Some(idx), Some(mhz)) = (current_idx.take(), current_mhz.take()) {
+                result.insert(idx, mhz.round() as u32);
             }
             continue;
         }
@@ -109,13 +121,12 @@ fn read_cpuinfo() -> HashMap<u32, (String, u32)> {
 
         match key {
             "processor" => current_idx = value.parse().ok(),
-            "model name" => current_model = Some(value.to_string()),
             "cpu MHz" => current_mhz = value.parse().ok(),
             _ => {}
         }
     }
-    if let (Some(idx), Some(model), Some(mhz)) = (current_idx, current_model, current_mhz) {
-        result.insert(idx, (model, mhz.round() as u32));
+    if let (Some(idx), Some(mhz)) = (current_idx, current_mhz) {
+        result.insert(idx, mhz.round() as u32);
     }
 
     result
