@@ -77,11 +77,10 @@ fn to_wire(info: &SysmonGpuInfo) -> GpuInfo {
             GpuProvider::Nvidia => "NVIDIA".to_string(),
             GpuProvider::Intel => "Intel".to_string(),
         },
-        // tpx-sysmon doesn't resolve a friendly model name (e.g. "Radeon RX
-        // 6800") from the PCI device ID database - only the vendor is known
-        // reliably. The frontend just displays this as text, so the PCI id
-        // is a reasonable fallback rather than leaving it blank.
-        model: info.id.clone(),
+        // tpx-sysmon resolves a friendly marketing name (e.g. "Radeon RX 7800
+        // XT") from the PCI databases, falling back to the PCI address when it
+        // can't. The frontend renders this as text next to the vendor.
+        model: info.model.clone(),
         temperature_gpu: info.temperature,
         utilization_gpu: info.gpu_usage,
         memory_used: bytes_to_mib(info.mem_used),

@@ -75,28 +75,24 @@ export class OmGpu extends connect()(OmdashComponent) {
   }
 
   private get normalizedModelName(): string {
-    const modelLower = this.gpuModel.toLowerCase();
+    const model = this.gpuModel.trim();
 
-    if (modelLower === 'raphael') {
+    // Falls back to the raw PCI id when the client couldn't resolve a name.
+    if (model.toLowerCase() === 'raphael') {
       return 'iGPU Raphael';
     }
 
-    if (modelLower.includes('radeon')) {
-      const productName = /\[(.*)\]/.exec(this.gpuModel)?.[1] ?? '';
-
-      // Statically move to RX 7800 XT for now
-      if (productName.includes('7800 XT')) {
-        return 'Radeon RX 7800 XT';
-      }
-
-      return productName || modelLower;
+    // pci.ids-style names carry the marketing name in brackets, e.g.
+    // "Navi 32 [Radeon RX 7700 XT / 7800 XT]" or "AD104 [GeForce RTX 4070]".
+    const bracketed = /\[(.*)\]/.exec(model)?.[1];
+    if (bracketed) {
+      return bracketed;
     }
 
-    if (modelLower.includes('geforce')) {
-      return 'GeForce';
-    }
-
-    return this.gpuModel;
+    // Otherwise the client already resolved an exact marketing name (e.g.
+    // "Radeon RX 7800 XT" from amdgpu.ids). Drop a redundant leading vendor
+    // word, since the vendor is rendered separately by normalizedVendorName.
+    return model.replace(/^(AMD|NVIDIA|Intel)\s+/i, '');
   }
 
   private get gpuName(): string {
