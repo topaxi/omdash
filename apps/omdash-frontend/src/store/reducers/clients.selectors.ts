@@ -1,14 +1,35 @@
-import { type ClientState, type ClientsState } from './clients.reducer.js';
-import { selectHistory } from './history.selectors.js';
+import {
+  type CpuInfo,
+  type ClientState,
+  type MemoryInfo,
+} from './clients.reducer.js';
 
 export function selectClient(hostname: string) {
-  return (state: ClientsState) => state[hostname];
+  return (state: { [key: string]: ClientState }) => state[hostname];
 }
 
-export function selectCPUHistory(clientState: ClientState) {
-  return selectHistory(clientState.cpus);
+export function selectCPULatest(client: ClientState | undefined): CpuInfo[] {
+  return client?.cpus?.latest ?? [];
 }
 
-export function selectMemoryHistory(clientState: ClientState) {
-  return selectHistory(clientState.memory);
+export function selectCPUPrevious(client: ClientState | undefined): CpuInfo[] {
+  return client?.cpus?.previous ?? [];
+}
+
+export function selectCPUUsageSeries(
+  client: ClientState | undefined,
+): number[] {
+  return client?.cpus?.usage ?? [];
+}
+
+export function selectMemoryLatest(
+  client: ClientState | undefined,
+): MemoryInfo | undefined {
+  return client?.memory?.latest;
+}
+
+export function selectMemoryUsageSeries(
+  client: ClientState | undefined,
+): number[] {
+  return client?.memory?.usage ?? [];
 }

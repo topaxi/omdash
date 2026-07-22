@@ -4,7 +4,6 @@ import { connect } from '../../store/connect.js';
 import { RootState } from '../../store/index.js';
 import { gpuStyles } from './gpu.styles.js';
 import { formatBytes } from '../../utils/format/formatBytes.js';
-import { GpuInfo } from '../../store/reducers/clients.reducer.js';
 
 import '../bspark/bspark.js';
 import { OmdashComponent } from '../../base/OmdashComponent.js';
@@ -38,14 +37,11 @@ export class OmGpu extends connect()(OmdashComponent) {
   private accessor memoryTotal = 0;
 
   @state()
-  history: GpuInfo[] = [];
+  private accessor utilizationSeries: number[] = [];
 
   override stateChanged(state: RootState) {
-    const history =
-      state.clients[this.hostname]?.gpus?.history
-        .map((gpus) => gpus[this.gpuIndex])
-        .filter((gpu) => gpu != null) ?? [];
-    const gpu = history.at(-1);
+    const gpus = state.clients[this.hostname]?.gpus;
+    const gpu = gpus?.latest[this.gpuIndex];
 
     if (!gpu) {
       return;
@@ -57,7 +53,7 @@ export class OmGpu extends connect()(OmdashComponent) {
     this.utilization = gpu.utilizationGpu ?? 0;
     this.memoryUsed = (gpu.memoryUsed ?? 0) * 1024 * 1024;
     this.memoryTotal = (gpu.memoryTotal ?? 0) * 1024 * 1024;
-    this.history = history;
+    this.utilizationSeries = gpus.utilization[this.gpuIndex] ?? [];
   }
 
   private get normalizedVendorName(): string {
@@ -115,7 +111,7 @@ export class OmGpu extends connect()(OmdashComponent) {
   }
 
   private get sparkValues() {
-    return this.history.slice(-60).map((gpu) => gpu.utilizationGpu ?? 0);
+    return this.utilizationSeries;
   }
 
   render() {

@@ -1,41 +1,23 @@
-import { AnyAction, Reducer } from '@reduxjs/toolkit';
+/**
+ * The number of derived data points kept for each metric's sparkline series.
+ * Consumers only ever render a suffix of ~60 points (see `cpu.ts`/`gpu.ts`
+ * `slice(-60)`), so there is no reason to retain more.
+ */
+export const SERIES_LIMIT = 60;
 
-export interface HistoryState<T> {
-  limit: number;
-  history: T[];
-}
+/**
+ * Append `value` to a numeric series, keeping at most `limit` most-recent
+ * points. Returns a new array (kept immutable for Redux) sized to `limit`.
+ */
+export function pushCapped(
+  series: readonly number[],
+  value: number,
+  limit: number = SERIES_LIMIT,
+): number[] {
+  if (series.length < limit) {
+    return [...series, value];
+  }
 
-export interface HistoryReducerOptions {
-  /**
-   * The maximum number of history states to keep.
-   * @default 100
-   */
-  limit?: number;
-}
-
-export const initialHistoryState: HistoryState<any> = {
-  limit: 100,
-  history: [],
-};
-
-export function createHistoryReducer<T, A extends AnyAction>(
-  reducer: Reducer<T, A>,
-  options: HistoryReducerOptions = {},
-): Reducer<HistoryState<T>, A> {
-  const { limit = initialHistoryState.limit } = options;
-  const initialState = { ...initialHistoryState, limit };
-
-  return (state = initialState, action) => {
-    const prevState = state.history.at(-1);
-    const nextState = reducer(prevState, action);
-
-    if (prevState === nextState) {
-      return state;
-    }
-
-    return {
-      ...state,
-      history: [...state.history, nextState].slice(-state.limit),
-    };
-  };
+  // Drop the oldest point(s) so the result is exactly `limit` long.
+  return [...series.slice(series.length - limit + 1), value];
 }

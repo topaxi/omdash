@@ -97,11 +97,10 @@ export class OmHost extends connect()(OmdashComponent) {
     this.processCount = client.ps?.count ?? 0;
     this.battery = client.battery ?? null;
     this.gpuIndices =
-      client.gpus.history
-        .at(-1)
-        ?.map((_, i) => i)
+      client.gpus?.latest
+        .map((_, i) => i)
         .filter((gpuIndex) =>
-          this.gpuProvidesMetrics(client.gpus.history.at(-1)![gpuIndex]!),
+          this.gpuProvidesMetrics(client.gpus.latest[gpuIndex]!),
         ) ?? [];
     this.fsSize = (client.fsSize ?? []).sort((a, b) =>
       a.mount.localeCompare(b.mount),

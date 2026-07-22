@@ -18,7 +18,6 @@ export function envReducer(
 ): EnvState {
   switch (action.type) {
     case 'server/env':
-      console.log(action);
       return { ...state, ...action.payload };
     default:
       return state;

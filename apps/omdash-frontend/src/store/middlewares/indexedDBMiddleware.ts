@@ -25,6 +25,22 @@ class IndexedDBStorageForMiddleware<S = any> extends IndexedDBStorage {
 
 const SAVE_INTERVAL = 10_000;
 
+/**
+ * Bumped whenever the persisted store shape changes incompatibly. On load, a
+ * blob written by a different version is discarded rather than replayed, so
+ * stale-shape state can never reach the component read path (which reads the
+ * compact `clients` fields directly, before any metric arrives to repair it).
+ *
+ * v2: compact per-metric state (`{ latest, previous, usage }`) replaced the old
+ *     `{ limit, history }` snapshot arrays.
+ */
+const STORE_SCHEMA_VERSION = 2;
+
+interface PersistedStore<S> {
+  __v: number;
+  state: S;
+}
+
 export type IndexedDBMiddlewareActions<T = unknown> =
   | ReturnType<typeof initStoreFromIndexedDB>
   | { type: 'REPLACE_STATE'; payload: T };
@@ -39,9 +55,12 @@ export function createReduxIndexedDBMiddleware(): Middleware {
     const { dispatch, getState } = api;
 
     const saveStateToIndexedDB = () => {
-      const state = getState();
+      const persisted: PersistedStore<unknown> = {
+        __v: STORE_SCHEMA_VERSION,
+        state: getState(),
+      };
 
-      return indexedDBStorage.saveStateToIndexedDB(state);
+      return indexedDBStorage.saveStateToIndexedDB(persisted);
     };
 
     const saveDebounced = debounce(saveStateToIndexedDB, SAVE_INTERVAL, {
@@ -52,10 +71,13 @@ export function createReduxIndexedDBMiddleware(): Middleware {
       async (action: UnknownAction | IndexedDBMiddlewareActions) => {
         if (action.type === INIT_STORE_FROM_INDEXEDDB) {
           // If the action type is INIT_STORE_FROM_INDEXEDDB, load the state from IndexedDB
-          const storedState = await indexedDBStorage.loadStateFromIndexedDB();
-          if (storedState) {
+          const stored: PersistedStore<unknown> | null =
+            await indexedDBStorage.loadStateFromIndexedDB();
+          // Only replay a blob written by the current schema version; a stale
+          // shape is dropped so it can never reach the component read path.
+          if (stored && stored.__v === STORE_SCHEMA_VERSION) {
             // Dispatch an action to initialize the store with the loaded state
-            dispatch({ type: 'REPLACE_STATE', payload: storedState });
+            dispatch({ type: 'REPLACE_STATE', payload: stored.state });
           }
         } else {
           // Continue with the next middleware or reducer

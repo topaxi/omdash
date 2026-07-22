@@ -1,5 +1,6 @@
 import type { OmClientAction } from '../action.js';
-import { HistoryState, createHistoryReducer } from './history.reducer.js';
+import { pushCapped } from './history.reducer.js';
+import { getAverageCPUUsage } from './cpu-usage.js';
 
 export interface CpuInfo {
   model: string;
@@ -89,6 +90,33 @@ export interface GpuInfo {
   utilizationMemory?: number;
 }
 
+/**
+ * Compact per-metric state: instead of retaining ~100 full snapshots, we keep
+ * only the snapshot(s) the UI actually reads plus a small derived numeric
+ * series for the sparkline.
+ */
+export interface CpuState {
+  /** Most recent per-core snapshot (model/speed/count/temp display). */
+  latest: CpuInfo[];
+  /** Previous per-core snapshot, needed to derive usage deltas on demand. */
+  previous: CpuInfo[];
+  /** Whole-CPU usage percent series (one point per metric message). */
+  usage: number[];
+}
+
+export interface GpuState {
+  /** Most recent per-GPU snapshot. */
+  latest: GpuInfo[];
+  /** Per-GPU-index utilization percent series. */
+  utilization: number[][];
+}
+
+export interface MemoryState {
+  latest: MemoryInfo;
+  /** Used-memory percent series for the sparkline. */
+  usage: number[];
+}
+
 export interface ClientState {
   addr: string;
   hostname: string;
@@ -97,8 +125,8 @@ export interface ClientState {
   uptime: number;
   lastUpdate: number;
   load: [number, number, number];
-  cpus: HistoryState<CpuInfo[]>;
-  memory: HistoryState<MemoryInfo>;
+  cpus: CpuState;
+  memory: MemoryState;
   ps: {
     count: number;
     highestCpu: any[];
@@ -117,7 +145,7 @@ export interface ClientState {
       chipset: number;
     };
   };
-  gpus: HistoryState<GpuInfo[]>;
+  gpus: GpuState;
   fsSize: Array<{
     size: number;
     used: number;
@@ -131,54 +159,81 @@ export interface ClientsState {
 
 export const initialClientsState: ClientsState = {};
 
-const clientCPUsHistoryReducer = createHistoryReducer(
-  function clientCPUsReducer(
-    state: CpuInfo[] = [],
-    action: MetricAction,
-  ): CpuInfo[] {
-    if (action.type !== 'client/metric' || !action.payload.cpus) {
-      return state;
-    }
+const initialCpuState: CpuState = { latest: [], previous: [], usage: [] };
 
-    return action.payload.cpus;
-  },
-);
+function clientCPUsReducer(
+  state: CpuState = initialCpuState,
+  action: MetricAction,
+): CpuState {
+  if (action.type !== 'client/metric' || !action.payload.cpus) {
+    return state;
+  }
 
-const clientGPUsHistoryReducer = createHistoryReducer(
-  function clientGPUsReducer(
-    state: GpuInfo[] = [],
-    action: MetricAction,
-  ): GpuInfo[] {
-    if (action.type !== 'client/metric' || !action.payload.gpus) {
-      return state;
-    }
+  // `?? []` also normalizes any stale, old-shape state rehydrated from
+  // IndexedDB (which carried `{ limit, history }` instead of these fields).
+  const previous = state.latest ?? [];
+  const latest: CpuInfo[] = action.payload.cpus;
+  const usage = pushCapped(
+    state.usage ?? [],
+    Math.round(getAverageCPUUsage(previous, latest)),
+  );
 
-    return action.payload.gpus;
-  },
-);
+  return { latest, previous, usage };
+}
 
-const clientMemoryHistoryReducer = createHistoryReducer(
-  function clientMemoryReducer(
-    state: MemoryInfo = {
-      total: 0,
-      free: 0,
-      used: 0,
-      active: 0,
-      available: 0,
-      buffcache: 0,
-      swaptotal: 0,
-      swapused: 0,
-      swapfree: 0,
-    },
-    action: MetricAction,
-  ): MemoryInfo {
-    if (action.type !== 'client/metric' || !action.payload.memory) {
-      return state;
-    }
+const initialGpuState: GpuState = { latest: [], utilization: [] };
 
-    return action.payload.memory;
-  },
-);
+function clientGPUsReducer(
+  state: GpuState = initialGpuState,
+  action: MetricAction,
+): GpuState {
+  if (action.type !== 'client/metric' || !action.payload.gpus) {
+    return state;
+  }
+
+  const latest: GpuInfo[] = action.payload.gpus;
+  const prevUtilization = state.utilization ?? [];
+  const utilization = latest.map((gpu, i) =>
+    pushCapped(prevUtilization[i] ?? [], gpu.utilizationGpu ?? 0),
+  );
+
+  return { latest, utilization };
+}
+
+const initialMemoryInfo: MemoryInfo = {
+  total: 0,
+  free: 0,
+  used: 0,
+  active: 0,
+  available: 0,
+  buffcache: 0,
+  swaptotal: 0,
+  swapused: 0,
+  swapfree: 0,
+};
+
+const initialMemoryState: MemoryState = {
+  latest: initialMemoryInfo,
+  usage: [],
+};
+
+function clientMemoryReducer(
+  state: MemoryState = initialMemoryState,
+  action: MetricAction,
+): MemoryState {
+  if (action.type !== 'client/metric' || !action.payload.memory) {
+    return state;
+  }
+
+  const latest: MemoryInfo = action.payload.memory;
+  const usagePercent =
+    latest.total > 0
+      ? ((latest.total - latest.available) / latest.total) * 100
+      : 0;
+  const usage = pushCapped(state.usage ?? [], usagePercent);
+
+  return { latest, usage };
+}
 
 function clientReducer(
   state: ClientState,
@@ -198,12 +253,22 @@ function clientReducer(
       };
 
     case 'client/metric': {
+      // Each metric message carries only a subset of these fields. Assign the
+      // known ones explicitly (rather than spreading the raw payload) so the
+      // ClientState keeps a single, stable object shape on the hot path - V8
+      // hidden-class stability matters on the Pi's QtWebEngine - the fat
+      // cpus/memory/gpus arrays are folded into compact sub-state, and unknown
+      // payload keys never leak onto the client (or into IndexedDB).
+      const { payload } = action;
+
       return {
         ...state,
-        ...action.payload,
-        cpus: clientCPUsHistoryReducer(state.cpus, action),
-        memory: clientMemoryHistoryReducer(state.memory, action),
-        gpus: clientGPUsHistoryReducer(state.gpus, action),
+        load: payload.load ?? state.load,
+        uptime: payload.uptime ?? state.uptime,
+        fsSize: payload.fsSize ?? state.fsSize,
+        cpus: clientCPUsReducer(state.cpus, action),
+        memory: clientMemoryReducer(state.memory, action),
+        gpus: clientGPUsReducer(state.gpus, action),
       };
     }
 
@@ -249,16 +314,22 @@ export function clientsReducer(
 
   switch (action.type) {
     default:
-    case 'client/register':
-      return {
-        ...state,
-        [action.client]: {
-          ...clientReducer(state[action.client] ?? {}, action),
-          // TODO: Side effect in reducers should be avoided.
-          //       Use an rtk listener instead.
-          lastUpdate: Date.now(),
+    case 'client/register': {
+      // TODO: Side effect in reducers should be avoided.
+      //       Use an rtk listener instead.
+      const now = Date.now();
+
+      return pruneStaleClients(
+        {
+          ...state,
+          [action.client]: {
+            ...clientReducer(state[action.client] ?? {}, action),
+            lastUpdate: now,
+          },
         },
-      };
+        now,
+      );
+    }
 
     case 'client/unregister': {
       const { [action.client]: _, ...clients } = state;
@@ -266,4 +337,24 @@ export function clientsReducer(
       return clients;
     }
   }
+}
+
+/**
+ * How long a client may go without an update before it is dropped from the
+ * store entirely. Hosts that simply disappear never send `client/unregister`,
+ * so without this sweep their full retained state would leak forever.
+ */
+const STALE_CLIENT_TTL = 15 * 60 * 1000;
+
+function pruneStaleClients(state: ClientsState, now: number): ClientsState {
+  let pruned: ClientsState | null = null;
+
+  for (const [hostname, client] of Object.entries(state)) {
+    if (now - (client.lastUpdate ?? 0) > STALE_CLIENT_TTL) {
+      pruned ??= { ...state };
+      delete pruned[hostname];
+    }
+  }
+
+  return pruned ?? state;
 }

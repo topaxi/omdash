@@ -2,6 +2,7 @@ import { html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { connect } from '../../store/connect.js';
 import { RootState } from '../../store';
+import { type MemoryInfo } from '../../store/reducers/clients.reducer.js';
 import { memoryStyles } from './memory.styles.js';
 import { formatBytes } from '../../utils/format/formatBytes.js';
 
@@ -16,13 +17,13 @@ export class OmMemory extends connect()(OmdashComponent) {
   accessor hostname = '';
 
   @state()
-  memory: RootState['clients'][string]['memory'] = {
-    limit: 100,
-    history: [],
-  };
+  private accessor memoryLatest: MemoryInfo | undefined;
+
+  @state()
+  private accessor memoryUsageSeries: number[] = [];
 
   get latestMemoryInfo() {
-    return this.memory.history.at(-1);
+    return this.memoryLatest;
   }
 
   get total(): number {
@@ -58,13 +59,12 @@ export class OmMemory extends connect()(OmdashComponent) {
       return;
     }
 
-    this.memory = memory;
+    this.memoryLatest = memory.latest;
+    this.memoryUsageSeries = memory.usage;
   }
 
   get memoryHistory() {
-    return this.memory.history.map(
-      (memory) => ((memory.total - memory.available) / this.total) * 100,
-    );
+    return this.memoryUsageSeries;
   }
 
   private renderAvailableMemory() {
