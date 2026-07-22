@@ -52,19 +52,29 @@ export class OmGauge extends OmdashComponent {
   protected updated(
     _changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>,
   ): void {
+    const animated = window.navigator.hardwareConcurrency > 4;
+
     if (this.segments != null) {
-      this.gauge.setSegments(
-        this.segments.map((s) => ({ value: s.percent, color: s.color })),
-      );
-      // Center text still shows the aggregate percent.
-      this.gauge.setValue(this.percent);
+      const mapped = this.segments.map((s) => ({
+        value: s.percent,
+        color: s.color,
+      }));
+
+      if (animated) {
+        this.gauge.setSegments(mapped, 0.5);
+        // Center text still shows the aggregate percent.
+        this.gauge.setValueAnimated(this.percent, 0.5);
+      } else {
+        this.gauge.setSegments(mapped);
+        this.gauge.setValue(this.percent);
+      }
       return;
     }
 
     // Restore the single arc if this gauge previously rendered segments.
     this.gauge.clearSegments();
 
-    if (window.navigator.hardwareConcurrency > 4) {
+    if (animated) {
       this.gauge.setValueAnimated(this.percent, 0.5);
     } else {
       this.gauge.setValue(this.percent);

@@ -163,6 +163,7 @@ export class Gauge {
   private gaugeValuePath: SVGElement | null = null;
   private gaugeSvg: SVGElement | null = null;
   private segmentPaths: SVGElement[] = [];
+  private currentSegments: Array<{ value: number; color: string }> = [];
   private label: (value: number) => string | number;
   private viewBox: string | undefined;
 
@@ -261,40 +262,117 @@ export class Gauge {
     return pathString(this.radius, a1, a2, flag);
   }
 
+  /** Ensure exactly `count` reusable segment path elements exist. */
+  private reconcileSegmentPaths(count: number): void {
+    while (this.segmentPaths.length > count) {
+      this.segmentPaths.pop()!.remove();
+    }
+    while (this.segmentPaths.length < count) {
+      const path = svg('path', {
+        'class': this.valueDialClass,
+        'fill': 'none',
+        'stroke-width': 2.5,
+        'd': '',
+      });
+      this.gaugeSvg!.appendChild(path);
+      this.segmentPaths.push(path);
+    }
+  }
+
+  /** Draw the given ordered segment values as stacked arcs from `min`. */
+  private drawSegments(values: number[], colors: string[]): void {
+    let cursor = this.min;
+
+    for (let i = 0; i < values.length; i++) {
+      const end = clamp(cursor + values[i], this.min, this.limit);
+      this.segmentPaths[i].setAttribute('d', this.segmentPath(cursor, end));
+      this.segmentPaths[i].style.stroke = colors[i];
+      cursor = end;
+    }
+  }
+
   /**
    * Render the value arc as a series of colored, stacked segments instead of a
    * single arc. Each segment's value is in the gauge's [min, max] domain and
    * segments are laid end to end from `min`. The single value arc is hidden
    * while segments are active; the center text is still driven by `setValue`.
+   *
+   * When `duration > 0` the transition from the previously rendered segments is
+   * animated the same way `setValueAnimated` animates the single arc: each
+   * segment's cumulative boundary is interpolated over `duration` seconds.
+   * Segments are matched to their previous state by color, so tiers that appear
+   * grow from 0 and tiers that disappear shrink to 0.
    */
-  setSegments(segments: Array<{ value: number; color: string }>): void {
+  setSegments(
+    segments: Array<{ value: number; color: string }>,
+    duration = 0,
+  ): void {
     if (this.gaugeSvg == null) {
       return;
     }
 
-    for (const path of this.segmentPaths) {
-      path.remove();
-    }
-    this.segmentPaths = [];
-
     // Hide the default single arc; segments replace it.
     this.gaugeValuePath!.style.display = 'none';
 
-    let cursor = this.min;
+    const from = this.currentSegments;
 
-    for (const segment of segments) {
-      const end = clamp(cursor + segment.value, this.min, this.limit);
-      const path = svg('path', {
-        'class': this.valueDialClass,
-        'fill': 'none',
-        'stroke-width': 2.5,
-        'd': this.segmentPath(cursor, end),
-      });
-      path.style.stroke = segment.color;
-      this.gaugeSvg.appendChild(path);
-      this.segmentPaths.push(path);
-      cursor = end;
+    // Union of colors in a stable order: the new segments first, then any
+    // colors that are going away (so they can animate down to 0).
+    const colors: string[] = [];
+    for (const s of segments) {
+      if (!colors.includes(s.color)) colors.push(s.color);
     }
+    for (const s of from) {
+      if (!colors.includes(s.color)) colors.push(s.color);
+    }
+
+    const valueOf = (
+      list: Array<{ value: number; color: string }>,
+      color: string,
+    ) => list.find((s) => s.color === color)?.value ?? 0;
+
+    const fromValues = colors.map((c) => valueOf(from, c));
+    const toValues = colors.map((c) => valueOf(segments, c));
+
+    this.reconcileSegmentPaths(colors.length);
+
+    const finalize = () => {
+      // Keep only the non-zero target segments as the new current state.
+      this.currentSegments = segments
+        .filter((s) => s.value > 0)
+        .map((s) => ({ ...s }));
+      this.reconcileSegmentPaths(this.currentSegments.length);
+      this.drawSegments(
+        this.currentSegments.map((s) => s.value),
+        this.currentSegments.map((s) => s.color),
+      );
+    };
+
+    const unchanged =
+      fromValues.length === toValues.length &&
+      fromValues.every((v, i) => v === toValues[i]);
+
+    if (duration <= 0 || unchanged) {
+      this.drawSegments(toValues, colors);
+      finalize();
+      return;
+    }
+
+    Animation({
+      start: 0,
+      end: 1,
+      duration,
+      step: (t: number) => {
+        const values = fromValues.map(
+          (fromValue, i) => fromValue + (toValues[i] - fromValue) * t,
+        );
+        this.drawSegments(values, colors);
+
+        if (t >= 1) {
+          finalize();
+        }
+      },
+    });
   }
 
   /**
@@ -302,7 +380,7 @@ export class Gauge {
    * segments were never used, so it is cheap to call on every update.
    */
   clearSegments(): void {
-    if (this.segmentPaths.length === 0) {
+    if (this.segmentPaths.length === 0 && this.currentSegments.length === 0) {
       return;
     }
 
@@ -310,6 +388,7 @@ export class Gauge {
       path.remove();
     }
     this.segmentPaths = [];
+    this.currentSegments = [];
     this.gaugeValuePath!.style.display = '';
   }
 
