@@ -64,18 +64,20 @@ export class OmNetwork extends connect()(OmdashComponent) {
   ];
 
   stateChanged(state: RootState): void {
-    this.data = Object.entries(state.pings).map(([host, pings], i) => ({
-      host,
-      addr: pings.at(-1)?.ip || '',
-      color: this.colors[i % this.colors.length],
-      average: Math.round(
-        pings.reduce((acc, curr) => acc + curr.time, 0) / pings.length,
-      ),
-      values: pings.map((ping) => ({
-        x: ping.timestamp,
-        y: ping.time,
-      })),
-    }));
+    this.data = Object.entries(state.pings)
+      .filter(([_, pings]) => pings.length !== 0)
+      .map(([host, pings], i) => ({
+        host,
+        addr: pings.at(-1)?.ip || '',
+        color: this.colors[i % this.colors.length],
+        average: Math.round(
+          pings.reduce((acc, curr) => acc + curr.time, 0) / pings.length,
+        ),
+        values: pings.map((ping) => ({
+          x: ping.timestamp,
+          y: ping.time,
+        })),
+      }));
   }
 
   protected render(): unknown {
