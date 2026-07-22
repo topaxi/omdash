@@ -10,6 +10,7 @@ mod temperature;
 use std::time::Duration;
 
 use futures_util::{SinkExt, StreamExt};
+use tokio::signal::unix::{Signal, SignalKind, signal};
 use tokio::sync::{mpsc, watch};
 use tokio_tungstenite::tungstenite::Message;
 use tokio_tungstenite::{MaybeTlsStream, WebSocketStream};
@@ -40,14 +41,26 @@ async fn main() {
         std::env::var("OMDASH_SERVER_HOST").unwrap_or_else(|_| "localhost:3200".to_string());
     let url = format!("ws://{server_host}");
 
+    // Installed once for the whole process rather than per-connection: the
+    // reconnect backoff below sleeps between attempts, and a SIGTERM arriving
+    // during that sleep (or during connect_async) must still stop the process
+    // promptly - otherwise `systemctl stop` hangs until it times out and
+    // SIGKILLs us.
+    let mut sigint = signal(SignalKind::interrupt()).expect("failed to install SIGINT handler");
+    let mut sigterm = signal(SignalKind::terminate()).expect("failed to install SIGTERM handler");
+
     let mut reconnect_delay = INITIAL_RECONNECT_DELAY;
     loop {
         tracing::info!("Connecting to {url}");
-        match run_connection(&url).await {
+        match run_connection(&url, &mut reconnect_delay, &mut sigint, &mut sigterm).await {
             ConnectionOutcome::ShuttingDown => break,
             ConnectionOutcome::Disconnected => {
                 tracing::info!("Connection closed, reconnecting in {reconnect_delay:?}");
-                tokio::time::sleep(reconnect_delay).await;
+                tokio::select! {
+                    () = tokio::time::sleep(reconnect_delay) => {}
+                    _ = sigint.recv() => break,
+                    _ = sigterm.recv() => break,
+                }
                 reconnect_delay = (reconnect_delay * 2).min(MAX_RECONNECT_DELAY);
             }
         }
@@ -59,15 +72,29 @@ enum ConnectionOutcome {
     ShuttingDown,
 }
 
-async fn run_connection(url: &str) -> ConnectionOutcome {
-    let ws_stream = match tokio_tungstenite::connect_async(url).await {
-        Ok((stream, _)) => stream,
-        Err(e) => {
-            tracing::warn!("Connect failed: {e}");
-            return ConnectionOutcome::Disconnected;
-        }
+async fn run_connection(
+    url: &str,
+    reconnect_delay: &mut Duration,
+    sigint: &mut Signal,
+    sigterm: &mut Signal,
+) -> ConnectionOutcome {
+    let ws_stream = tokio::select! {
+        result = tokio_tungstenite::connect_async(url) => match result {
+            Ok((stream, _)) => stream,
+            Err(e) => {
+                tracing::warn!("Connect failed: {e}");
+                return ConnectionOutcome::Disconnected;
+            }
+        },
+        _ = sigint.recv() => return ConnectionOutcome::ShuttingDown,
+        _ = sigterm.recv() => return ConnectionOutcome::ShuttingDown,
     };
     tracing::info!("Connected");
+
+    // Reset the reconnect backoff now that we have a live connection, so the
+    // next drop retries in INITIAL_RECONNECT_DELAY rather than staying pinned
+    // at MAX_RECONNECT_DELAY after the boot-time "connection refused" attempts.
+    *reconnect_delay = INITIAL_RECONNECT_DELAY;
 
     let (mut ws_tx, mut ws_rx) = ws_stream.split();
     let (out_tx, mut out_rx) = mpsc::unbounded_channel::<Message>();
@@ -80,11 +107,6 @@ async fn run_connection(url: &str) -> ConnectionOutcome {
     }));
 
     let metrics_handle = tokio::spawn(run_metric_loops(out_tx.clone()));
-
-    let mut sigint = tokio::signal::unix::signal(tokio::signal::unix::SignalKind::interrupt())
-        .expect("failed to install SIGINT handler");
-    let mut sigterm = tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate())
-        .expect("failed to install SIGTERM handler");
 
     let heartbeat_deadline = tokio::time::sleep(HEARTBEAT_TIMEOUT);
     tokio::pin!(heartbeat_deadline);
