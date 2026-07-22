@@ -14,29 +14,38 @@ use std::sync::OnceLock;
 
 use crate::protocol::{CpuInfo, CpuTimes};
 
-/// The marketing model name shared by every core (identical per-core "model
-/// name" values in `/proc/cpuinfo` aren't worth re-deriving), resolved once
-/// via `init_model` since it never changes at runtime. See
-/// `tpx_sysmon::cpu::resolve_model` for the cleanup (trademark markers,
-/// core-count marketing suffixes) and ARM fallback raw `/proc/cpuinfo` lacks.
-static MODEL: OnceLock<String> = OnceLock::new();
+/// Per-core marketing model name, keyed by logical CPU index, resolved once
+/// via `init_model` since it never changes at runtime. Kept per-core (not
+/// collapsed into one shared string) because hybrid/heterogeneous SoCs (ARM
+/// big.LITTLE, Intel P-core/E-core) genuinely have more than one CPU model in
+/// the same box. See `tpx_sysmon::cpu::resolve_models` for the cleanup
+/// (trademark markers, core-count marketing suffixes) and the ARM fallback
+/// raw `/proc/cpuinfo` lacks.
+static MODELS: OnceLock<HashMap<u32, String>> = OnceLock::new();
 
-/// Must be called once before `read_per_core` - see `MODEL`. Async because
+/// Must be called once before `read_per_core` - see `MODELS`. Async because
 /// resolution may shell out (e.g. to `lscpu` on ARM).
 pub async fn init_model() {
-    let model = tpx_sysmon::cpu::resolve_model().await.unwrap_or_default();
-    let _ = MODEL.set(model);
+    let models = tpx_sysmon::cpu::resolve_models()
+        .await
+        .into_iter()
+        .map(|core| (core.cpu, core.model))
+        .collect();
+    let _ = MODELS.set(models);
 }
 
 pub fn read_per_core() -> Vec<CpuInfo> {
-    let model = MODEL.get().cloned().unwrap_or_default();
+    let models = MODELS.get();
     let speeds = read_cpuinfo_speeds();
     let times = read_proc_stat_per_core();
 
     times
         .into_iter()
         .map(|(idx, times)| CpuInfo {
-            model: model.clone(),
+            model: models
+                .and_then(|m| m.get(&idx))
+                .cloned()
+                .unwrap_or_default(),
             speed: speeds.get(&idx).copied().unwrap_or_default(),
             times,
         })
