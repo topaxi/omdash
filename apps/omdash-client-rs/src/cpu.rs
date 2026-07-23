@@ -36,7 +36,7 @@ pub async fn init_model() {
 
 pub fn read_per_core() -> Vec<CpuInfo> {
     let models = MODELS.get();
-    let speeds = tpx_sysmon::cpu::read_cpuinfo_speeds();
+    let speeds = tpx_sysmon::cpu::read_speeds();
     let times = read_proc_stat_per_core();
 
     times
