@@ -36,7 +36,7 @@ pub async fn init_model() {
 
 pub fn read_per_core() -> Vec<CpuInfo> {
     let models = MODELS.get();
-    let speeds = read_cpuinfo_speeds();
+    let speeds = tpx_sysmon::cpu::read_cpuinfo_speeds();
     let times = read_proc_stat_per_core();
 
     times
@@ -96,46 +96,6 @@ fn read_proc_stat_per_core() -> Vec<(u32, CpuTimes)> {
                 },
             ));
         }
-    }
-
-    result
-}
-
-/// Reads `cpu MHz` per logical processor index from `/proc/cpuinfo`,
-/// matching what `os.cpus()[].speed` reports. Unlike the model name, current
-/// clock speed genuinely varies per core (frequency scaling), so this stays
-/// a live per-tick read.
-fn read_cpuinfo_speeds() -> HashMap<u32, u32> {
-    let Ok(content) = std::fs::read_to_string("/proc/cpuinfo") else {
-        return HashMap::new();
-    };
-
-    let mut result = HashMap::new();
-    let mut current_idx: Option<u32> = None;
-    let mut current_mhz: Option<f64> = None;
-
-    for line in content.lines() {
-        if line.is_empty() {
-            if let (Some(idx), Some(mhz)) = (current_idx.take(), current_mhz.take()) {
-                result.insert(idx, mhz.round() as u32);
-            }
-            continue;
-        }
-
-        let Some((key, value)) = line.split_once(':') else {
-            continue;
-        };
-        let key = key.trim();
-        let value = value.trim();
-
-        match key {
-            "processor" => current_idx = value.parse().ok(),
-            "cpu MHz" => current_mhz = value.parse().ok(),
-            _ => {}
-        }
-    }
-    if let (Some(idx), Some(mhz)) = (current_idx, current_mhz) {
-        result.insert(idx, mhz.round() as u32);
     }
 
     result
