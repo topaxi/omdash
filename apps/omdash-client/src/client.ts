@@ -23,6 +23,7 @@ if (WINDOWS) {
 
 const UPDATE_INTERVAL = 2000;
 const PS_UPDATE_INTERVAL = 4000;
+const CONNECT_TIMEOUT = 10_000;
 
 let pingTimer: NodeJS.Timeout | null = null;
 
@@ -43,7 +44,7 @@ function connect(url: string) {
   console.log('Connecting to', url);
 
   const timers: NodeJS.Timeout[] = [];
-  const ws = new WebSocket(url);
+  const ws = new WebSocket(url, { handshakeTimeout: CONNECT_TIMEOUT });
 
   function unregister() {
     ws.send(

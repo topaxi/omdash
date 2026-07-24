@@ -20,6 +20,7 @@ use tpx_sysmon::memory::MemoryState;
 use protocol::{ClientMessage, MetricPayload, RegisterPayload};
 
 const HEARTBEAT_TIMEOUT: Duration = Duration::from_secs(11);
+const CONNECT_TIMEOUT: Duration = Duration::from_secs(10);
 const INITIAL_RECONNECT_DELAY: Duration = Duration::from_secs(1);
 const MAX_RECONNECT_DELAY: Duration = Duration::from_secs(32);
 
@@ -81,10 +82,14 @@ async fn run_connection(
     sigterm: &mut Signal,
 ) -> ConnectionOutcome {
     let ws_stream = tokio::select! {
-        result = tokio_tungstenite::connect_async(url) => match result {
-            Ok((stream, _)) => stream,
-            Err(e) => {
+        result = tokio::time::timeout(CONNECT_TIMEOUT, tokio_tungstenite::connect_async(url)) => match result {
+            Ok(Ok((stream, _))) => stream,
+            Ok(Err(e)) => {
                 tracing::warn!("Connect failed: {e}");
+                return ConnectionOutcome::Disconnected;
+            }
+            Err(_) => {
+                tracing::warn!("Connect timed out after {CONNECT_TIMEOUT:?}");
                 return ConnectionOutcome::Disconnected;
             }
         },
