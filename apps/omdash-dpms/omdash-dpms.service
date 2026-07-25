@@ -1,0 +1,15 @@
+[Unit]
+Description=omdash display power management
+After=omdash-server-rs.service
+
+[Service]
+Type=simple
+ExecStart=/home/topaxi/projects/omdash/apps/omdash-dpms/omdash-dpms.sh
+Restart=on-failure
+RestartSec=10
+Environment="OMDASH_SERVER_URL=http://localhost:3200"
+Environment="OMDASH_DPMS_OUTPUT=HDMI-A-1"
+Environment="OMDASH_DPMS_ALWAYS_ON=ompi,colon,liva"
+
+[Install]
+WantedBy=default.target

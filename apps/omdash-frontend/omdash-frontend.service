@@ -1,5 +1,5 @@
 [Unit]
-After=omdash-server.service
+After=omdash-server-rs.service
 
 [Service]
 Type=simple

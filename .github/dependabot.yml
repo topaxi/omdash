@@ -5,6 +5,23 @@
 
 version: 2
 updates:
+  - package-ecosystem: 'cargo'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+    groups:
+      tracing:
+        patterns:
+          - 'tracing'
+          - 'tracing-*'
+      tokio:
+        patterns:
+          - 'tokio'
+          - 'tokio-*'
+      serde:
+        patterns:
+          - 'serde'
+          - 'serde_*'
   - package-ecosystem: 'npm' # See documentation for possible values
     versioning-strategy: 'increase'
     directory: '/' # Location of package manifests

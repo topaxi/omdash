@@ -1,0 +1,20 @@
+[workspace]
+resolver = "3"
+members = ["apps/omdash-client-rs", "apps/omdash-server-rs"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+
+[workspace.dependencies]
+anyhow = "1.0.104"
+futures-util = "0.3.33"
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.151"
+tokio = "1.53.1"
+tracing = "0.1.44"
+tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
+# Lives outside this repo. Path dependencies outside the workspace directory do
+# not become implicit members, so it stays an external package; the path is
+# relative to this manifest, not to the member that depends on it.
+tpx-sysmon = { version = "0.1.0", path = "../tpx-sysmon" }

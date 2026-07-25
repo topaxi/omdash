@@ -1,4 +1,4 @@
-//! Wire types matching the JSON shapes `omdash-server` relays verbatim to
+//! Wire types matching the JSON shapes `omdash-server-rs` relays verbatim to
 //! `omdash-frontend`, which dispatches each message directly as a Redux
 //! action (see `apps/omdash-frontend/src/store/reducers/clients.reducer.ts`).
 //! Field names and nesting here are load-bearing: they must match what that

@@ -3,7 +3,7 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/node /home/topaxi/projects/omdash/apps/omdash-server/build/server.js
+ExecStart=/home/topaxi/projects/omdash/target/release/omdash-server-rs
 Restart=on-failure
 Environment="OMDASH_UNSPLASH_CLIENT_ID="
 

@@ -5,7 +5,7 @@
 default:
     @just --list
 
-# Build everything: all JS/TS workspaces (via turbo) and the Rust client
+# Build everything: all JS/TS workspaces (via turbo) and the Rust workspace
 build: build-js build-rust
 
 # Build all JS/TS workspaces through the turbo pipeline
@@ -28,28 +28,29 @@ build-frontend:
 build-client:
     npm run build --workspace=omdash-client
 
-# Build the Node relay server
-build-server:
-    npm run build --workspace=omdash-server
-
-# Build the Rust client (release)
+# Build the Rust client and relay server (release)
 build-rust:
-    cargo build --release --manifest-path apps/omdash-client-rs/Cargo.toml
+    cargo build --release
 
-# Run the dev stack (turbo) plus the Rust client, excluding the Node client
+# Run the frontend dev server plus the Rust relay and client
 dev:
     #!/usr/bin/env bash
     set -euo pipefail
     trap 'kill 0' EXIT
     npm run dev -- --filter='!omdash-client' &
-    OMDASH_SERVER_HOST=localhost:3200 cargo run --manifest-path apps/omdash-client-rs/Cargo.toml &
+    cargo run -p omdash-server-rs &
+    OMDASH_SERVER_HOST=localhost:3200 cargo run -p omdash-client-rs &
     wait
 
 # Lint all workspaces
 lint:
     npm run lint
 
+# Run the Rust test suite
+test:
+    cargo test
+
 # Remove build artifacts
 clean:
     rm -rf apps/*/build packages/*/build .turbo
-    cargo clean --manifest-path apps/omdash-client-rs/Cargo.toml
+    cargo clean
