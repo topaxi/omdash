@@ -22,7 +22,7 @@
     "lodash-es": "^4.17.22",
     "omdash-gauge": "*",
     "serve": "^14.2.5",
-    "systeminformation": "^5.28.9"
+    "systeminformation": "^5.33.1"
   },
   "devDependencies": {
     "@types/d3": "^7.4.3",
