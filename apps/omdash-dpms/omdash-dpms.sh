@@ -10,8 +10,10 @@ OMDASH_SERVER_URL=${OMDASH_SERVER_URL:-http://localhost:3200}
 OMDASH_DPMS_OUTPUT=${OMDASH_DPMS_OUTPUT:-HDMI-A-1}
 OMDASH_DPMS_INTERVAL=${OMDASH_DPMS_INTERVAL:-10}
 # Hosts that are up around the clock. They tell us nothing about whether anyone
-# is around, so they must not keep the display awake.
-OMDASH_DPMS_ALWAYS_ON=${OMDASH_DPMS_ALWAYS_ON:-ompi,colon,liva}
+# is around, so they must not keep the display awake. Substituted with `-`
+# rather than `:-` so that setting it empty means "no host is always on" (any
+# connected client wakes the display) instead of silently restoring this list.
+OMDASH_DPMS_ALWAYS_ON=${OMDASH_DPMS_ALWAYS_ON-ompi,colon,liva}
 
 log() {
   echo "omdash-dpms: $*" >&2
@@ -61,14 +63,18 @@ set_dpms() {
     return 1
   fi
 
-  SWAYSOCK=$socket swaymsg output "$OMDASH_DPMS_OUTPUT" dpms "$state" >/dev/null
+  # `power`, not the older `dpms`: sway still accepts `output <name> dpms
+  # on|off` and answers `success: true`, but on 1.12 it does nothing at all.
+  # The Node relay this replaced used `dpms`, which is why display power
+  # management had quietly stopped working.
+  SWAYSOCK=$socket swaymsg output "$OMDASH_DPMS_OUTPUT" power "$state" >/dev/null
 }
 
 # The desired state is reasserted on every tick rather than only when the
 # connected-client set flips. Transition-only control cannot recover once the
 # display and our belief about it diverge - a failed swaymsg, sway restarting,
 # or the output coming back powered off would leave the screen stuck off with
-# no further transition to correct it. `dpms on` when already on (and `dpms
+# no further transition to correct it. `power on` when already on (and `power
 # off` when already off) is a harmless no-op, so reasserting is self-healing.
 while true; do
   has_active_clients
