@@ -118,6 +118,7 @@ fn relay(state: &AppState, id: ClientId, addr: &str, text: &str) {
                 arch: field("arch"),
                 platform: field("platform"),
                 release: field("release"),
+                version: payload.get("version").filter(|v| !v.is_null()).cloned(),
             },
         );
     }

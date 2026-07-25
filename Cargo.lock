@@ -567,6 +567,7 @@ dependencies = [
  "anyhow",
  "futures-util",
  "nix",
+ "omdash-version",
  "serde",
  "serde_json",
  "sysinfo",
@@ -584,11 +585,20 @@ dependencies = [
  "anyhow",
  "axum",
  "futures-util",
+ "omdash-version",
  "serde",
  "serde_json",
  "tokio",
  "tracing",
  "tracing-subscriber",
+]
+
+[[package]]
+name = "omdash-version"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
 ]
 
 [[package]]

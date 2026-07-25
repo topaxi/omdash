@@ -16,6 +16,11 @@ import '../process-list/process-list.js';
 import { hostStyles } from './host.styles.js';
 import { GpuInfo } from '../../store/reducers/clients.reducer.js';
 import { OmdashComponent } from '../../base/OmdashComponent.js';
+import {
+  isOutdated,
+  shortCommit,
+  type Version,
+} from '../../store/reducers/version.js';
 
 function formatTime(seconds: number) {
   if (seconds < 60) {
@@ -78,6 +83,12 @@ export class OmHost extends connect()(OmdashComponent) {
   @state()
   private accessor fsSize: { size: number; used: number; mount: string }[] = [];
 
+  @state()
+  private accessor version: Version | undefined;
+
+  @state()
+  private accessor serverVersion: Version | undefined;
+
   private gpuProvidesMetrics(gpu: GpuInfo) {
     return Boolean(gpu.utilizationGpu || (gpu.memoryUsed && gpu.memoryTotal));
   }
@@ -85,10 +96,15 @@ export class OmHost extends connect()(OmdashComponent) {
   override stateChanged(state: RootState): void {
     const client = state.clients[this.hostname];
 
+    // Read before the early return below - it is not per-client, so it stays
+    // meaningful even for a host that has no state yet.
+    this.serverVersion = state.env.version;
+
     if (!client) {
       return;
     }
 
+    this.version = client.version;
     this.addr = client.addr ?? '';
     this.uptime = Math.round(client.uptime) || 0;
     this.platform = client.platform ?? '';
@@ -154,6 +170,22 @@ export class OmHost extends connect()(OmdashComponent) {
     return icons[Math.floor((battery.percent / 100) * (icons.length - 1))];
   }
 
+  private renderOutdated() {
+    if (!isOutdated(this.version, this.serverVersion)) {
+      return '';
+    }
+
+    return html`
+      <span
+        class="outdated"
+        title="Running ${shortCommit(this.version)}, relay runs ${shortCommit(
+          this.serverVersion,
+        )}"
+        >󰚰</span
+      >
+    `;
+  }
+
   private renderBattery() {
     if (this.battery == null) {
       return '';
@@ -179,6 +211,7 @@ export class OmHost extends connect()(OmdashComponent) {
             ${this.hostname.split('.')[0]} ${this.renderUptime()}
             ${this.renderLastUpdate()}
           </div>
+          ${this.renderOutdated()}
           <small class="host-addr">${this.formatIp(this.addr)}</small>
           ${this.renderBattery()}
         </div>

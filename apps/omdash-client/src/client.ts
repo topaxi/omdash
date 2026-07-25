@@ -3,6 +3,7 @@ import WebSocket from 'ws';
 import si from 'systeminformation';
 import { pick } from './utils/pick';
 import { setIntervalImmediate } from './utils/timers';
+import { getVersion } from './utils/version';
 import { getProcesses } from './processes';
 import { getAMDGPUInfo } from './rocm';
 
@@ -20,6 +21,8 @@ if (WINDOWS) {
   process.on('SIGTERM', stop);
   process.on('SIGQUIT', stop);
 }
+
+const version = getVersion();
 
 const UPDATE_INTERVAL = 2000;
 const PS_UPDATE_INTERVAL = 4000;
@@ -68,6 +71,7 @@ function connect(url: string) {
           platform: os.platform(),
           release: os.release(),
           hostname: os.hostname(),
+          version,
         },
       }),
     );

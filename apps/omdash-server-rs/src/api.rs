@@ -28,6 +28,9 @@ pub struct Client {
     arch: Option<String>,
     platform: Option<String>,
     release: Option<String>,
+    /// The commit the client was built from, as it reported it. `null` for
+    /// clients that predate the field.
+    version: Option<serde_json::Value>,
     /// Unix seconds.
     connected_at: u64,
     /// Unix seconds. Stale by at most one heartbeat interval for a live client.
@@ -42,6 +45,7 @@ impl From<ClientEntry> for Client {
             arch: entry.info.arch,
             platform: entry.info.platform,
             release: entry.info.release,
+            version: entry.info.version,
             connected_at: entry.connected_at,
             last_message_at: entry.last_message_at,
         }
@@ -76,6 +80,7 @@ mod tests {
                         arch: Some("x86_64".to_owned()),
                         platform: Some("linux".to_owned()),
                         release: Some("6.14.0".to_owned()),
+                        version: Some(json!({ "commit": "abc1234", "committedAt": 1_700_000_000 })),
                     },
                     connected_at: 1_700_000_000,
                     last_message_at: 1_700_000_042,
@@ -93,6 +98,7 @@ mod tests {
                     "arch": "x86_64",
                     "platform": "linux",
                     "release": "6.14.0",
+                    "version": { "commit": "abc1234", "committedAt": 1_700_000_000 },
                     "connectedAt": 1_700_000_000,
                     "lastMessageAt": 1_700_000_042
                 }]

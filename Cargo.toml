@@ -1,12 +1,13 @@
 [workspace]
 resolver = "3"
-members = ["apps/omdash-client-rs", "apps/omdash-server-rs"]
+members = ["apps/omdash-client-rs", "apps/omdash-server-rs", "crates/omdash-version"]
 
 [workspace.package]
 version = "0.1.0"
 edition = "2024"
 
 [workspace.dependencies]
+omdash-version = { path = "crates/omdash-version" }
 anyhow = "1.0.104"
 futures-util = "0.3.33"
 serde = { version = "1.0.229", features = ["derive"] }

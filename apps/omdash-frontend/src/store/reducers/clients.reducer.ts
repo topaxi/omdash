@@ -1,6 +1,7 @@
 import type { OmClientAction } from '../action.js';
 import { pushCapped } from './history.reducer.js';
 import { getAverageCPUUsage } from './cpu-usage.js';
+import type { Version } from './version.js';
 
 export interface CpuInfo {
   model: string;
@@ -12,7 +13,7 @@ export interface CpuInfo {
 
 export type RegisterAction = OmClientAction<
   'register',
-  { addr: string; hostname: string }
+  { addr: string; hostname: string; version?: Version }
 >;
 export type UnregisterAction = OmClientAction<'unregister', unknown>;
 export type MetricAction = OmClientAction<'metric', Record<string, any>>;
@@ -122,6 +123,8 @@ export interface ClientState {
   hostname: string;
   platform: string;
   release: string;
+  /** The commit this client was built from; absent for clients that predate it. */
+  version?: Version;
   uptime: number;
   lastUpdate: number;
   load: [number, number, number];

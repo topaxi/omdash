@@ -29,6 +29,11 @@ pub struct RegisterPayload {
     pub platform: &'static str,
     pub release: String,
     pub hostname: String,
+    /// The commit this binary was built from, so the dashboard can flag hosts
+    /// running older code than the relay. Absent when the build had no
+    /// repository to read it from.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub version: Option<omdash_version::Version>,
 }
 
 /// A single `client/metric` push. Node sends several of these independently,
@@ -171,6 +176,7 @@ mod tests {
             platform: "linux",
             release: "6.1.0".to_string(),
             hostname: "ompi".to_string(),
+            version: None,
         }))
         .unwrap();
         assert_eq!(
@@ -183,6 +189,28 @@ mod tests {
                     "release": "6.1.0",
                     "hostname": "ompi"
                 }
+            })
+        );
+    }
+
+    #[test]
+    fn register_carries_the_build_version() {
+        let json = serde_json::to_value(ClientMessage::Register(RegisterPayload {
+            arch: "x86_64",
+            platform: "linux",
+            release: "6.1.0".to_string(),
+            hostname: "ompi".to_string(),
+            version: Some(omdash_version::Version {
+                commit: "cf3ea55bf18aa2dbc6985900bc1c5ee983f94085",
+                committed_at: 1_700_000_000,
+            }),
+        }))
+        .unwrap();
+        assert_eq!(
+            json["payload"]["version"],
+            serde_json::json!({
+                "commit": "cf3ea55bf18aa2dbc6985900bc1c5ee983f94085",
+                "committedAt": 1_700_000_000
             })
         );
     }

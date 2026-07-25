@@ -106,12 +106,16 @@ async fn run_connection(
     let (mut ws_tx, mut ws_rx) = ws_stream.split();
     let (out_tx, mut out_rx) = mpsc::unbounded_channel::<Message>();
 
-    send(&out_tx, &ClientMessage::Register(RegisterPayload {
-        arch: std::env::consts::ARCH,
-        platform: std::env::consts::OS,
-        release: os_release(),
-        hostname: hostname(),
-    }));
+    send(
+        &out_tx,
+        &ClientMessage::Register(RegisterPayload {
+            arch: std::env::consts::ARCH,
+            platform: std::env::consts::OS,
+            release: os_release(),
+            hostname: hostname(),
+            version: omdash_version::version(),
+        }),
+    );
 
     let metrics_handle = tokio::spawn(run_metric_loops(out_tx.clone()));
 

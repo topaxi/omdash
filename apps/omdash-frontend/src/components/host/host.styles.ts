@@ -41,6 +41,10 @@ export const hostStyles = css`
     right: 1ch;
   }
 
+  .outdated {
+    color: var(--ctp-macchiato-yellow);
+  }
+
   .critical {
     animation: pulse 1s infinite;
   }

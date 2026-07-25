@@ -41,6 +41,11 @@ pub enum ServerMessage<'a> {
 #[derive(Serialize)]
 pub struct EnvPayload<'a> {
     pub unsplash: Unsplash<'a>,
+    /// The commit the relay itself was built from. The dashboard compares
+    /// each client's reported version against this one to decide which hosts
+    /// are running older code.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub version: Option<omdash_version::Version>,
 }
 
 #[derive(Serialize)]
@@ -63,6 +68,11 @@ pub struct RegisterPayload<'a> {
     pub platform: Option<&'a str>,
     pub release: Option<&'a str>,
     pub addr: &'a str,
+    /// Relayed back exactly as the client sent it, rather than re-typed here:
+    /// the relay has no reason to interpret it, and clients that predate the
+    /// field simply have none.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub version: Option<&'a Value>,
 }
 
 #[cfg(test)]
@@ -123,6 +133,7 @@ mod tests {
         let json = serde_json::to_value(ServerMessage::Env {
             payload: EnvPayload {
                 unsplash: Unsplash { client_id: "abc" },
+                version: None,
             },
         })
         .unwrap();
@@ -132,6 +143,28 @@ mod tests {
             json!({
                 "type": "server/env",
                 "payload": { "unsplash": { "client_id": "abc" } }
+            })
+        );
+    }
+
+    #[test]
+    fn env_carries_the_relay_version() {
+        let json = serde_json::to_value(ServerMessage::Env {
+            payload: EnvPayload {
+                unsplash: Unsplash { client_id: "" },
+                version: Some(omdash_version::Version {
+                    commit: "cf3ea55bf18aa2dbc6985900bc1c5ee983f94085",
+                    committed_at: 1_700_000_000,
+                }),
+            },
+        })
+        .unwrap();
+
+        assert_eq!(
+            json["payload"]["version"],
+            json!({
+                "commit": "cf3ea55bf18aa2dbc6985900bc1c5ee983f94085",
+                "committedAt": 1_700_000_000
             })
         );
     }
@@ -172,6 +205,7 @@ mod tests {
                 platform: Some("linux"),
                 release: Some("6.14.0"),
                 addr: "::ffff:10.0.0.5",
+                version: None,
             },
         })
         .unwrap();
@@ -190,5 +224,24 @@ mod tests {
                 }
             })
         );
+    }
+
+    #[test]
+    fn register_snapshot_replays_the_client_version_verbatim() {
+        let version = json!({ "commit": "abc1234", "committedAt": 1_700_000_000 });
+        let json = serde_json::to_value(ServerMessage::Register {
+            client: "colon",
+            payload: RegisterPayload {
+                hostname: "colon",
+                arch: None,
+                platform: None,
+                release: None,
+                addr: "10.0.0.5",
+                version: Some(&version),
+            },
+        })
+        .unwrap();
+
+        assert_eq!(json["payload"]["version"], version);
     }
 }

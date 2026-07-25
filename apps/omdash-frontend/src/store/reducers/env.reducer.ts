@@ -1,4 +1,5 @@
 import { Action } from '@reduxjs/toolkit';
+import type { Version } from './version.js';
 
 export interface EnvAction extends Action<`server/env`> {
   payload: EnvState;
@@ -6,6 +7,8 @@ export interface EnvAction extends Action<`server/env`> {
 
 export interface EnvState {
   unsplash: { client_id: string | undefined };
+  /** The commit the relay was built from; absent if it could not determine it. */
+  version?: Version;
 }
 
 const initialEnvState = {

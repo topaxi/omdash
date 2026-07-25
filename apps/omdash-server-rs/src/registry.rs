@@ -21,6 +21,10 @@ pub struct ClientInfo {
     pub arch: Option<String>,
     pub platform: Option<String>,
     pub release: Option<String>,
+    /// The client's build provenance, kept as the raw JSON it sent so the
+    /// relay can hand it back verbatim when replaying registrations to a
+    /// dashboard, without having to model a shape it never inspects.
+    pub version: Option<serde_json::Value>,
 }
 
 #[derive(Clone)]

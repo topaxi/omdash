@@ -76,6 +76,7 @@ async fn send_initial_state(
             unsplash: Unsplash {
                 client_id: &state.unsplash_client_id,
             },
+            version: omdash_version::version(),
         },
     }) {
         ws_tx.send(super::text(&env)).await?;
@@ -97,6 +98,7 @@ async fn send_initial_state(
                 platform: entry.info.platform.as_deref(),
                 release: entry.info.release.as_deref(),
                 addr: &entry.addr,
+                version: entry.info.version.as_ref(),
             },
         }) {
             ws_tx.send(super::text(&message)).await?;

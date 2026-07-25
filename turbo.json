@@ -4,6 +4,10 @@
     "build": {
       "outputs": [
         "build/**"
+      ],
+      "env": [
+        "OMDASH_GIT_COMMIT",
+        "OMDASH_GIT_COMMITTED_AT"
       ]
     },
     "omdash-frontend#build": {

@@ -1,8 +1,15 @@
 import { html } from 'lit';
-import { customElement } from 'lit/decorators.js';
+import { customElement, state } from 'lit/decorators.js';
 
+import '../../components/ago/ago.js';
 import '../../components/box/box.js';
 import { connect } from '../../store/connect.js';
+import { RootState } from '../../store/index.js';
+import {
+  frontendVersion,
+  shortCommit,
+  type Version,
+} from '../../store/reducers/version.js';
 import { settingsStyles } from './settings.styles.js';
 import { OmdashComponent } from '../../base/OmdashComponent.js';
 
@@ -10,12 +17,30 @@ import { OmdashComponent } from '../../base/OmdashComponent.js';
 export class OmSettings extends connect()(OmdashComponent) {
   static styles = settingsStyles;
 
+  @state()
+  private accessor serverVersion: Version | undefined;
+
+  override stateChanged(state: RootState): void {
+    this.serverVersion = state.env.version;
+  }
+
   private refresh() {
     window.location.href = '/';
   }
 
   private reset() {
     this.store.dispatch({ type: 'REPLACE_STATE', payload: undefined });
+  }
+
+  private renderVersion(version: Version | undefined | null) {
+    if (!version) {
+      return 'unknown';
+    }
+
+    return html`
+      <span class="commit">${shortCommit(version)}</span>
+      (<om-ago date=${version.committedAt * 1000}></om-ago>)
+    `;
   }
 
   protected render(): unknown {
@@ -26,6 +51,10 @@ export class OmSettings extends connect()(OmdashComponent) {
         <dl class="debug-info">
           <dt>Hardware Concurrency</dt>
           <dd>${window.navigator.hardwareConcurrency}</dd>
+          <dt>Frontend</dt>
+          <dd>${this.renderVersion(frontendVersion)}</dd>
+          <dt>Server</dt>
+          <dd>${this.renderVersion(this.serverVersion)}</dd>
         </dl>
       </om-box>
     `;
