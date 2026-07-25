@@ -34,28 +34,38 @@ export class OmSettings extends connect()(OmdashComponent) {
 
   private renderVersion(version: Version | undefined | null) {
     if (!version) {
-      return 'unknown';
+      return html`<span class="unknown">unknown</span>`;
     }
 
-    return html`
-      <span class="commit">${shortCommit(version)}</span>
-      (<om-ago date=${version.committedAt * 1000}></om-ago>)
-    `;
+    return html`<span class="commit">${shortCommit(version)}</span>
+      <om-ago class="age" date=${version.committedAt * 1000}></om-ago>`;
   }
 
   protected render(): unknown {
     return html`
       <om-box class="content">
-        <button @click=${this.refresh}>Refresh 󰑐</button>
-        <button @click=${this.reset}>Reset 󰐷</button>
-        <dl class="debug-info">
-          <dt>Hardware Concurrency</dt>
-          <dd>${window.navigator.hardwareConcurrency}</dd>
-          <dt>Frontend</dt>
-          <dd>${this.renderVersion(frontendVersion)}</dd>
-          <dt>Server</dt>
-          <dd>${this.renderVersion(this.serverVersion)}</dd>
-        </dl>
+        <div class="settings">
+          <div class="actions">
+            <button @click=${this.refresh}>Refresh 󰑐</button>
+            <button @click=${this.reset}>Reset 󰐷</button>
+          </div>
+          <section>
+            <h2>Versions</h2>
+            <dl class="info">
+              <dt>Frontend</dt>
+              <dd>${this.renderVersion(frontendVersion)}</dd>
+              <dt>Server</dt>
+              <dd>${this.renderVersion(this.serverVersion)}</dd>
+            </dl>
+          </section>
+          <section>
+            <h2>Browser</h2>
+            <dl class="info">
+              <dt>Hardware Concurrency</dt>
+              <dd>${window.navigator.hardwareConcurrency}</dd>
+            </dl>
+          </section>
+        </div>
       </om-box>
     `;
   }

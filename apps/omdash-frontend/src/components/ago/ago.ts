@@ -19,18 +19,24 @@ function timeDifference(
   }
 
   if (elapsed < msPerMinute) {
-    return `${Math.round(elapsed / 1000)} seconds ago`;
+    return `${plural(elapsed / 1000, 'second')} ago`;
   } else if (elapsed < msPerHour) {
-    return `${Math.round(elapsed / msPerMinute)} minutes ago`;
+    return `${plural(elapsed / msPerMinute, 'minute')} ago`;
   } else if (elapsed < msPerDay) {
-    return `${Math.round(elapsed / msPerHour)} hours ago`;
+    return `${plural(elapsed / msPerHour, 'hour')} ago`;
   } else if (elapsed < msPerMonth) {
-    return `approximately ${Math.round(elapsed / msPerDay)} days ago`;
+    return `approximately ${plural(elapsed / msPerDay, 'day')} ago`;
   } else if (elapsed < msPerYear) {
-    return `approximately ${Math.round(elapsed / msPerMonth)} months ago`;
+    return `approximately ${plural(elapsed / msPerMonth, 'month')} ago`;
   } else {
-    return `approximately ${Math.round(elapsed / msPerYear)} years ago`;
+    return `approximately ${plural(elapsed / msPerYear, 'year')} ago`;
   }
+}
+
+function plural(value: number, unit: string) {
+  const rounded = Math.round(value);
+
+  return `${rounded} ${unit}${rounded === 1 ? '' : 's'}`;
 }
 
 @customElement('om-ago')
